@@ -6,8 +6,6 @@ import {
   UtensilsCrossed,
   Tag,
   Table2,
-  BarChart3,
-  Users,
   Settings,
   LogOut,
   ChevronLeft,
@@ -20,6 +18,8 @@ import { cn } from "@/lib/utils";
 interface NavItem {
   label: string;
   href: string;
+  /** Use startsWith matching (for parent paths like /orders) */
+  matchPrefix?: boolean;
   icon: React.ReactNode;
   roles: UserRole[];
 }
@@ -34,6 +34,7 @@ const navItems: NavItem[] = [
   {
     label: "Pesanan",
     href: "/orders",
+    matchPrefix: true,
     icon: <ShoppingCart size={18} />,
     roles: ["owner", "manager", "cashier", "kitchen"],
   },
@@ -54,18 +55,6 @@ const navItems: NavItem[] = [
     href: "/tables",
     icon: <Table2 size={18} />,
     roles: ["owner", "manager", "cashier"],
-  },
-  {
-    label: "Laporan",
-    href: "/reports",
-    icon: <BarChart3 size={18} />,
-    roles: ["owner", "manager"],
-  },
-  {
-    label: "Staf",
-    href: "/staff",
-    icon: <Users size={18} />,
-    roles: ["owner", "manager"],
   },
   {
     label: "Pengaturan",
@@ -112,7 +101,9 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       {/* Navigation */}
       <nav className="flex-1 px-2 py-4 space-y-0.5 overflow-y-auto">
         {visibleNav.map((item) => {
-          const active = pathname.startsWith(item.href);
+          const active = item.matchPrefix
+            ? pathname.startsWith(item.href)
+            : pathname === item.href;
           return (
             <Link
               key={item.href}

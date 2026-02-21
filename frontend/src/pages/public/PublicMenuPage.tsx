@@ -50,16 +50,30 @@ interface CartDrawerProps {
   onUpdateQty: (itemId: number, qty: number) => void;
 }
 
-function CartDrawer({ open, onClose, cart, categories, currency, tableId, slug, onOrderSuccess, onUpdateQty }: CartDrawerProps) {
+function CartDrawer({
+  open,
+  onClose,
+  cart,
+  categories,
+  currency,
+  tableId,
+  slug,
+  onOrderSuccess,
+  onUpdateQty,
+}: CartDrawerProps) {
   const [notes, setNotes] = useState("");
   const [customerName, setCustomerName] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const allItems = useMemo(() => categories.flatMap((c) => c.active_menu_items ?? []), [categories]);
+  const allItems = useMemo(
+    () => categories.flatMap((c) => c.active_menu_items ?? []),
+    [categories],
+  );
 
   const cartItems = useMemo(() => {
-    const result: { id: number; name: string; price: number; qty: number }[] = [];
+    const result: { id: number; name: string; price: number; qty: number }[] =
+      [];
     cart.forEach((qty, id) => {
       const item = allItems.find((i) => i.id === id);
       if (item) result.push({ id, name: item.name, price: item.price, qty });
@@ -82,7 +96,9 @@ function CartDrawer({ open, onClose, cart, categories, currency, tableId, slug, 
       });
       onOrderSuccess(res.data.data.order_number);
     } catch (e: unknown) {
-      const msg = (e as { response?: { data?: { message?: string } } })?.response?.data?.message ?? "Gagal mengirim pesanan.";
+      const msg =
+        (e as { response?: { data?: { message?: string } } })?.response?.data
+          ?.message ?? "Gagal mengirim pesanan.";
       setError(msg);
     } finally {
       setLoading(false);
@@ -96,8 +112,13 @@ function CartDrawer({ open, onClose, cart, categories, currency, tableId, slug, 
       <div className="fixed inset-0 bg-black/40 z-30" onClick={onClose} />
       <div className="fixed bottom-0 left-0 right-0 max-w-lg mx-auto bg-white rounded-t-2xl z-40 max-h-[85vh] flex flex-col shadow-2xl">
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-          <h2 className="font-bold text-gray-900 text-base">Keranjang ({cartItems.length} item)</h2>
-          <button onClick={onClose} className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-gray-200">
+          <h2 className="font-bold text-gray-900 text-base">
+            Keranjang ({cartItems.length} item)
+          </h2>
+          <button
+            onClick={onClose}
+            className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-gray-200"
+          >
             <X size={16} />
           </button>
         </div>
@@ -106,37 +127,79 @@ function CartDrawer({ open, onClose, cart, categories, currency, tableId, slug, 
             <div key={item.id} className="flex items-center gap-3">
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-gray-800">{item.name}</p>
-                <p className="text-xs text-orange-600 font-semibold">{fmt(item.price, currency)}</p>
+                <p className="text-xs text-orange-600 font-semibold">
+                  {fmt(item.price, currency)}
+                </p>
               </div>
               <div className="flex items-center gap-2">
-                <button onClick={() => onUpdateQty(item.id, item.qty - 1)} className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-orange-100 hover:text-orange-600 transition">
+                <button
+                  onClick={() => onUpdateQty(item.id, item.qty - 1)}
+                  className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-orange-100 hover:text-orange-600 transition"
+                >
                   <Minus size={12} />
                 </button>
-                <span className="w-6 text-center text-sm font-bold text-gray-900">{item.qty}</span>
-                <button onClick={() => onUpdateQty(item.id, item.qty + 1)} className="w-7 h-7 rounded-full bg-orange-500 flex items-center justify-center text-white hover:bg-orange-600 transition">
+                <span className="w-6 text-center text-sm font-bold text-gray-900">
+                  {item.qty}
+                </span>
+                <button
+                  onClick={() => onUpdateQty(item.id, item.qty + 1)}
+                  className="w-7 h-7 rounded-full bg-orange-500 flex items-center justify-center text-white hover:bg-orange-600 transition"
+                >
                   <Plus size={12} />
                 </button>
               </div>
-              <p className="text-sm font-semibold text-gray-900 w-20 text-right">{fmt(item.price * item.qty, currency)}</p>
+              <p className="text-sm font-semibold text-gray-900 w-20 text-right">
+                {fmt(item.price * item.qty, currency)}
+              </p>
             </div>
           ))}
         </div>
         <div className="px-5 pb-5 space-y-3 border-t border-gray-100 pt-3">
           <div>
-            <label className="text-xs font-medium text-gray-500 mb-1 block">Nama (opsional)</label>
-            <input type="text" value={customerName} onChange={(e) => setCustomerName(e.target.value)} placeholder="Nama kamu..." className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400" />
+            <label className="text-xs font-medium text-gray-500 mb-1 block">
+              Nama (opsional)
+            </label>
+            <input
+              type="text"
+              value={customerName}
+              onChange={(e) => setCustomerName(e.target.value)}
+              placeholder="Nama kamu..."
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
+            />
           </div>
           <div>
-            <label className="text-xs font-medium text-gray-500 mb-1 block">Catatan (opsional)</label>
-            <textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Misal: tanpa pedas, extra saus..." rows={2} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400 resize-none" />
+            <label className="text-xs font-medium text-gray-500 mb-1 block">
+              Catatan (opsional)
+            </label>
+            <textarea
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="Misal: tanpa pedas, extra saus..."
+              rows={2}
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400 resize-none"
+            />
           </div>
           <div className="flex justify-between items-center py-2 border-t border-gray-100">
             <span className="text-sm text-gray-500">Total</span>
-            <span className="font-bold text-base text-gray-900">{fmt(subtotal, currency)}</span>
+            <span className="font-bold text-base text-gray-900">
+              {fmt(subtotal, currency)}
+            </span>
           </div>
-          {error && <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{error}</p>}
-          <button onClick={handleOrder} disabled={loading || cartItems.length === 0} className="w-full bg-orange-500 hover:bg-orange-600 text-white rounded-xl py-3.5 font-semibold text-sm transition disabled:opacity-60 flex items-center justify-center gap-2">
-            {loading ? <Loader2 size={17} className="animate-spin" /> : <ChevronRight size={17} />}
+          {error && (
+            <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+              {error}
+            </p>
+          )}
+          <button
+            onClick={handleOrder}
+            disabled={loading || cartItems.length === 0}
+            className="w-full bg-orange-500 hover:bg-orange-600 text-white rounded-xl py-3.5 font-semibold text-sm transition disabled:opacity-60 flex items-center justify-center gap-2"
+          >
+            {loading ? (
+              <Loader2 size={17} className="animate-spin" />
+            ) : (
+              <ChevronRight size={17} />
+            )}
             {loading ? "Mengirim…" : "Pesan Sekarang"}
           </button>
         </div>
@@ -147,15 +210,30 @@ function CartDrawer({ open, onClose, cart, categories, currency, tableId, slug, 
 
 // ─── Success screen ───────────────────────────────────────
 
-function SuccessScreen({ orderNumber, onReset }: { orderNumber: string; onReset: () => void }) {
+function SuccessScreen({
+  orderNumber,
+  onReset,
+}: {
+  orderNumber: string;
+  onReset: () => void;
+}) {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 px-6 text-center">
       <CheckCircle2 size={56} className="text-green-500 mb-4" />
       <h2 className="text-xl font-bold text-gray-900 mb-2">Pesanan Dikirim!</h2>
       <p className="text-sm text-gray-500 mb-1">Nomor pesanan kamu:</p>
-      <div className="bg-white border border-gray-200 rounded-xl px-6 py-3 text-2xl font-bold text-orange-600 tracking-wide mb-6">{orderNumber}</div>
-      <p className="text-xs text-gray-400 max-w-xs mb-8">Pesananmu sedang diproses. Mohon tunggu sebentar.</p>
-      <button onClick={onReset} className="px-6 py-3 bg-orange-500 text-white rounded-xl text-sm font-semibold hover:bg-orange-600">Pesan Lagi</button>
+      <div className="bg-white border border-gray-200 rounded-xl px-6 py-3 text-2xl font-bold text-orange-600 tracking-wide mb-6">
+        {orderNumber}
+      </div>
+      <p className="text-xs text-gray-400 max-w-xs mb-8">
+        Pesananmu sedang diproses. Mohon tunggu sebentar.
+      </p>
+      <button
+        onClick={onReset}
+        className="px-6 py-3 bg-orange-500 text-white rounded-xl text-sm font-semibold hover:bg-orange-600"
+      >
+        Pesan Lagi
+      </button>
     </div>
   );
 }
@@ -188,7 +266,8 @@ export default function PublicMenuPage() {
         if (cats.length > 0) setActiveTab(cats[0].id);
       })
       .catch((err: unknown) => {
-        const status = (err as { response?: { status?: number } })?.response?.status;
+        const status = (err as { response?: { status?: number } })?.response
+          ?.status;
         if (status === 404) setNotFound(true);
       })
       .finally(() => setLoading(false));
@@ -220,17 +299,29 @@ export default function PublicMenuPage() {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 px-6 text-center">
         <div className="text-5xl mb-4">🍽</div>
-        <h2 className="text-xl font-bold text-gray-800 mb-2">Menu tidak ditemukan</h2>
-        <p className="text-sm text-gray-400">Restoran belum tersedia atau URL tidak valid.</p>
+        <h2 className="text-xl font-bold text-gray-800 mb-2">
+          Menu tidak ditemukan
+        </h2>
+        <p className="text-sm text-gray-400">
+          Restoran belum tersedia atau URL tidak valid.
+        </p>
       </div>
     );
 
   if (orderNumber) {
-    return <SuccessScreen orderNumber={orderNumber} onReset={() => setOrderNumber(null)} />;
+    return (
+      <SuccessScreen
+        orderNumber={orderNumber}
+        onReset={() => setOrderNumber(null)}
+      />
+    );
   }
 
-  const activeItems = categories.find((c) => c.id === activeTab)?.active_menu_items ?? [];
-  const allCats = categories.filter((c) => c.active_menu_items && c.active_menu_items.length > 0);
+  const activeItems =
+    categories.find((c) => c.id === activeTab)?.active_menu_items ?? [];
+  const allCats = categories.filter(
+    (c) => c.active_menu_items && c.active_menu_items.length > 0,
+  );
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -238,13 +329,25 @@ export default function PublicMenuPage() {
       <div className="bg-white shadow-sm sticky top-0 z-10">
         <div className="max-w-lg mx-auto px-4 py-3 flex items-center gap-3">
           {restaurant?.logo_url ? (
-            <img src={restaurant.logo_url} alt="logo" className="w-10 h-10 object-contain rounded-lg flex-shrink-0" />
+            <img
+              src={restaurant.logo_url}
+              alt="logo"
+              className="w-10 h-10 object-contain rounded-lg flex-shrink-0"
+            />
           ) : (
-            <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center text-xl flex-shrink-0">🍽</div>
+            <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center text-xl flex-shrink-0">
+              🍽
+            </div>
           )}
           <div className="min-w-0 flex-1">
-            <p className="font-bold text-gray-900 truncate">{restaurant?.name}</p>
-            {restaurant?.address && <p className="text-xs text-gray-400 truncate">{restaurant.address}</p>}
+            <p className="font-bold text-gray-900 truncate">
+              {restaurant?.name}
+            </p>
+            {restaurant?.address && (
+              <p className="text-xs text-gray-400 truncate">
+                {restaurant.address}
+              </p>
+            )}
           </div>
         </div>
 
@@ -263,7 +366,9 @@ export default function PublicMenuPage() {
                   onClick={() => setActiveTab(c.id)}
                   className={cn(
                     "flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium transition",
-                    activeTab === c.id ? "bg-orange-500 text-white shadow" : "bg-gray-100 text-gray-600 hover:bg-gray-200",
+                    activeTab === c.id
+                      ? "bg-orange-500 text-white shadow"
+                      : "bg-gray-100 text-gray-600 hover:bg-gray-200",
                   )}
                 >
                   {c.name}
@@ -282,14 +387,23 @@ export default function PublicMenuPage() {
             <p className="text-sm">Menu belum tersedia saat ini.</p>
           </div>
         ) : activeItems.length === 0 ? (
-          <div className="text-center py-12 text-gray-400 text-sm">Tidak ada menu di kategori ini.</div>
+          <div className="text-center py-12 text-gray-400 text-sm">
+            Tidak ada menu di kategori ini.
+          </div>
         ) : (
           activeItems.map((item) => {
             const qty = cart.get(item.id) ?? 0;
             return (
-              <div key={item.id} className="bg-white rounded-xl overflow-hidden flex gap-3 shadow-sm">
+              <div
+                key={item.id}
+                className="bg-white rounded-xl overflow-hidden flex gap-3 shadow-sm"
+              >
                 {item.image_url ? (
-                  <img src={item.image_url} alt={item.name} className="w-24 h-24 flex-shrink-0 object-cover" />
+                  <img
+                    src={item.image_url}
+                    alt={item.name}
+                    className="w-24 h-24 flex-shrink-0 object-cover"
+                  />
                 ) : (
                   <div className="w-24 h-24 flex-shrink-0 bg-gray-100 flex items-center justify-center text-gray-300">
                     <ImageOff size={22} />
@@ -297,12 +411,22 @@ export default function PublicMenuPage() {
                 )}
                 <div className="flex flex-col justify-center py-3 pr-3 flex-1 min-w-0">
                   <div className="flex items-start gap-1">
-                    <p className="font-semibold text-gray-900 text-sm leading-snug flex-1 min-w-0">{item.name}</p>
-                    {item.is_featured && <span className="text-amber-500 text-xs">⭐</span>}
+                    <p className="font-semibold text-gray-900 text-sm leading-snug flex-1 min-w-0">
+                      {item.name}
+                    </p>
+                    {item.is_featured && (
+                      <span className="text-amber-500 text-xs">⭐</span>
+                    )}
                   </div>
-                  {item.description && <p className="text-xs text-gray-400 mt-0.5 line-clamp-2">{item.description}</p>}
+                  {item.description && (
+                    <p className="text-xs text-gray-400 mt-0.5 line-clamp-2">
+                      {item.description}
+                    </p>
+                  )}
                   <div className="flex items-center justify-between mt-2">
-                    <p className="font-bold text-orange-600 text-sm">{fmt(item.price, restaurant?.currency)}</p>
+                    <p className="font-bold text-orange-600 text-sm">
+                      {fmt(item.price, restaurant?.currency)}
+                    </p>
                     {item.preparation_time ? (
                       <span className="flex items-center gap-1 text-xs text-gray-400">
                         <Clock size={10} /> {item.preparation_time} mnt
@@ -311,16 +435,27 @@ export default function PublicMenuPage() {
                   </div>
                   <div className="mt-2">
                     {qty === 0 ? (
-                      <button onClick={() => updateQty(item.id, 1)} className="flex items-center gap-1 bg-orange-500 text-white text-xs font-semibold px-3 py-1.5 rounded-full hover:bg-orange-600 transition">
+                      <button
+                        onClick={() => updateQty(item.id, 1)}
+                        className="flex items-center gap-1 bg-orange-500 text-white text-xs font-semibold px-3 py-1.5 rounded-full hover:bg-orange-600 transition"
+                      >
                         <Plus size={12} /> Tambah
                       </button>
                     ) : (
                       <div className="flex items-center gap-2">
-                        <button onClick={() => updateQty(item.id, qty - 1)} className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-orange-100 hover:text-orange-600 transition">
+                        <button
+                          onClick={() => updateQty(item.id, qty - 1)}
+                          className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-orange-100 hover:text-orange-600 transition"
+                        >
                           <Minus size={12} />
                         </button>
-                        <span className="text-sm font-bold text-gray-900 w-4 text-center">{qty}</span>
-                        <button onClick={() => updateQty(item.id, qty + 1)} className="w-7 h-7 rounded-full bg-orange-500 flex items-center justify-center text-white hover:bg-orange-600 transition">
+                        <span className="text-sm font-bold text-gray-900 w-4 text-center">
+                          {qty}
+                        </span>
+                        <button
+                          onClick={() => updateQty(item.id, qty + 1)}
+                          className="w-7 h-7 rounded-full bg-orange-500 flex items-center justify-center text-white hover:bg-orange-600 transition"
+                        >
                           <Plus size={12} />
                         </button>
                       </div>
@@ -364,7 +499,11 @@ export default function PublicMenuPage() {
           currency={restaurant?.currency}
           tableId={tableId}
           slug={slug}
-          onOrderSuccess={(num) => { setOrderNumber(num); setCartOpen(false); setCart(new Map()); }}
+          onOrderSuccess={(num) => {
+            setOrderNumber(num);
+            setCartOpen(false);
+            setCart(new Map());
+          }}
           onUpdateQty={updateQty}
         />
       )}
