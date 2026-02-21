@@ -10,6 +10,7 @@ import {
   LogOut,
   ChevronLeft,
   Menu,
+  Wallet,
 } from "lucide-react";
 import { useAuthStore } from "@/stores/authStore";
 import type { UserRole } from "@/types/auth";
@@ -37,6 +38,12 @@ const navItems: NavItem[] = [
     matchPrefix: true,
     icon: <ShoppingCart size={18} />,
     roles: ["owner", "manager", "cashier", "kitchen"],
+  },
+  {
+    label: "Pembayaran",
+    href: "/payments",
+    icon: <Wallet size={18} />,
+    roles: ["owner", "manager", "cashier"],
   },
   {
     label: "Kategori",

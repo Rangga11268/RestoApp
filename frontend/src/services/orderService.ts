@@ -44,6 +44,23 @@ export interface Order {
   items?: OrderItem[];
   table?: { id: number; name: string } | null;
   cashier?: { id: number; name: string } | null;
+  restaurant?: {
+    id: number;
+    name: string;
+    address: string | null;
+    phone: string | null;
+    email: string;
+  } | null;
+  payment?: {
+    id: number;
+    method: import("./paymentService").PaymentMethod;
+    amount: number;
+    change_amount: number;
+    status: import("./paymentService").PaymentStatus;
+    transaction_ref: string | null;
+    notes: string | null;
+    paid_at: string | null;
+  } | null;
 }
 
 export interface PaginatedOrders {

@@ -6,6 +6,7 @@ use App\Http\Controllers\API\Auth\ProfileController;
 use App\Http\Controllers\API\MenuCategoryController;
 use App\Http\Controllers\API\MenuItemController;
 use App\Http\Controllers\API\OrderController;
+use App\Http\Controllers\API\PaymentController;
 use App\Http\Controllers\API\PublicMenuController;
 use App\Http\Controllers\API\RestaurantController;
 use App\Http\Controllers\API\RestaurantTableController;
@@ -86,6 +87,13 @@ Route::prefix('v1')->group(function () {
             Route::patch('orders/{order}/status', [OrderController::class, 'updateStatus']);
             Route::delete('orders/{order}', [OrderController::class, 'destroy']);
 
+            // ── Payments ────────────────────────────────────
+            Route::get('payments/history', [PaymentController::class, 'history']);
+            Route::post('payments/midtrans/snap-token', [PaymentController::class, 'snapToken']);
+            Route::post('payments', [PaymentController::class, 'store']);
+            Route::get('payments/{payment}', [PaymentController::class, 'show']);
+            Route::patch('payments/{payment}/refund', [PaymentController::class, 'refund']);
+
             // ── Phase 4–6 routes added here progressively ──
         });
     });
@@ -100,4 +108,12 @@ Route::prefix('v1')->group(function () {
 
     Route::post('public/{slug}/orders', [PublicMenuController::class, 'createOrder'])
         ->middleware('throttle:30,1');
+
+    /*
+    |--------------------------------------------------
+    | Midtrans Notification Webhook (no auth required)
+    |--------------------------------------------------
+    */
+    Route::post('payments/midtrans/notification', [PaymentController::class, 'notification'])
+        ->middleware('throttle:120,1');
 });

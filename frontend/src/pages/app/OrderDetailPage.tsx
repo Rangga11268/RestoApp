@@ -12,6 +12,8 @@ import {
   BellRing,
   CircleDashed,
   Loader2,
+  Banknote,
+  Receipt,
 } from "lucide-react";
 import {
   getOrder,
@@ -431,6 +433,32 @@ export default function OrderDetailPage() {
               Batalkan
             </button>
           )}
+        </div>
+      )}
+
+      {/* ── Payment CTA ─────────────────────────────────── */}
+      {order.payment_status === "unpaid" && order.status !== "cancelled" && (
+        <div className="mt-3">
+          <button
+            onClick={() => navigate(`/orders/${order.id}/payment`)}
+            className="inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold bg-green-600 hover:bg-green-700 text-white transition"
+          >
+            <Banknote size={16} />
+            Proses Pembayaran
+          </button>
+        </div>
+      )}
+
+      {/* ── Invoice CTA ──────────────────────────────────── */}
+      {order.payment_status !== "unpaid" && (
+        <div className="mt-3">
+          <button
+            onClick={() => navigate(`/orders/${order.id}/invoice`)}
+            className="inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold border border-gray-200 text-gray-700 hover:bg-gray-50 transition"
+          >
+            <Receipt size={16} />
+            Lihat Invoice
+          </button>
         </div>
       )}
     </div>

@@ -17,6 +17,9 @@ const TablesPage = lazy(() => import("@/pages/app/TablesPage"));
 const SettingsPage = lazy(() => import("@/pages/app/SettingsPage"));
 const OrdersPage = lazy(() => import("@/pages/app/OrdersPage"));
 const OrderDetailPage = lazy(() => import("@/pages/app/OrderDetailPage"));
+const PaymentPage = lazy(() => import("@/pages/app/PaymentPage"));
+const InvoicePage = lazy(() => import("@/pages/app/InvoicePage"));
+const PaymentHistoryPage = lazy(() => import("@/pages/app/PaymentHistoryPage"));
 const UnauthorizedPage = lazy(() => import("@/pages/UnauthorizedPage"));
 
 // Public pages (no auth)
@@ -100,6 +103,30 @@ export default function App() {
               element={
                 <ShellRoute>
                   <OrderDetailPage />
+                </ShellRoute>
+              }
+            />
+            <Route
+              path="/orders/:id/payment"
+              element={
+                <ShellRoute>
+                  <PaymentPage />
+                </ShellRoute>
+              }
+            />
+            <Route
+              path="/orders/:id/invoice"
+              element={
+                <ShellRoute>
+                  <InvoicePage />
+                </ShellRoute>
+              }
+            />
+            <Route
+              path="/payments"
+              element={
+                <ShellRoute>
+                  <PaymentHistoryPage />
                 </ShellRoute>
               }
             />
