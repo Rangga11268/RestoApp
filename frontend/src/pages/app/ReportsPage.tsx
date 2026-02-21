@@ -15,12 +15,15 @@ import {
   BarChart3,
   Users,
   ImageOff,
-  Download,
+  FileSpreadsheet,
+  FileText,
 } from "lucide-react";
 import {
   getSalesReport,
   getTopProducts,
   getStaffPerformance,
+  exportReportExcel,
+  exportReportPdf,
   type SalesData,
   type TopProduct,
   type StaffStat,
@@ -96,6 +99,26 @@ export default function ReportsPage() {
   const [loadingSales, setLoadingSales] = useState(true);
   const [loadingProducts, setLoadingProducts] = useState(true);
   const [loadingStaff, setLoadingStaff] = useState(true);
+  const [exporting, setExporting] = useState<"excel" | "pdf" | null>(null);
+
+  const handleExport = async (type: "excel" | "pdf") => {
+    setExporting(type);
+    const params = {
+      from,
+      to,
+      group_by: groupBy,
+      limit: topLimit,
+      sort_by: topSort,
+    };
+    try {
+      if (type === "excel") await exportReportExcel(params);
+      else await exportReportPdf(params);
+    } catch {
+      // silently ignore — browser will show nothing if it fails
+    } finally {
+      setExporting(null);
+    }
+  };
 
   // Fetch sales + staff together when date range changes
   useEffect(() => {
@@ -172,15 +195,32 @@ export default function ReportsPage() {
             Analisis penjualan & performa restoran
           </p>
         </div>
-        <a
-          href={`/api/reports/sales?from=${from}&to=${to}&export=excel`}
-          className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium px-4 py-2 rounded-lg transition"
-          target="_blank"
-          rel="noreferrer"
-        >
-          <Download size={15} />
-          Export Excel
-        </a>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => handleExport("excel")}
+            disabled={!!exporting}
+            className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 disabled:opacity-60 text-white text-sm font-medium px-4 py-2 rounded-lg transition"
+          >
+            {exporting === "excel" ? (
+              <Loader2 size={15} className="animate-spin" />
+            ) : (
+              <FileSpreadsheet size={15} />
+            )}
+            Excel
+          </button>
+          <button
+            onClick={() => handleExport("pdf")}
+            disabled={!!exporting}
+            className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 disabled:opacity-60 text-white text-sm font-medium px-4 py-2 rounded-lg transition"
+          >
+            {exporting === "pdf" ? (
+              <Loader2 size={15} className="animate-spin" />
+            ) : (
+              <FileText size={15} />
+            )}
+            PDF
+          </button>
+        </div>
       </div>
 
       {/* Filters */}

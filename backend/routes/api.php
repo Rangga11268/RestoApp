@@ -101,6 +101,8 @@ Route::prefix('v1')->group(function () {
                 Route::get('sales',             [ReportController::class, 'sales']);
                 Route::get('top-products',      [ReportController::class, 'topProducts']);
                 Route::get('staff-performance', [ReportController::class, 'staffPerformance']);
+                Route::get('export/excel',      [ReportController::class, 'exportExcel']);
+                Route::get('export/pdf',        [ReportController::class, 'exportPdf']);
             });
         });
     });

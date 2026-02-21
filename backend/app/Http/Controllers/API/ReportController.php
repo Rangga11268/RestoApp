@@ -2,17 +2,22 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Exports\SalesReportExport;
 use App\Http\Controllers\Controller;
 use App\Http\Traits\ApiResponse;
 use App\Models\MenuItem;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Payment;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class ReportController extends Controller
 {
@@ -277,5 +282,181 @@ class ReportController extends Controller
         });
 
         return $this->success($data);
+    }
+
+    /* ────────────────────────────────────────────────────
+     | GET /v1/reports/export/excel
+     | Download combined sales report as .xlsx
+     ──────────────────────────────────────────────────── */
+    public function exportExcel(Request $request): BinaryFileResponse
+    {
+        $request->validate([
+            'from'     => 'nullable|date',
+            'to'       => 'nullable|date|after_or_equal:from',
+            'group_by' => 'nullable|in:day,month',
+        ]);
+
+        $user         = $request->user();
+        $restaurantId = $user->restaurant_id;
+        $from         = Carbon::parse($request->input('from', now()->subDays(29)->format('Y-m-d')))->startOfDay();
+        $to           = Carbon::parse($request->input('to', now()->format('Y-m-d')))->endOfDay();
+        $groupBy      = $request->input('group_by', 'day');
+        $groupFormat  = $groupBy === 'month' ? '%Y-%m' : '%Y-%m-%d';
+        $labelFormat  = $groupBy === 'month' ? '%Y-%m' : '%d %b %Y';
+
+        $chart = Payment::whereHas(
+            'order',
+            fn($q) => $q->where('restaurant_id', $restaurantId)->where('status', '!=', 'cancelled')
+        )
+            ->where('status', 'paid')
+            ->whereBetween('paid_at', [$from, $to])
+            ->select(
+                DB::raw("DATE_FORMAT(paid_at, '{$groupFormat}') as period"),
+                DB::raw("DATE_FORMAT(paid_at, '{$labelFormat}') as label"),
+                DB::raw('SUM(amount) as revenue'),
+                DB::raw('COUNT(*) as transactions'),
+            )
+            ->groupBy('period', 'label')
+            ->orderBy('period')
+            ->get()
+            ->map(fn($r) => [
+                'label'        => $r->label,
+                'revenue'      => (float) $r->revenue,
+                'transactions' => (int) $r->transactions,
+            ])
+            ->toArray();
+
+        $restaurantName = $user->restaurant?->name ?? 'Restoran';
+        $export = new SalesReportExport(
+            $chart,
+            $restaurantName,
+            $from->format('d/m/Y'),
+            $to->format('d/m/Y'),
+        );
+
+        $filename = 'laporan-penjualan-' . $from->format('Ymd') . '-' . $to->format('Ymd') . '.xlsx';
+
+        return Excel::download($export, $filename);
+    }
+
+    /* ────────────────────────────────────────────────────
+     | GET /v1/reports/export/pdf
+     | Download combined sales report as .pdf
+     ──────────────────────────────────────────────────── */
+    public function exportPdf(Request $request): Response
+    {
+        $request->validate([
+            'from'     => 'nullable|date',
+            'to'       => 'nullable|date|after_or_equal:from',
+            'group_by' => 'nullable|in:day,month',
+            'limit'    => 'nullable|integer|min:1|max:50',
+            'sort_by'  => 'nullable|in:qty,revenue',
+        ]);
+
+        $user         = $request->user();
+        $restaurantId = $user->restaurant_id;
+        $from         = Carbon::parse($request->input('from', now()->subDays(29)->format('Y-m-d')))->startOfDay();
+        $to           = Carbon::parse($request->input('to', now()->format('Y-m-d')))->endOfDay();
+        $groupBy      = $request->input('group_by', 'day');
+        $groupFormat  = $groupBy === 'month' ? '%Y-%m' : '%Y-%m-%d';
+        $labelFormat  = $groupBy === 'month' ? '%Y-%m' : '%d %b %Y';
+        $limit        = (int) $request->input('limit', 10);
+        $sortBy       = $request->input('sort_by', 'revenue');
+        $sortCol      = $sortBy === 'revenue' ? 'total_revenue' : 'total_qty';
+
+        // ── Sales summary + chart ─────────────────────────
+        $paymentsQuery = Payment::whereHas(
+            'order',
+            fn($q) => $q->where('restaurant_id', $restaurantId)->where('status', '!=', 'cancelled')
+        )->where('status', 'paid')->whereBetween('paid_at', [$from, $to]);
+
+        $totalRevenue      = (float) (clone $paymentsQuery)->sum('amount');
+        $totalTransactions = (int)   (clone $paymentsQuery)->count();
+        $days              = max(1, $from->diffInDays($to) + 1);
+
+        $summary = [
+            'total_revenue'      => $totalRevenue,
+            'total_transactions' => $totalTransactions,
+            'avg_per_day'        => round($totalRevenue / $days, 0),
+        ];
+
+        $chart = (clone $paymentsQuery)
+            ->select(
+                DB::raw("DATE_FORMAT(paid_at, '{$groupFormat}') as period"),
+                DB::raw("DATE_FORMAT(paid_at, '{$labelFormat}') as label"),
+                DB::raw('SUM(amount) as revenue'),
+                DB::raw('COUNT(*) as transactions'),
+            )
+            ->groupBy('period', 'label')
+            ->orderBy('period')
+            ->get()
+            ->map(fn($r) => [
+                'label'        => $r->label,
+                'revenue'      => (float) $r->revenue,
+                'transactions' => (int) $r->transactions,
+            ])
+            ->toArray();
+
+        // ── Top products ──────────────────────────────────
+        $topProducts = OrderItem::whereHas(
+            'order',
+            fn($q) => $q
+                ->where('restaurant_id', $restaurantId)
+                ->where('status', '!=', 'cancelled')
+                ->whereBetween('created_at', [$from, $to])
+        )
+            ->select(
+                'menu_item_id',
+                DB::raw('SUM(quantity) as total_qty'),
+                DB::raw('SUM(subtotal) as total_revenue'),
+            )
+            ->groupBy('menu_item_id')
+            ->orderByDesc($sortCol)
+            ->limit($limit)
+            ->with('menuItem:id,name')
+            ->get()
+            ->map(fn($row) => [
+                'name'          => $row->menuItem?->name ?? 'Item Dihapus',
+                'total_qty'     => (int) $row->total_qty,
+                'total_revenue' => (float) $row->total_revenue,
+            ])
+            ->toArray();
+
+        // ── Staff performance ─────────────────────────────
+        $staffPerformance = Order::where('restaurant_id', $restaurantId)
+            ->where('status', 'completed')
+            ->whereBetween('created_at', [$from, $to])
+            ->whereNotNull('cashier_id')
+            ->select(
+                'cashier_id',
+                DB::raw('COUNT(*) as total_orders'),
+                DB::raw('SUM(total) as total_revenue'),
+            )
+            ->groupBy('cashier_id')
+            ->orderByDesc('total_revenue')
+            ->with('cashier:id,name')
+            ->get()
+            ->map(fn($row) => [
+                'cashier_name'  => $row->cashier?->name ?? 'Unknown',
+                'total_orders'  => (int) $row->total_orders,
+                'total_revenue' => (float) $row->total_revenue,
+            ])
+            ->toArray();
+
+        $restaurantName = $user->restaurant?->name ?? 'Restoran';
+        $filename       = 'laporan-penjualan-' . $from->format('Ymd') . '-' . $to->format('Ymd') . '.pdf';
+
+        $pdf = Pdf::loadView('reports.sales_pdf', [
+            'restaurantName'   => $restaurantName,
+            'from'             => $from->format('d/m/Y'),
+            'to'               => $to->format('d/m/Y'),
+            'printedAt'        => now()->format('d/m/Y H:i'),
+            'summary'          => $summary,
+            'chart'            => $chart,
+            'topProducts'      => $topProducts,
+            'staffPerformance' => $staffPerformance,
+        ])->setPaper('a4', 'portrait');
+
+        return $pdf->download($filename);
     }
 }

@@ -89,3 +89,43 @@ export async function getStaffPerformance(params?: {
   const res = await api.get("/reports/staff-performance", { params });
   return res.data.data;
 }
+
+// ─── Export helpers ───────────────────────────────────────
+
+export interface ExportParams {
+  from?: string;
+  to?: string;
+  group_by?: "day" | "month";
+  limit?: number;
+  sort_by?: "qty" | "revenue";
+}
+
+async function triggerBlobDownload(
+  url: string,
+  params: ExportParams,
+  filename: string,
+): Promise<void> {
+  const res = await api.get(url, { params, responseType: "blob" });
+  const href = URL.createObjectURL(new Blob([res.data]));
+  const a = document.createElement("a");
+  a.href = href;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(href);
+}
+
+export function exportReportExcel(params: ExportParams): Promise<void> {
+  const from = params.from ?? "";
+  const to = params.to ?? "";
+  const filename = `laporan-penjualan-${from}-${to}.xlsx`;
+  return triggerBlobDownload("/reports/export/excel", params, filename);
+}
+
+export function exportReportPdf(params: ExportParams): Promise<void> {
+  const from = params.from ?? "";
+  const to = params.to ?? "";
+  const filename = `laporan-penjualan-${from}-${to}.pdf`;
+  return triggerBlobDownload("/reports/export/pdf", params, filename);
+}
