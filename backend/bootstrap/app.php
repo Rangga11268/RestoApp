@@ -32,8 +32,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'subscription' => CheckSubscriptionActive::class,
         ]);
 
-        // Sanctum SPA stateful domains
-        $middleware->statefulApi();
+        // Note: statefulApi() intentionally omitted — this app uses Bearer token auth,
+        // not cookie-based SPA auth. Enabling it causes CSRF mismatch from localhost.
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         // Always return JSON for /api/* routes
