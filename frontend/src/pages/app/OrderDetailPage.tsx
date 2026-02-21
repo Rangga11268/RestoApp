@@ -211,7 +211,7 @@ export default function OrderDetailPage() {
 
   if (error || !order) {
     return (
-      <div className="max-w-2xl">
+      <div className="max-w-2xl mx-auto">
         <p className="text-sm text-red-500 mb-4">
           {error ?? "Pesanan tidak ditemukan."}
         </p>
@@ -242,7 +242,7 @@ export default function OrderDetailPage() {
   })();
 
   return (
-    <div className="max-w-2xl">
+    <div className="max-w-2xl mx-auto">
       {/* Back */}
       <Link
         to="/orders"

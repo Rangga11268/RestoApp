@@ -58,7 +58,12 @@ interface OrderFormProps {
   onOrderSuccess: (orderNumber: string) => void;
 }
 
-function useOrderForm({ cartItems, tableId, slug, onOrderSuccess }: OrderFormProps) {
+function useOrderForm({
+  cartItems,
+  tableId,
+  slug,
+  onOrderSuccess,
+}: OrderFormProps) {
   const [notes, setNotes] = useState("");
   const [customerName, setCustomerName] = useState("");
   const [loading, setLoading] = useState(false);
@@ -69,7 +74,7 @@ function useOrderForm({ cartItems, tableId, slug, onOrderSuccess }: OrderFormPro
     setLoading(true);
     setError(null);
     try {
-      const res = await api.post(`/api/v1/public/${slug}/orders`, {
+      const res = await api.post(`/public/${slug}/orders`, {
         table_id: tableId ? Number(tableId) : null,
         order_type: tableId ? "dine_in" : "take_away",
         notes: notes || undefined,
@@ -87,17 +92,37 @@ function useOrderForm({ cartItems, tableId, slug, onOrderSuccess }: OrderFormPro
     }
   }
 
-  return { notes, setNotes, customerName, setCustomerName, loading, error, subtotal, handleOrder };
+  return {
+    notes,
+    setNotes,
+    customerName,
+    setCustomerName,
+    loading,
+    error,
+    subtotal,
+    handleOrder,
+  };
 }
 
 // ─── Desktop Cart Panel ────────────────────────────────────
 function CartPanel(props: OrderFormProps) {
   const { cartItems, currency, tableId, onUpdateQty } = props;
-  const { notes, setNotes, customerName, setCustomerName, loading, error, subtotal, handleOrder } =
-    useOrderForm(props);
+  const {
+    notes,
+    setNotes,
+    customerName,
+    setCustomerName,
+    loading,
+    error,
+    subtotal,
+    handleOrder,
+  } = useOrderForm(props);
 
   return (
-    <div className="flex flex-col h-full" style={{ maxHeight: "calc(100vh - 4rem)" }}>
+    <div
+      className="flex flex-col h-full"
+      style={{ maxHeight: "calc(100vh - 4rem)" }}
+    >
       {/* Header */}
       <div className="px-5 py-4 border-b border-gray-100 bg-white">
         <h2 className="font-bold text-gray-900 text-sm flex items-center gap-2">
@@ -117,22 +142,34 @@ function CartPanel(props: OrderFormProps) {
             <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3">
               <ShoppingCart size={20} className="text-gray-300" />
             </div>
-            <p className="text-xs font-semibold text-gray-400">Belum ada pesanan</p>
-            <p className="text-xs text-gray-300 mt-0.5">Pilih menu untuk mulai memesan</p>
+            <p className="text-xs font-semibold text-gray-400">
+              Belum ada pesanan
+            </p>
+            <p className="text-xs text-gray-300 mt-0.5">
+              Pilih menu untuk mulai memesan
+            </p>
           </div>
         ) : (
           cartItems.map((item) => (
             <div key={item.id} className="flex items-center gap-3">
               {item.image_url ? (
-                <img src={item.image_url} alt={item.name} className="w-11 h-11 rounded-lg object-cover border border-gray-100 flex-shrink-0" />
+                <img
+                  src={item.image_url}
+                  alt={item.name}
+                  className="w-11 h-11 rounded-lg object-cover border border-gray-100 flex-shrink-0"
+                />
               ) : (
                 <div className="w-11 h-11 rounded-lg bg-gray-100 flex items-center justify-center text-gray-300 flex-shrink-0">
                   <ImageOff size={13} />
                 </div>
               )}
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-semibold text-gray-800 truncate">{item.name}</p>
-                <p className="text-xs text-orange-600 font-bold">{fmt(item.price, currency)}</p>
+                <p className="text-xs font-semibold text-gray-800 truncate">
+                  {item.name}
+                </p>
+                <p className="text-xs text-orange-600 font-bold">
+                  {fmt(item.price, currency)}
+                </p>
               </div>
               <div className="flex items-center gap-1.5 bg-gray-50 rounded-full px-1 py-1 border border-gray-100 flex-shrink-0">
                 <button
@@ -141,7 +178,9 @@ function CartPanel(props: OrderFormProps) {
                 >
                   <Minus size={11} />
                 </button>
-                <span className="text-xs font-bold text-gray-900 w-3 text-center">{item.qty}</span>
+                <span className="text-xs font-bold text-gray-900 w-3 text-center">
+                  {item.qty}
+                </span>
                 <button
                   onClick={() => onUpdateQty(item.id, item.qty + 1)}
                   className="w-5 h-5 rounded-full bg-orange-500 flex items-center justify-center text-white hover:bg-orange-600 transition-colors"
@@ -182,7 +221,9 @@ function CartPanel(props: OrderFormProps) {
         </div>
         <div className="flex items-center justify-between py-2 border-t border-gray-200">
           <span className="text-xs text-gray-500">Total Pembayaran</span>
-          <span className="font-black text-sm text-gray-900">{fmt(subtotal, currency)}</span>
+          <span className="font-black text-sm text-gray-900">
+            {fmt(subtotal, currency)}
+          </span>
         </div>
         {error && (
           <p className="text-xs text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2 text-center">
@@ -194,7 +235,11 @@ function CartPanel(props: OrderFormProps) {
           disabled={loading || cartItems.length === 0}
           className="w-full bg-orange-500 hover:bg-orange-600 text-white rounded-xl py-2.5 font-bold text-xs transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-orange-500/25"
         >
-          {loading ? <Loader2 size={14} className="animate-spin" /> : <Receipt size={14} />}
+          {loading ? (
+            <Loader2 size={14} className="animate-spin" />
+          ) : (
+            <Receipt size={14} />
+          )}
           {loading ? "Mengirim…" : "Buat Pesanan"}
         </button>
       </div>
@@ -203,26 +248,48 @@ function CartPanel(props: OrderFormProps) {
 }
 
 // ─── Mobile Cart Drawer ────────────────────────────────────
-function CartDrawer({ open, onClose, ...rest }: OrderFormProps & { open: boolean; onClose: () => void }) {
+function CartDrawer({
+  open,
+  onClose,
+  ...rest
+}: OrderFormProps & { open: boolean; onClose: () => void }) {
   const { cartItems, currency, tableId, onUpdateQty } = rest;
-  const { notes, setNotes, customerName, setCustomerName, loading, error, subtotal, handleOrder } =
-    useOrderForm(rest);
+  const {
+    notes,
+    setNotes,
+    customerName,
+    setCustomerName,
+    loading,
+    error,
+    subtotal,
+    handleOrder,
+  } = useOrderForm(rest);
 
   if (!open) return null;
 
   return (
     <>
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden" onClick={onClose} />
+      <div
+        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
+        onClick={onClose}
+      />
       <div className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white rounded-t-3xl z-50 max-h-[90vh] flex flex-col shadow-2xl lg:hidden">
         <div className="w-full flex justify-center pt-3 pb-1">
           <div className="w-12 h-1.5 bg-gray-200 rounded-full" />
         </div>
         <div className="flex items-center justify-between px-6 py-3 border-b border-gray-100">
           <div>
-            <h2 className="font-bold text-gray-900 text-lg">Keranjang Pesanan</h2>
-            <p className="text-xs text-gray-500">{cartItems.length} item terpilih</p>
+            <h2 className="font-bold text-gray-900 text-lg">
+              Keranjang Pesanan
+            </h2>
+            <p className="text-xs text-gray-500">
+              {cartItems.length} item terpilih
+            </p>
           </div>
-          <button onClick={onClose} className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-gray-200 transition-colors">
+          <button
+            onClick={onClose}
+            className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-gray-200 transition-colors"
+          >
             <X size={18} />
           </button>
         </div>
@@ -234,22 +301,38 @@ function CartDrawer({ open, onClose, ...rest }: OrderFormProps & { open: boolean
           {cartItems.map((item) => (
             <div key={item.id} className="flex items-center gap-3">
               {item.image_url ? (
-                <img src={item.image_url} alt={item.name} className="w-14 h-14 rounded-lg object-cover border border-gray-100 flex-shrink-0" />
+                <img
+                  src={item.image_url}
+                  alt={item.name}
+                  className="w-14 h-14 rounded-lg object-cover border border-gray-100 flex-shrink-0"
+                />
               ) : (
                 <div className="w-14 h-14 rounded-lg bg-gray-50 flex items-center justify-center text-gray-300 border border-gray-100 flex-shrink-0">
                   <ImageOff size={16} />
                 </div>
               )}
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-gray-800 truncate">{item.name}</p>
-                <p className="text-sm text-orange-600 font-bold">{fmt(item.price, currency)}</p>
+                <p className="text-sm font-semibold text-gray-800 truncate">
+                  {item.name}
+                </p>
+                <p className="text-sm text-orange-600 font-bold">
+                  {fmt(item.price, currency)}
+                </p>
               </div>
               <div className="flex items-center gap-2 bg-gray-50 rounded-full px-1.5 py-1 border border-gray-100 flex-shrink-0">
-                <button onClick={() => onUpdateQty(item.id, item.qty - 1)} className="w-7 h-7 rounded-full bg-white shadow-sm flex items-center justify-center text-gray-600 hover:text-orange-600 transition-colors">
+                <button
+                  onClick={() => onUpdateQty(item.id, item.qty - 1)}
+                  className="w-7 h-7 rounded-full bg-white shadow-sm flex items-center justify-center text-gray-600 hover:text-orange-600 transition-colors"
+                >
                   <Minus size={14} />
                 </button>
-                <span className="text-sm font-bold text-gray-900 w-4 text-center">{item.qty}</span>
-                <button onClick={() => onUpdateQty(item.id, item.qty + 1)} className="w-7 h-7 rounded-full bg-orange-500 flex items-center justify-center text-white hover:bg-orange-600 transition-colors">
+                <span className="text-sm font-bold text-gray-900 w-4 text-center">
+                  {item.qty}
+                </span>
+                <button
+                  onClick={() => onUpdateQty(item.id, item.qty + 1)}
+                  className="w-7 h-7 rounded-full bg-orange-500 flex items-center justify-center text-white hover:bg-orange-600 transition-colors"
+                >
                   <Plus size={14} />
                 </button>
               </div>
@@ -261,28 +344,51 @@ function CartDrawer({ open, onClose, ...rest }: OrderFormProps & { open: boolean
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <User size={16} className="text-gray-400" />
             </div>
-            <input type="text" value={customerName} onChange={(e) => setCustomerName(e.target.value)} placeholder="Nama Pemesan (Opsional)"
-              className="w-full pl-10 pr-3 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all" />
+            <input
+              type="text"
+              value={customerName}
+              onChange={(e) => setCustomerName(e.target.value)}
+              placeholder="Nama Pemesan (Opsional)"
+              className="w-full pl-10 pr-3 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all"
+            />
           </div>
           <div className="relative">
             <div className="absolute top-3 left-3 pointer-events-none">
               <FileText size={16} className="text-gray-400" />
             </div>
-            <textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Catatan pesanan (Opsional)" rows={2}
-              className="w-full pl-10 pr-3 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all resize-none" />
+            <textarea
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="Catatan pesanan (Opsional)"
+              rows={2}
+              className="w-full pl-10 pr-3 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all resize-none"
+            />
           </div>
           <div className="flex justify-between items-end pt-2">
             <div>
               <p className="text-xs text-gray-500 mb-0.5">Total Pembayaran</p>
-              <p className="font-black text-xl text-gray-900">{fmt(subtotal, currency)}</p>
+              <p className="font-black text-xl text-gray-900">
+                {fmt(subtotal, currency)}
+              </p>
             </div>
-            <button onClick={handleOrder} disabled={loading || cartItems.length === 0}
-              className="bg-orange-500 hover:bg-orange-600 text-white rounded-xl px-6 py-3 font-bold text-sm transition-all disabled:opacity-60 flex items-center justify-center gap-2 shadow-lg shadow-orange-500/30">
-              {loading ? <Loader2 size={18} className="animate-spin" /> : <>Pesan <ChevronRight size={18} /></>}
+            <button
+              onClick={handleOrder}
+              disabled={loading || cartItems.length === 0}
+              className="bg-orange-500 hover:bg-orange-600 text-white rounded-xl px-6 py-3 font-bold text-sm transition-all disabled:opacity-60 flex items-center justify-center gap-2 shadow-lg shadow-orange-500/30"
+            >
+              {loading ? (
+                <Loader2 size={18} className="animate-spin" />
+              ) : (
+                <>
+                  Pesan <ChevronRight size={18} />
+                </>
+              )}
             </button>
           </div>
           {error && (
-            <p className="text-xs text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2 text-center">{error}</p>
+            <p className="text-xs text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2 text-center">
+              {error}
+            </p>
           )}
         </div>
       </div>
@@ -291,20 +397,32 @@ function CartDrawer({ open, onClose, ...rest }: OrderFormProps & { open: boolean
 }
 
 // ─── Success screen ─────────────────────────────────────────────────────────
-function SuccessScreen({ orderNumber, onReset }: { orderNumber: string; onReset: () => void }) {
+function SuccessScreen({
+  orderNumber,
+  onReset,
+}: {
+  orderNumber: string;
+  onReset: () => void;
+}) {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
       <div className="w-full max-w-md bg-white min-h-screen shadow-2xl flex flex-col items-center justify-center px-6 text-center">
         <div className="w-24 h-24 bg-green-50 rounded-full flex items-center justify-center mb-6">
           <CheckCircle2 size={48} className="text-green-500" />
         </div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Pesanan Berhasil!</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          Pesanan Berhasil!
+        </h2>
         <p className="text-gray-500 mb-8 max-w-xs">
           Pesananmu telah kami terima dan sedang disiapkan oleh dapur.
         </p>
         <div className="bg-gray-50 border border-gray-100 rounded-2xl p-6 w-full max-w-xs mb-8">
-          <p className="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-2">Nomor Pesanan</p>
-          <div className="text-3xl font-black text-orange-600 tracking-widest">{orderNumber}</div>
+          <p className="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-2">
+            Nomor Pesanan
+          </p>
+          <div className="text-3xl font-black text-orange-600 tracking-widest">
+            {orderNumber}
+          </div>
         </div>
         <button
           onClick={onReset}
@@ -358,13 +476,19 @@ function MenuCard({
         )}
       </div>
       <div className="p-3">
-        <h3 className="font-bold text-gray-900 text-sm leading-tight line-clamp-1">{item.name}</h3>
+        <h3 className="font-bold text-gray-900 text-sm leading-tight line-clamp-1">
+          {item.name}
+        </h3>
         {item.description && (
-          <p className="text-xs text-gray-400 mt-1 line-clamp-2 leading-relaxed">{item.description}</p>
+          <p className="text-xs text-gray-400 mt-1 line-clamp-2 leading-relaxed">
+            {item.description}
+          </p>
         )}
         <div className="flex items-center justify-between mt-3">
           <div>
-            <p className="font-black text-orange-600 text-sm">{fmt(item.price, currency)}</p>
+            <p className="font-black text-orange-600 text-sm">
+              {fmt(item.price, currency)}
+            </p>
             {item.preparation_time && (
               <span className="flex items-center gap-1 text-[10px] text-gray-400 font-medium mt-0.5">
                 <Clock size={9} /> {item.preparation_time} mnt
@@ -386,7 +510,9 @@ function MenuCard({
               >
                 <Minus size={12} />
               </button>
-              <span className="text-xs font-bold text-gray-900 w-3 text-center">{qty}</span>
+              <span className="text-xs font-bold text-gray-900 w-3 text-center">
+                {qty}
+              </span>
               <button
                 onClick={() => onUpdateQty(item.id, qty + 1)}
                 className="w-6 h-6 rounded-full bg-orange-500 flex items-center justify-center text-white hover:bg-orange-600 transition-colors"
@@ -435,7 +561,8 @@ export default function PublicMenuPage() {
         if (cats.length > 0) setActiveTab(cats[0].id);
       })
       .catch((err: unknown) => {
-        const status = (err as { response?: { status?: number } })?.response?.status;
+        const status = (err as { response?: { status?: number } })?.response
+          ?.status;
         if (status === 404) setNotFound(true);
       })
       .finally(() => setLoading(false));
@@ -450,13 +577,23 @@ export default function PublicMenuPage() {
     });
   }
 
-  const allItems = useMemo(() => categories.flatMap((c) => c.active_menu_items ?? []), [categories]);
+  const allItems = useMemo(
+    () => categories.flatMap((c) => c.active_menu_items ?? []),
+    [categories],
+  );
 
   const cartItems = useMemo<CartItem[]>(() => {
     const result: CartItem[] = [];
     cart.forEach((qty, id) => {
       const item = allItems.find((i) => i.id === id);
-      if (item) result.push({ id, name: item.name, price: item.price, qty, image_url: item.image_url });
+      if (item)
+        result.push({
+          id,
+          name: item.name,
+          price: item.price,
+          qty,
+          image_url: item.image_url,
+        });
     });
     return result;
   }, [cart, allItems]);
@@ -483,7 +620,9 @@ export default function PublicMenuPage() {
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
         <div className="w-full max-w-md bg-white min-h-screen shadow-2xl flex flex-col items-center justify-center">
           <div className="w-10 h-10 border-4 border-orange-200 border-t-orange-500 rounded-full animate-spin mb-4" />
-          <p className="text-sm text-gray-500 font-medium animate-pulse">Memuat menu...</p>
+          <p className="text-sm text-gray-500 font-medium animate-pulse">
+            Memuat menu...
+          </p>
         </div>
       </div>
     );
@@ -492,17 +631,32 @@ export default function PublicMenuPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
         <div className="w-full max-w-md bg-white min-h-screen shadow-2xl flex flex-col items-center justify-center px-6 text-center">
-          <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-6 text-4xl">🍽</div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Menu Tidak Ditemukan</h2>
-          <p className="text-gray-500 max-w-xs">Maaf, restoran yang kamu cari belum tersedia atau URL tidak valid.</p>
+          <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-6 text-4xl">
+            🍽
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            Menu Tidak Ditemukan
+          </h2>
+          <p className="text-gray-500 max-w-xs">
+            Maaf, restoran yang kamu cari belum tersedia atau URL tidak valid.
+          </p>
         </div>
       </div>
     );
 
-  if (orderNumber) return <SuccessScreen orderNumber={orderNumber} onReset={() => setOrderNumber(null)} />;
+  if (orderNumber)
+    return (
+      <SuccessScreen
+        orderNumber={orderNumber}
+        onReset={() => setOrderNumber(null)}
+      />
+    );
 
-  const activeItems = categories.find((c) => c.id === activeTab)?.active_menu_items ?? [];
-  const allCats = categories.filter((c) => c.active_menu_items && c.active_menu_items.length > 0);
+  const activeItems =
+    categories.find((c) => c.id === activeTab)?.active_menu_items ?? [];
+  const allCats = categories.filter(
+    (c) => c.active_menu_items && c.active_menu_items.length > 0,
+  );
   const orderFormProps: OrderFormProps = {
     cartItems,
     currency: restaurant?.currency,
@@ -515,19 +669,29 @@ export default function PublicMenuPage() {
   return (
     <div className="min-h-screen bg-gray-100 font-sans">
       <div className="max-w-7xl mx-auto lg:px-6 lg:py-8 lg:flex lg:gap-5 min-h-screen">
-
         {/* ── LEFT SIDEBAR (desktop only) ──────────────────────────────── */}
         <aside className="hidden lg:flex flex-col w-56 xl:w-64 flex-shrink-0 sticky top-8 self-start bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="p-5 bg-gradient-to-b from-orange-50 to-white border-b border-gray-100">
             {restaurant?.logo_url ? (
-              <img src={restaurant.logo_url} alt="logo" className="w-14 h-14 object-cover rounded-xl shadow-sm border border-white mb-3" />
+              <img
+                src={restaurant.logo_url}
+                alt="logo"
+                className="w-14 h-14 object-cover rounded-xl shadow-sm border border-white mb-3"
+              />
             ) : (
-              <div className="w-14 h-14 bg-gradient-to-br from-orange-400 to-orange-600 rounded-xl flex items-center justify-center text-2xl text-white shadow-sm mb-3">🍽</div>
+              <div className="w-14 h-14 bg-gradient-to-br from-orange-400 to-orange-600 rounded-xl flex items-center justify-center text-2xl text-white shadow-sm mb-3">
+                🍽
+              </div>
             )}
-            <h1 className="font-extrabold text-gray-900 text-sm leading-tight">{restaurant?.name}</h1>
+            <h1 className="font-extrabold text-gray-900 text-sm leading-tight">
+              {restaurant?.name}
+            </h1>
             {restaurant?.address && (
               <p className="text-xs text-gray-500 mt-1.5 flex items-start gap-1">
-                <MapPin size={11} className="mt-0.5 flex-shrink-0 text-gray-400" />
+                <MapPin
+                  size={11}
+                  className="mt-0.5 flex-shrink-0 text-gray-400"
+                />
                 <span className="line-clamp-3">{restaurant.address}</span>
               </p>
             )}
@@ -539,7 +703,9 @@ export default function PublicMenuPage() {
             )}
           </div>
           <nav className="p-3 space-y-0.5 overflow-y-auto">
-            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-2 mb-2 mt-1">Kategori</p>
+            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-2 mb-2 mt-1">
+              Kategori
+            </p>
             {allCats.map((c) => (
               <button
                 key={c.id}
@@ -565,15 +731,26 @@ export default function PublicMenuPage() {
               <div className="absolute inset-0 h-28 bg-gradient-to-b from-orange-500/10 to-transparent pointer-events-none" />
               <div className="px-5 pt-6 pb-4 relative flex items-start gap-4">
                 {restaurant?.logo_url ? (
-                  <img src={restaurant.logo_url} alt="logo" className="w-14 h-14 object-cover rounded-2xl shadow-sm border border-white flex-shrink-0" />
+                  <img
+                    src={restaurant.logo_url}
+                    alt="logo"
+                    className="w-14 h-14 object-cover rounded-2xl shadow-sm border border-white flex-shrink-0"
+                  />
                 ) : (
-                  <div className="w-14 h-14 bg-gradient-to-br from-orange-400 to-orange-600 rounded-2xl flex items-center justify-center text-2xl text-white shadow-sm flex-shrink-0">🍽</div>
+                  <div className="w-14 h-14 bg-gradient-to-br from-orange-400 to-orange-600 rounded-2xl flex items-center justify-center text-2xl text-white shadow-sm flex-shrink-0">
+                    🍽
+                  </div>
                 )}
                 <div className="min-w-0 flex-1 pt-1">
-                  <h1 className="font-extrabold text-lg text-gray-900 truncate">{restaurant?.name}</h1>
+                  <h1 className="font-extrabold text-lg text-gray-900 truncate">
+                    {restaurant?.name}
+                  </h1>
                   {restaurant?.address && (
                     <p className="text-xs text-gray-500 mt-1 flex items-start gap-1">
-                      <MapPin size={12} className="mt-0.5 flex-shrink-0 text-gray-400" />
+                      <MapPin
+                        size={12}
+                        className="mt-0.5 flex-shrink-0 text-gray-400"
+                      />
                       <span className="line-clamp-1">{restaurant.address}</span>
                     </p>
                   )}
@@ -586,7 +763,12 @@ export default function PublicMenuPage() {
               </div>
             </div>
             {/* Mobile horizontal category tabs */}
-            <div className={cn("sticky top-0 z-30 bg-white/80 backdrop-blur-md transition-all duration-200", isScrolled ? "shadow-sm border-b border-gray-100" : "")}>
+            <div
+              className={cn(
+                "sticky top-0 z-30 bg-white/80 backdrop-blur-md transition-all duration-200",
+                isScrolled ? "shadow-sm border-b border-gray-100" : "",
+              )}
+            >
               <div className="flex gap-2 px-5 py-3 overflow-x-auto scrollbar-hide snap-x">
                 {allCats.map((c) => (
                   <button
@@ -594,7 +776,9 @@ export default function PublicMenuPage() {
                     onClick={() => setActiveTab(c.id)}
                     className={cn(
                       "flex-shrink-0 px-4 py-2 rounded-full text-xs font-bold transition-all snap-start",
-                      activeTab === c.id ? "bg-gray-900 text-white shadow-md" : "bg-white border border-gray-200 text-gray-600 hover:bg-gray-50",
+                      activeTab === c.id
+                        ? "bg-gray-900 text-white shadow-md"
+                        : "bg-white border border-gray-200 text-gray-600 hover:bg-gray-50",
                     )}
                   >
                     {c.name}
@@ -610,7 +794,9 @@ export default function PublicMenuPage() {
               <h2 className="font-black text-2xl text-gray-900">
                 {allCats.find((c) => c.id === activeTab)?.name ?? "Menu"}
               </h2>
-              <p className="text-sm text-gray-400 mt-0.5">{activeItems.length} pilihan tersedia</p>
+              <p className="text-sm text-gray-400 mt-0.5">
+                {activeItems.length} pilihan tersedia
+              </p>
             </div>
           </div>
 
@@ -619,11 +805,15 @@ export default function PublicMenuPage() {
             {categories.length === 0 ? (
               <div className="text-center py-20 text-gray-400">
                 <div className="text-5xl mb-4 opacity-40">📋</div>
-                <p className="text-sm font-medium">Menu belum tersedia saat ini.</p>
+                <p className="text-sm font-medium">
+                  Menu belum tersedia saat ini.
+                </p>
               </div>
             ) : activeItems.length === 0 ? (
               <div className="text-center py-20 text-gray-400">
-                <p className="text-sm font-medium">Tidak ada menu di kategori ini.</p>
+                <p className="text-sm font-medium">
+                  Tidak ada menu di kategori ini.
+                </p>
               </div>
             ) : (
               <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-3 lg:gap-4">
@@ -642,7 +832,8 @@ export default function PublicMenuPage() {
 
           <div className="hidden lg:block text-center pb-8">
             <p className="text-xs font-medium text-gray-400">
-              Powered by <span className="font-bold text-gray-500">RestoApp</span>
+              Powered by{" "}
+              <span className="font-bold text-gray-500">RestoApp</span>
             </p>
           </div>
         </main>
@@ -671,8 +862,12 @@ export default function PublicMenuPage() {
                 </span>
               </div>
               <div className="flex flex-col items-start">
-                <span className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">Total Pesanan</span>
-                <span className="font-bold text-sm">{fmt(cartTotal, restaurant?.currency)}</span>
+                <span className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">
+                  Total Pesanan
+                </span>
+                <span className="font-bold text-sm">
+                  {fmt(cartTotal, restaurant?.currency)}
+                </span>
               </div>
             </div>
             <div className="bg-orange-500 text-white px-5 py-3 rounded-xl font-bold text-sm flex items-center gap-1">
@@ -684,9 +879,12 @@ export default function PublicMenuPage() {
 
       {/* ── MOBILE cart drawer (bottom sheet) ───────────────────────── */}
       {slug && (
-        <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} {...orderFormProps} />
+        <CartDrawer
+          open={cartOpen}
+          onClose={() => setCartOpen(false)}
+          {...orderFormProps}
+        />
       )}
     </div>
   );
 }
-

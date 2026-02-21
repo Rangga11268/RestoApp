@@ -117,7 +117,7 @@ export default function CategoriesPage() {
   };
 
   return (
-    <div>
+    <div className="w-full">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Kategori Menu</h1>

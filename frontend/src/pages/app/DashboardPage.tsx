@@ -149,7 +149,7 @@ export default function DashboardPage() {
   ];
 
   return (
-    <div className="max-w-5xl">
+    <div className="w-full">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
         <div>
@@ -438,6 +438,4 @@ export default function DashboardPage() {
       </div>
     </div>
   );
-
 }
-

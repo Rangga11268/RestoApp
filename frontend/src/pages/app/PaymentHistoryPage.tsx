@@ -82,11 +82,11 @@ export default function PaymentHistoryPage() {
   }, [filterMethod, filterStatus, filterDate]);
 
   return (
-    <div className="max-w-4xl">
+    <div className="w-full">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-xl font-bold text-gray-900">
+          <h1 className="text-2xl font-bold text-gray-900">
             Riwayat Pembayaran
           </h1>
           <p className="text-sm text-gray-500 mt-0.5">
@@ -96,7 +96,7 @@ export default function PaymentHistoryPage() {
         <button
           onClick={() => load(page)}
           disabled={loading}
-          className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 transition"
+          className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 border border-gray-200 hover:border-gray-300 rounded-lg px-3 py-1.5 bg-white transition"
         >
           <RefreshCw size={14} className={cn(loading && "animate-spin")} />
           Refresh
@@ -110,7 +110,7 @@ export default function PaymentHistoryPage() {
           onChange={(e) =>
             setFilterMethod(e.target.value as PaymentMethod | "")
           }
-          className="text-sm border border-gray-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-200"
+          className="text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-200"
         >
           {METHODS.map((m) => (
             <option key={m.value} value={m.value}>
@@ -124,7 +124,7 @@ export default function PaymentHistoryPage() {
           onChange={(e) =>
             setFilterStatus(e.target.value as PaymentStatus | "")
           }
-          className="text-sm border border-gray-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-200"
+          className="text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-200"
         >
           <option value="">Semua Status</option>
           <option value="paid">Lunas</option>
@@ -137,7 +137,7 @@ export default function PaymentHistoryPage() {
           type="date"
           value={filterDate}
           onChange={(e) => setFilterDate(e.target.value)}
-          className="text-sm border border-gray-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-200"
+          className="text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-200"
         />
 
         {(filterMethod || filterStatus || filterDate) && (

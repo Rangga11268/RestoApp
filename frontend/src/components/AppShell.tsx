@@ -124,10 +124,10 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               to={item.href}
               onClick={() => setMobileOpen(false)}
               className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition",
+                "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition",
                 active
-                  ? "bg-orange-50 text-orange-600"
-                  : "text-gray-600 hover:bg-gray-100 hover:text-gray-900",
+                  ? "bg-orange-50 text-orange-600 font-semibold"
+                  : "text-gray-600 hover:bg-gray-100 hover:text-gray-900 font-medium",
               )}
             >
               <span
@@ -149,10 +149,12 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               {user?.name.charAt(0).toUpperCase()}
             </div>
             <div className="min-w-0">
-              <p className="text-sm font-medium text-gray-900 truncate">
+              <p className="text-sm font-semibold text-gray-900 truncate">
                 {user?.name}
               </p>
-              <p className="text-xs text-gray-400 capitalize">{user?.role}</p>
+              <span className="inline-block text-[10px] font-medium bg-gray-100 text-gray-500 capitalize rounded-full px-2 py-0.5 mt-0.5">
+                {user?.role}
+              </span>
             </div>
           </div>
         )}

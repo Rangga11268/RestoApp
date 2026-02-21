@@ -241,7 +241,7 @@ export default function InvoicePage() {
 
   if (error || !order) {
     return (
-      <div className="max-w-lg">
+      <div className="max-w-lg mx-auto">
         <p className="text-sm text-red-500 mb-3">
           {error ?? "Tidak ditemukan."}
         </p>
@@ -273,8 +273,7 @@ export default function InvoicePage() {
         }
       `}</style>
 
-      <div className="max-w-lg">
-        {/* Toolbar */}
+      <div className="max-w-lg mx-auto">
         <div className="no-print flex items-center justify-between mb-6">
           <button
             onClick={() => navigate(`/orders/${order.id}`)}

@@ -292,7 +292,7 @@ export default function PaymentPage() {
 
   if (error || !order) {
     return (
-      <div className="max-w-lg">
+      <div className="max-w-lg mx-auto">
         <p className="text-sm text-red-500 mb-3">
           {error ?? "Tidak ditemukan."}
         </p>
@@ -326,7 +326,7 @@ export default function PaymentPage() {
         />
       )}
 
-      <div className="max-w-2xl">
+      <div className="max-w-2xl mx-auto">
         {/* Back */}
         <Link
           to={`/orders/${order.id}`}

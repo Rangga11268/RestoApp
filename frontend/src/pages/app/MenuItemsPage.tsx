@@ -169,7 +169,7 @@ export default function MenuItemsPage() {
   };
 
   return (
-    <div>
+    <div className="w-full">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Menu</h1>
@@ -181,7 +181,7 @@ export default function MenuItemsPage() {
           <select
             value={filterCat}
             onChange={(e) => setFilterCat(e.target.value)}
-            className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-500"
+            className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-400"
           >
             <option value="">Semua Kategori</option>
             {categories.map((c) => (
