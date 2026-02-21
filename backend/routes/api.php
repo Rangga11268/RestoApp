@@ -5,6 +5,7 @@ use App\Http\Controllers\API\Auth\PasswordResetController;
 use App\Http\Controllers\API\Auth\ProfileController;
 use App\Http\Controllers\API\MenuCategoryController;
 use App\Http\Controllers\API\MenuItemController;
+use App\Http\Controllers\API\OrderController;
 use App\Http\Controllers\API\PublicMenuController;
 use App\Http\Controllers\API\RestaurantController;
 use App\Http\Controllers\API\RestaurantTableController;
@@ -78,7 +79,14 @@ Route::prefix('v1')->group(function () {
             Route::delete('tables/{restaurantTable}', [RestaurantTableController::class, 'destroy']);
             Route::post('tables/{restaurantTable}/regenerate-qr', [RestaurantTableController::class, 'regenerateQr']);
 
-            // ── Phase 3–6 routes added here progressively ──
+            // ── Orders ──────────────────────────────────────
+            Route::get('orders', [OrderController::class, 'index']);
+            Route::post('orders', [OrderController::class, 'store']);
+            Route::get('orders/{order}', [OrderController::class, 'show']);
+            Route::patch('orders/{order}/status', [OrderController::class, 'updateStatus']);
+            Route::delete('orders/{order}', [OrderController::class, 'destroy']);
+
+            // ── Phase 4–6 routes added here progressively ──
         });
     });
 
@@ -89,4 +97,7 @@ Route::prefix('v1')->group(function () {
     */
     Route::get('public/{slug}/menu', [PublicMenuController::class, 'menu'])
         ->middleware('throttle:60,1');
+
+    Route::post('public/{slug}/orders', [PublicMenuController::class, 'createOrder'])
+        ->middleware('throttle:30,1');
 });

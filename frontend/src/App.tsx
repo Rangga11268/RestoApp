@@ -15,6 +15,8 @@ const CategoriesPage = lazy(() => import("@/pages/app/CategoriesPage"));
 const MenuItemsPage = lazy(() => import("@/pages/app/MenuItemsPage"));
 const TablesPage = lazy(() => import("@/pages/app/TablesPage"));
 const SettingsPage = lazy(() => import("@/pages/app/SettingsPage"));
+const OrdersPage = lazy(() => import("@/pages/app/OrdersPage"));
+const OrderDetailPage = lazy(() => import("@/pages/app/OrderDetailPage"));
 const UnauthorizedPage = lazy(() => import("@/pages/UnauthorizedPage"));
 
 // Public pages (no auth)
@@ -82,6 +84,22 @@ export default function App() {
               element={
                 <ShellRoute>
                   <SettingsPage />
+                </ShellRoute>
+              }
+            />
+            <Route
+              path="/orders"
+              element={
+                <ShellRoute>
+                  <OrdersPage />
+                </ShellRoute>
+              }
+            />
+            <Route
+              path="/orders/:id"
+              element={
+                <ShellRoute>
+                  <OrderDetailPage />
                 </ShellRoute>
               }
             />
