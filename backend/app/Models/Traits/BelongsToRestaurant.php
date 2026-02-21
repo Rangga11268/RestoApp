@@ -3,6 +3,8 @@
 namespace App\Models\Traits;
 
 use App\Models\Scopes\RestaurantScope;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 trait BelongsToRestaurant
 {
@@ -15,12 +17,14 @@ trait BelongsToRestaurant
 
         // Automatically set restaurant_id on create
         static::creating(function ($model) {
+            /** @var User|null $user */
+            $user = Auth::user();
             if (
-                auth()->check()
-                && auth()->user()->role !== 'superadmin'
+                $user
+                && $user->role !== 'superadmin'
                 && empty($model->restaurant_id)
             ) {
-                $model->restaurant_id = auth()->user()->restaurant_id;
+                $model->restaurant_id = $user->restaurant_id;
             }
         });
     }

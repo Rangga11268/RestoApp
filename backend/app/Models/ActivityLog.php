@@ -40,9 +40,11 @@ class ActivityLog extends Model
         array $properties = [],
         ?int $restaurantId = null
     ): self {
+        /** @var \App\Models\User|null $user */
+        $user = \Illuminate\Support\Facades\Auth::user();
         return static::create([
-            'restaurant_id' => $restaurantId ?? (auth()->user()?->restaurant_id),
-            'user_id'       => auth()->id(),
+            'restaurant_id' => $restaurantId ?? $user?->restaurant_id,
+            'user_id'       => $user?->id,
             'action'        => $action,
             'subject_type'  => $subject ? get_class($subject) : null,
             'subject_id'    => $subject?->getKey(),
