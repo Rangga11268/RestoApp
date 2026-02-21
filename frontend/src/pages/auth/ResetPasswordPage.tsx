@@ -3,7 +3,9 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Lock, Eye, EyeOff, Loader2 } from "lucide-react";
 import api from "@/lib/axios";
+import AuthLayout from "@/components/auth/AuthLayout";
 
 const schema = z
   .object({
@@ -21,6 +23,8 @@ export default function ResetPasswordPage() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const [serverError, setServerError] = useState("");
+  const [showPwd, setShowPwd] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const token = params.get("token") ?? "";
   const email = params.get("email") ?? "";
@@ -45,89 +49,124 @@ export default function ResetPasswordPage() {
 
   if (!token || !email) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-        <div className="w-full max-w-md text-center bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
-          <div className="text-4xl mb-4">❌</div>
+      <AuthLayout>
+        <div className="text-center py-8">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-red-100 text-3xl mb-5">
+            ❌
+          </div>
           <h2 className="text-xl font-bold text-gray-900 mb-2">
             Link tidak valid
           </h2>
-          <p className="text-sm text-gray-500 mb-6">
+          <p className="text-sm text-gray-500 mb-8">
             Link reset password tidak valid atau sudah kadaluarsa.
           </p>
           <Link
             to="/forgot-password"
-            className="text-orange-500 hover:text-orange-600 text-sm font-medium"
+            className="text-sm text-orange-500 hover:text-orange-600 font-semibold"
           >
             Minta link baru
           </Link>
         </div>
-      </div>
+      </AuthLayout>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-md">
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-orange-500 mb-4">
-              <span className="text-white text-xl">🔒</span>
-            </div>
-            <h1 className="text-2xl font-bold text-gray-900">Reset Password</h1>
-            <p className="text-sm text-gray-500 mt-1">
-              Masukkan password baru Anda
-            </p>
-          </div>
-
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            {serverError && (
-              <div className="rounded-lg bg-red-50 border border-red-200 p-3 text-sm text-red-700">
-                {serverError}
-              </div>
-            )}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Password Baru
-              </label>
-              <input
-                {...register("password")}
-                type="password"
-                placeholder="Min. 8 karakter"
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100 transition"
-              />
-              {errors.password && (
-                <p className="text-xs text-red-500 mt-1">
-                  {errors.password.message}
-                </p>
-              )}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Konfirmasi Password
-              </label>
-              <input
-                {...register("password_confirmation")}
-                type="password"
-                placeholder="Ulangi password baru"
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100 transition"
-              />
-              {errors.password_confirmation && (
-                <p className="text-xs text-red-500 mt-1">
-                  {errors.password_confirmation.message}
-                </p>
-              )}
-            </div>
-
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full bg-orange-500 hover:bg-orange-600 disabled:opacity-60 text-white font-semibold py-2.5 rounded-lg text-sm transition"
-            >
-              {isSubmitting ? "Menyimpan..." : "Reset Password"}
-            </button>
-          </form>
+    <AuthLayout>
+      {/* Mobile brand */}
+      <div className="flex items-center gap-2 mb-8 lg:hidden">
+        <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center">
+          <span className="text-sm">🍽</span>
         </div>
+        <span className="font-bold text-gray-900 text-lg">RestoApp</span>
       </div>
-    </div>
+
+      <h1 className="text-2xl font-bold text-gray-900 mb-1">
+        Buat password baru
+      </h1>
+      <p className="text-sm text-gray-500 mb-7">
+        Masukkan password baru untuk akun Anda.
+      </p>
+
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        {serverError && (
+          <div className="rounded-lg bg-red-50 border border-red-200 px-3 py-2.5 text-sm text-red-700 flex items-start gap-2">
+            <span className="flex-shrink-0 mt-px">⚠</span>
+            <span>{serverError}</span>
+          </div>
+        )}
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+            Password Baru
+          </label>
+          <div className="relative">
+            <Lock
+              size={15}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+            />
+            <input
+              {...register("password")}
+              type={showPwd ? "text" : "password"}
+              placeholder="Min. 8 karakter"
+              className="w-full rounded-lg border border-gray-300 pl-9 pr-10 py-2.5 text-sm outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100 transition placeholder:text-gray-400"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPwd((v) => !v)}
+              tabIndex={-1}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition"
+            >
+              {showPwd ? <EyeOff size={15} /> : <Eye size={15} />}
+            </button>
+          </div>
+          {errors.password && (
+            <p className="text-xs text-red-500 mt-1">
+              {errors.password.message}
+            </p>
+          )}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+            Konfirmasi Password
+          </label>
+          <div className="relative">
+            <Lock
+              size={15}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+            />
+            <input
+              {...register("password_confirmation")}
+              type={showConfirm ? "text" : "password"}
+              placeholder="Ulangi password baru"
+              className="w-full rounded-lg border border-gray-300 pl-9 pr-10 py-2.5 text-sm outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100 transition placeholder:text-gray-400"
+            />
+            <button
+              type="button"
+              onClick={() => setShowConfirm((v) => !v)}
+              tabIndex={-1}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition"
+            >
+              {showConfirm ? <EyeOff size={15} /> : <Eye size={15} />}
+            </button>
+          </div>
+          {errors.password_confirmation && (
+            <p className="text-xs text-red-500 mt-1">
+              {errors.password_confirmation.message}
+            </p>
+          )}
+        </div>
+
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="w-full flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 active:bg-orange-700 disabled:opacity-60 text-white font-semibold py-2.5 rounded-lg text-sm transition mt-1"
+        >
+          {isSubmitting && <Loader2 size={15} className="animate-spin" />}
+          {isSubmitting ? "Menyimpan..." : "Simpan Password Baru"}
+        </button>
+      </form>
+    </AuthLayout>
   );
 }

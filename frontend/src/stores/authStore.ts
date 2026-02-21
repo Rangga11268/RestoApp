@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import api from "@/lib/axios";
+import { saveToken, clearToken, getStoredToken } from "@/lib/axios";
 import type { AuthUser } from "@/types/auth";
 
 interface AuthState {
@@ -9,7 +10,11 @@ interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
 
-  login: (email: string, password: string) => Promise<void>;
+  login: (
+    email: string,
+    password: string,
+    rememberMe?: boolean,
+  ) => Promise<void>;
   register: (data: RegisterData) => Promise<void>;
   logout: () => Promise<void>;
   fetchMe: () => Promise<void>;
@@ -30,15 +35,16 @@ export const useAuthStore = create<AuthState>()(
     (set, _get) => ({
       user: null,
       token: null,
-      isAuthenticated: false,
+      // Derive initial auth status from stored token — supports Remember Me
+      isAuthenticated: !!getStoredToken(),
       isLoading: false,
 
-      login: async (email, password) => {
+      login: async (email, password, rememberMe = false) => {
         set({ isLoading: true });
         try {
           const { data } = await api.post("/auth/login", { email, password });
           const { token, user } = data.data;
-          localStorage.setItem("auth_token", token);
+          saveToken(token, rememberMe);
           set({ user, token, isAuthenticated: true });
         } finally {
           set({ isLoading: false });
@@ -53,7 +59,7 @@ export const useAuthStore = create<AuthState>()(
             timezone: payload.timezone ?? "Asia/Jakarta",
           });
           const { token, user } = data.data;
-          localStorage.setItem("auth_token", token);
+          saveToken(token, true); // register always remembers
           set({ user, token, isAuthenticated: true });
         } finally {
           set({ isLoading: false });
@@ -66,7 +72,7 @@ export const useAuthStore = create<AuthState>()(
         } catch {
           // ignore network errors on logout
         }
-        localStorage.removeItem("auth_token");
+        clearToken();
         set({ user: null, token: null, isAuthenticated: false });
       },
 
@@ -77,7 +83,7 @@ export const useAuthStore = create<AuthState>()(
           set({ user: data.data, isAuthenticated: true });
         } catch {
           set({ user: null, token: null, isAuthenticated: false });
-          localStorage.removeItem("auth_token");
+          clearToken();
         } finally {
           set({ isLoading: false });
         }
