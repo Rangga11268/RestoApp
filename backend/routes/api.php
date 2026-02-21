@@ -8,6 +8,7 @@ use App\Http\Controllers\API\MenuItemController;
 use App\Http\Controllers\API\OrderController;
 use App\Http\Controllers\API\PaymentController;
 use App\Http\Controllers\API\PublicMenuController;
+use App\Http\Controllers\API\ReportController;
 use App\Http\Controllers\API\RestaurantController;
 use App\Http\Controllers\API\RestaurantTableController;
 use Illuminate\Support\Facades\Route;
@@ -94,7 +95,13 @@ Route::prefix('v1')->group(function () {
             Route::get('payments/{payment}', [PaymentController::class, 'show']);
             Route::patch('payments/{payment}/refund', [PaymentController::class, 'refund']);
 
-            // ── Phase 4–6 routes added here progressively ──
+            // ── Reports ─────────────────────────────────────
+            Route::prefix('reports')->group(function () {
+                Route::get('dashboard',         [ReportController::class, 'dashboard']);
+                Route::get('sales',             [ReportController::class, 'sales']);
+                Route::get('top-products',      [ReportController::class, 'topProducts']);
+                Route::get('staff-performance', [ReportController::class, 'staffPerformance']);
+            });
         });
     });
 

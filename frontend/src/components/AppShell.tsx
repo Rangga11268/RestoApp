@@ -11,6 +11,7 @@ import {
   ChevronLeft,
   Menu,
   Wallet,
+  BarChart3,
 } from "lucide-react";
 import { useAuthStore } from "@/stores/authStore";
 import type { UserRole } from "@/types/auth";
@@ -62,6 +63,12 @@ const navItems: NavItem[] = [
     href: "/tables",
     icon: <Table2 size={18} />,
     roles: ["owner", "manager", "cashier"],
+  },
+  {
+    label: "Laporan",
+    href: "/reports",
+    icon: <BarChart3 size={18} />,
+    roles: ["owner", "manager"],
   },
   {
     label: "Pengaturan",

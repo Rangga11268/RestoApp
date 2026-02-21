@@ -20,6 +20,7 @@ const OrderDetailPage = lazy(() => import("@/pages/app/OrderDetailPage"));
 const PaymentPage = lazy(() => import("@/pages/app/PaymentPage"));
 const InvoicePage = lazy(() => import("@/pages/app/InvoicePage"));
 const PaymentHistoryPage = lazy(() => import("@/pages/app/PaymentHistoryPage"));
+const ReportsPage = lazy(() => import("@/pages/app/ReportsPage"));
 const UnauthorizedPage = lazy(() => import("@/pages/UnauthorizedPage"));
 
 // Public pages (no auth)
@@ -127,6 +128,14 @@ export default function App() {
               element={
                 <ShellRoute>
                   <PaymentHistoryPage />
+                </ShellRoute>
+              }
+            />
+            <Route
+              path="/reports"
+              element={
+                <ShellRoute>
+                  <ReportsPage />
                 </ShellRoute>
               }
             />
