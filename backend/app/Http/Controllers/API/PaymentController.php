@@ -44,10 +44,11 @@ class PaymentController extends Controller
 
         $amount       = (float) $request->amount;
         $total        = (float) $order->total;
-        $changeAmount = $request->method === 'cash' ? max(0, $amount - $total) : 0;
+        $method       = $request->input('method');
+        $changeAmount = $method === 'cash' ? max(0, $amount - $total) : 0;
 
         // For cash: amount must be >= total
-        if ($request->method === 'cash' && $amount < $total) {
+        if ($method === 'cash' && $amount < $total) {
             return $this->error(
                 'Jumlah uang yang diterima kurang. Perlu: ' . number_format($total, 0, ',', '.'),
                 422
@@ -55,7 +56,7 @@ class PaymentController extends Controller
         }
 
         try {
-            DB::transaction(function () use ($order, $request, $amount, $changeAmount) {
+            DB::transaction(function () use ($order, $request, $amount, $changeAmount, $method) {
                 // Delete existing failed/pending payment if any
                 $order->payment?->delete();
 
@@ -63,7 +64,7 @@ class PaymentController extends Controller
                 Payment::create([
                     'order_id'        => $order->id,
                     'cashier_id'      => $request->user()->id,
-                    'method'          => $request->method,
+                    'method'          => $method,
                     'amount'          => $amount,
                     'change_amount'   => $changeAmount,
                     'status'          => 'paid',
@@ -97,12 +98,12 @@ class PaymentController extends Controller
     /* ─────────────────────────────────────────────────
      | GET /v1/payments/{payment}
      ───────────────────────────────────────────────── */
-    public function show(Payment $payment): JsonResponse
+    public function show(Payment $payment, Request $request): JsonResponse
     {
         $payment->load(['order.items', 'order.table', 'cashier']);
 
         // Scope check
-        if ($payment->order->restaurant_id !== auth()->user()->restaurant_id) {
+        if ($payment->order->restaurant_id !== $request->user()->restaurant_id) {
             return $this->error('Tidak ditemukan.', 404);
         }
 
@@ -149,11 +150,11 @@ class PaymentController extends Controller
             ->latest('paid_at');
 
         if ($request->filled('method')) {
-            $query->where('method', $request->method);
+            $query->where('method', $request->input('method'));
         }
 
         if ($request->filled('status')) {
-            $query->where('status', $request->status);
+            $query->where('status', $request->input('status'));
         }
 
         if ($request->filled('date')) {
