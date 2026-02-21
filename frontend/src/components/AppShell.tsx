@@ -4,6 +4,7 @@ import {
   LayoutDashboard,
   ShoppingCart,
   UtensilsCrossed,
+  Tag,
   Table2,
   BarChart3,
   Users,
@@ -37,8 +38,14 @@ const navItems: NavItem[] = [
     roles: ["owner", "manager", "cashier", "kitchen"],
   },
   {
+    label: "Kategori",
+    href: "/menu/categories",
+    icon: <Tag size={18} />,
+    roles: ["owner", "manager"],
+  },
+  {
     label: "Menu",
-    href: "/menu",
+    href: "/menu/items",
     icon: <UtensilsCrossed size={18} />,
     roles: ["owner", "manager"],
   },

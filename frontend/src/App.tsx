@@ -11,7 +11,14 @@ import ResetPasswordPage from "@/pages/auth/ResetPasswordPage";
 
 // App pages (lazy loaded)
 const DashboardPage = lazy(() => import("@/pages/app/DashboardPage"));
+const CategoriesPage = lazy(() => import("@/pages/app/CategoriesPage"));
+const MenuItemsPage = lazy(() => import("@/pages/app/MenuItemsPage"));
+const TablesPage = lazy(() => import("@/pages/app/TablesPage"));
+const SettingsPage = lazy(() => import("@/pages/app/SettingsPage"));
 const UnauthorizedPage = lazy(() => import("@/pages/UnauthorizedPage"));
+
+// Public pages (no auth)
+const PublicMenuPage = lazy(() => import("@/pages/public/PublicMenuPage"));
 
 const Loader = () => (
   <div className="flex items-center justify-center h-full min-h-[200px]">
@@ -19,29 +26,65 @@ const Loader = () => (
   </div>
 );
 
+function ShellRoute({ children }: { children: React.ReactNode }) {
+  return <AppShell>{children}</AppShell>;
+}
+
 export default function App() {
   return (
     <BrowserRouter>
       <Suspense fallback={<Loader />}>
         <Routes>
-          {/* Public */}
+          {/* Public — no auth required */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/unauthorized" element={<UnauthorizedPage />} />
+          <Route path="/menu/:slug" element={<PublicMenuPage />} />
 
           {/* Protected — all authenticated users */}
           <Route element={<ProtectedRoute />}>
             <Route
               path="/dashboard"
               element={
-                <AppShell>
+                <ShellRoute>
                   <DashboardPage />
-                </AppShell>
+                </ShellRoute>
               }
             />
-            {/* Additional protected routes will be added here in Phase 2+ */}
+            <Route
+              path="/menu/categories"
+              element={
+                <ShellRoute>
+                  <CategoriesPage />
+                </ShellRoute>
+              }
+            />
+            <Route
+              path="/menu/items"
+              element={
+                <ShellRoute>
+                  <MenuItemsPage />
+                </ShellRoute>
+              }
+            />
+            <Route
+              path="/tables"
+              element={
+                <ShellRoute>
+                  <TablesPage />
+                </ShellRoute>
+              }
+            />
+            <Route
+              path="/settings"
+              element={
+                <ShellRoute>
+                  <SettingsPage />
+                </ShellRoute>
+              }
+            />
           </Route>
 
           {/* Redirect root */}

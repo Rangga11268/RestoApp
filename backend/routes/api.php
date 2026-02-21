@@ -3,6 +3,11 @@
 use App\Http\Controllers\API\Auth\AuthController;
 use App\Http\Controllers\API\Auth\PasswordResetController;
 use App\Http\Controllers\API\Auth\ProfileController;
+use App\Http\Controllers\API\MenuCategoryController;
+use App\Http\Controllers\API\MenuItemController;
+use App\Http\Controllers\API\PublicMenuController;
+use App\Http\Controllers\API\RestaurantController;
+use App\Http\Controllers\API\RestaurantTableController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -43,13 +48,45 @@ Route::prefix('v1')->group(function () {
         | Tenant Routes (scoped to restaurant_id)
         |----------------------------------------------
         */
-        Route::middleware(['tenant'])->group(function () {
-            // These routes will be filled in Phase 2–6
-            // Phase 2: menu, tables, restaurant settings
-            // Phase 3: orders, kitchen
-            // Phase 4: payments
-            // Phase 5: reports
-            // Phase 6: subscriptions, admin
+        Route::middleware(['tenant', 'subscription'])->group(function () {
+
+            // ── Restaurant Settings ─────────────────────────
+            Route::get('restaurant', [RestaurantController::class, 'show']);
+            Route::post('restaurant', [RestaurantController::class, 'update']); // POST for multipart/form-data
+
+            // ── Menu Categories ─────────────────────────────
+            Route::get('menu/categories', [MenuCategoryController::class, 'index']);
+            Route::post('menu/categories', [MenuCategoryController::class, 'store']);
+            Route::get('menu/categories/{menuCategory}', [MenuCategoryController::class, 'show']);
+            Route::put('menu/categories/{menuCategory}', [MenuCategoryController::class, 'update']);
+            Route::delete('menu/categories/{menuCategory}', [MenuCategoryController::class, 'destroy']);
+            Route::patch('menu/categories/reorder', [MenuCategoryController::class, 'reorder']);
+
+            // ── Menu Items ──────────────────────────────────
+            Route::get('menu/items', [MenuItemController::class, 'index']);
+            Route::post('menu/items', [MenuItemController::class, 'store']);
+            Route::get('menu/items/{menuItem}', [MenuItemController::class, 'show']);
+            Route::post('menu/items/{menuItem}', [MenuItemController::class, 'update']); // POST for multipart/form-data
+            Route::delete('menu/items/{menuItem}', [MenuItemController::class, 'destroy']);
+            Route::patch('menu/items/{menuItem}/toggle', [MenuItemController::class, 'toggle']);
+
+            // ── Tables ─────────────────────────────────────
+            Route::get('tables', [RestaurantTableController::class, 'index']);
+            Route::post('tables', [RestaurantTableController::class, 'store']);
+            Route::get('tables/{restaurantTable}', [RestaurantTableController::class, 'show']);
+            Route::put('tables/{restaurantTable}', [RestaurantTableController::class, 'update']);
+            Route::delete('tables/{restaurantTable}', [RestaurantTableController::class, 'destroy']);
+            Route::post('tables/{restaurantTable}/regenerate-qr', [RestaurantTableController::class, 'regenerateQr']);
+
+            // ── Phase 3–6 routes added here progressively ──
         });
     });
+
+    /*
+    |--------------------------------------------------
+    | Public Menu (no auth, no tenant scope)
+    |--------------------------------------------------
+    */
+    Route::get('public/{slug}/menu', [PublicMenuController::class, 'menu'])
+        ->middleware('throttle:60,1');
 });
