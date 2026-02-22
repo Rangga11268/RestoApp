@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Subscription\SubscribeRequest;
 use App\Http\Traits\ApiResponse;
 use App\Models\ActivityLog;
 use App\Models\Subscription;
@@ -63,13 +64,8 @@ class SubscriptionController extends Controller
      | Subscribe to a plan (or upgrade / renew)
      | Body: { plan_id, months? }
      ──────────────────────────────────────────────────── */
-    public function subscribe(Request $request): JsonResponse
+    public function subscribe(SubscribeRequest $request): JsonResponse
     {
-        $request->validate([
-            'plan_id' => 'required|exists:subscription_plans,id',
-            'months'  => 'nullable|integer|min:1|max:12',
-        ]);
-
         $user   = $request->user();
         $plan   = SubscriptionPlan::findOrFail($request->plan_id);
         $months = (int) $request->input('months', 1);

@@ -13,7 +13,7 @@ return new class extends Migration
             $table->foreignId('restaurant_id')->constrained()->cascadeOnDelete();
             $table->string('name', 50);
             $table->tinyInteger('capacity')->default(4);
-            $table->string('qr_code', 255)->nullable();
+            $table->text('qr_code')->nullable();
             $table->enum('status', ['available', 'occupied', 'reserved'])->default('available');
             $table->boolean('is_active')->default(true);
             $table->timestamps();

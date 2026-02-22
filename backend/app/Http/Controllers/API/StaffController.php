@@ -3,13 +3,14 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Staff\StoreStaffRequest;
+use App\Http\Requests\Staff\UpdateStaffRequest;
 use App\Http\Traits\ApiResponse;
 use App\Models\ActivityLog;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rule;
 
 class StaffController extends Controller
 {
@@ -43,17 +44,11 @@ class StaffController extends Controller
      | POST /v1/staff
      | Create a new staff member
      ──────────────────────────────────────────────────── */
-    public function store(Request $request): JsonResponse
+    public function store(StoreStaffRequest $request): JsonResponse
     {
         $this->authorizeOwner($request);
 
-        $data = $request->validate([
-            'name'     => 'required|string|max:100',
-            'email'    => 'required|email|unique:users,email',
-            'password' => 'required|string|min:8|confirmed',
-            'role'     => ['required', Rule::in(self::STAFF_ROLES)],
-            'phone'    => 'nullable|string|max:20',
-        ]);
+        $data = $request->validated();
 
         $user = User::create([
             'restaurant_id' => $request->user()->restaurant_id,
@@ -74,19 +69,13 @@ class StaffController extends Controller
      | PUT /v1/staff/{user}
      | Update staff member info
      ──────────────────────────────────────────────────── */
-    public function update(Request $request, int $userId): JsonResponse
+    public function update(UpdateStaffRequest $request, int $userId): JsonResponse
     {
         $this->authorizeOwner($request);
 
         $user = $this->resolveStaff($request, $userId);
 
-        $data = $request->validate([
-            'name'     => 'sometimes|string|max:100',
-            'email'    => ['sometimes', 'email', Rule::unique('users', 'email')->ignore($user->id)],
-            'password' => 'sometimes|nullable|string|min:8|confirmed',
-            'role'     => ['sometimes', Rule::in(self::STAFF_ROLES)],
-            'phone'    => 'nullable|string|max:20',
-        ]);
+        $data = $request->validated();
 
         if (isset($data['password']) && $data['password']) {
             $data['password'] = Hash::make($data['password']);

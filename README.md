@@ -70,15 +70,17 @@ RestoApp/
 
 ## Fase Pengembangan
 
-| Fase        | Status  | Deskripsi                                     |
-| ----------- | ------- | --------------------------------------------- |
-| **Phase 1** | ✅ Done | Foundation — Auth, Multi-tenant, Subscription |
-| **Phase 2** | 🔄 Next | Menu & Kategori CRUD                          |
-| **Phase 3** | ⏳      | Manajemen Meja & QR Code                      |
-| **Phase 4** | ⏳      | POS & Order Management                        |
-| **Phase 5** | ⏳      | Pembayaran & Laporan                          |
-| **Phase 6** | ⏳      | Superadmin Panel                              |
-| **Phase 7** | ⏳      | Polish, Testing, Deploy                       |
+| Fase        | Status  | Deskripsi                                              |
+| ----------- | ------- | ------------------------------------------------------ |
+| **Phase 1** | ✅ Done | Foundation — Auth, Multi-tenant, Subscription          |
+| **Phase 2** | ✅ Done | Menu & Kategori CRUD                                   |
+| **Phase 3** | ✅ Done | Manajemen Meja & QR Code                               |
+| **Phase 4** | ✅ Done | POS & Order Management                                 |
+| **Phase 5** | ✅ Done | Pembayaran & Laporan Keuangan                          |
+| **Phase 6** | ✅ Done | Superadmin Panel                                       |
+| **Phase 7** | ✅ Done | Security Hardening, Feature Tests, DevOps & Deployment |
+
+> **Status:** Backend API 100% selesai, 63 feature tests passing. Frontend sedang dalam tahap finishing UI — poles tampilan, penggantian ikon, dan penambahan fitur kecil sebelum launch.
 
 ---
 
@@ -132,9 +134,11 @@ Buka **http://localhost:5173**
 
 ---
 
-## API Endpoints (Phase 1)
+## API Endpoints
 
 Base URL: `http://localhost:8000/api/v1`
+
+### Auth
 
 | Method | Endpoint                | Auth | Deskripsi                            |
 | ------ | ----------------------- | ---- | ------------------------------------ |
@@ -146,6 +150,79 @@ Base URL: `http://localhost:8000/api/v1`
 | `PUT`  | `/auth/password`        | ✅   | Ganti password                       |
 | `POST` | `/auth/forgot-password` | ❌   | Kirim link reset                     |
 | `POST` | `/auth/reset-password`  | ❌   | Reset password via token             |
+
+### Menu
+
+| Method   | Endpoint                  | Auth | Deskripsi             |
+| -------- | ------------------------- | ---- | --------------------- |
+| `GET`    | `/menu/categories`        | ✅   | List kategori         |
+| `POST`   | `/menu/categories`        | ✅   | Tambah kategori       |
+| `PUT`    | `/menu/categories/{id}`   | ✅   | Update kategori       |
+| `DELETE` | `/menu/categories/{id}`   | ✅   | Hapus kategori (soft) |
+| `GET`    | `/menu/items`             | ✅   | List item menu        |
+| `POST`   | `/menu/items`             | ✅   | Tambah item menu      |
+| `PUT`    | `/menu/items/{id}`        | ✅   | Update item menu      |
+| `PATCH`  | `/menu/items/{id}/toggle` | ✅   | Toggle aktif/nonaktif |
+| `DELETE` | `/menu/items/{id}`        | ✅   | Hapus item (soft)     |
+
+### Meja & QR Code
+
+| Method   | Endpoint                     | Auth | Deskripsi                 |
+| -------- | ---------------------------- | ---- | ------------------------- |
+| `GET`    | `/tables`                    | ✅   | List meja                 |
+| `POST`   | `/tables`                    | ✅   | Tambah meja + generate QR |
+| `PUT`    | `/tables/{id}`               | ✅   | Update meja               |
+| `DELETE` | `/tables/{id}`               | ✅   | Hapus meja                |
+| `POST`   | `/tables/{id}/regenerate-qr` | ✅   | Generate ulang QR code    |
+
+### Pesanan (Order)
+
+| Method  | Endpoint               | Auth | Deskripsi                    |
+| ------- | ---------------------- | ---- | ---------------------------- |
+| `GET`   | `/orders`              | ✅   | List pesanan (filter status) |
+| `POST`  | `/orders`              | ✅   | Buat pesanan baru            |
+| `GET`   | `/orders/{id}`         | ✅   | Detail pesanan               |
+| `PATCH` | `/orders/{id}/status`  | ✅   | Update status pesanan        |
+| `POST`  | `/orders/{id}/payment` | ✅   | Proses pembayaran            |
+
+### Laporan
+
+| Method | Endpoint                | Auth | Deskripsi            |
+| ------ | ----------------------- | ---- | -------------------- |
+| `GET`  | `/reports/daily`        | ✅   | Laporan harian       |
+| `GET`  | `/reports/monthly`      | ✅   | Laporan bulanan      |
+| `GET`  | `/reports/export/pdf`   | ✅   | Export laporan PDF   |
+| `GET`  | `/reports/export/excel` | ✅   | Export laporan Excel |
+
+### Staf
+
+| Method   | Endpoint             | Auth  | Deskripsi            |
+| -------- | -------------------- | ----- | -------------------- |
+| `GET`    | `/staff`             | Owner | List staf            |
+| `POST`   | `/staff`             | Owner | Tambah staf          |
+| `PUT`    | `/staff/{id}`        | Owner | Update staf          |
+| `PATCH`  | `/staff/{id}/toggle` | Owner | Aktifkan/nonaktifkan |
+| `DELETE` | `/staff/{id}`        | Owner | Hapus staf (soft)    |
+
+### Subscription
+
+| Method | Endpoint                  | Auth  | Deskripsi              |
+| ------ | ------------------------- | ----- | ---------------------- |
+| `GET`  | `/subscription/plans`     | ✅    | List plan tersedia     |
+| `GET`  | `/subscription/current`   | ✅    | Status langganan aktif |
+| `POST` | `/subscription/subscribe` | Owner | Berlangganan plan      |
+| `POST` | `/subscription/cancel`    | Owner | Batalkan langganan     |
+
+### Superadmin
+
+| Method  | Endpoint                                  | Superadmin | Deskripsi             |
+| ------- | ----------------------------------------- | ---------- | --------------------- |
+| `GET`   | `/superadmin/stats`                       | ✅         | Statistik platform    |
+| `GET`   | `/superadmin/restaurants`                 | ✅         | List semua restoran   |
+| `GET`   | `/superadmin/restaurants/{id}`            | ✅         | Detail restoran       |
+| `PATCH` | `/superadmin/restaurants/{id}/suspend`    | ✅         | Suspend restoran      |
+| `PATCH` | `/superadmin/restaurants/{id}/reactivate` | ✅         | Reaktivasi restoran   |
+| `GET`   | `/superadmin/logs`                        | ✅         | Activity log platform |
 
 ### Contoh Response
 
@@ -185,6 +262,39 @@ Base URL: `http://localhost:8000/api/v1`
 | `cashier`    | POS, pesanan, pembayaran                |
 | `kitchen`    | Lihat & update status pesanan dapur     |
 | `customer`   | Pesan via QR code                       |
+
+---
+
+## Testing
+
+```bash
+cd backend
+vendor/bin/phpunit
+```
+
+63 tests, 143 assertions — semua passing ✅
+
+| Test File          | Tests | Coverage                                       |
+| ------------------ | ----- | ---------------------------------------------- |
+| `AuthTest`         | 10    | Register, login, logout, me, profile, password |
+| `MenuTest`         | 9     | Kategori & item CRUD, tenant isolation         |
+| `OrderTest`        | 4     | Create, list, status update, isolation         |
+| `SubscriptionTest` | 8     | Plans, subscribe, cancel, expired guard        |
+| `StaffTest`        | 10    | CRUD, role restriction, isolation              |
+| `SuperAdminTest`   | 7     | Stats, restaurants, logs, suspend              |
+| `TableTest`        | 6     | CRUD, QR generate, isolation                   |
+
+---
+
+## Roadmap ke Depan
+
+> Project belum dilaunching — ada beberapa penyesuaian sebelum produksi:
+
+- [ ] Poles UI/UX frontend (layout, responsiveness, loading state)
+- [ ] Ganti ikon Lucide yang terlalu generic dengan ikon lebih tepat konteks
+- [ ] Penambahan fitur kecil sesuai feedback
+- [ ] Setup domain & hosting production
+- [ ] Onboarding restoran pertama
 
 ---
 

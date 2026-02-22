@@ -3,6 +3,7 @@
 use App\Http\Middleware\CheckSubscriptionActive;
 use App\Http\Middleware\EnsureRole;
 use App\Http\Middleware\EnsureTenantContext;
+use App\Http\Middleware\SecurityHeaders;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -31,6 +32,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'tenant'       => EnsureTenantContext::class,
             'subscription' => CheckSubscriptionActive::class,
         ]);
+
+        // Attach security headers to every API response
+        $middleware->appendToGroup('api', SecurityHeaders::class);
 
         // Note: statefulApi() intentionally omitted — this app uses Bearer token auth,
         // not cookie-based SPA auth. Enabling it causes CSRF mismatch from localhost.
