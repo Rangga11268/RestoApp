@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react'
-import { Plus, Pencil, Trash2, RefreshCw, Download, QrCode } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { Plus, Pencil, Trash2, RefreshCw, Download, QrCode, AlertTriangle } from 'lucide-react'
 import { useForm, type Resolver } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
+import QRCode from 'react-qr-code'
 import Modal from '@/components/Modal'
 import {
   getTables,
@@ -33,13 +34,32 @@ const STATUS_COLOR: Record<string, string> = {
   reserved: 'bg-amber-100 text-amber-700',
 }
 
-function downloadSvg(qr: string, name: string) {
-  const svg = atob(qr.replace(/^data:image\/svg\+xml;base64,/, ''))
-  const blob = new Blob([svg], { type: 'image/svg+xml' })
+/**
+ * Ubah path (/menu/slug?table=1) jadi URL lengkap.
+ * Pakai VITE_APP_URL dari .env jika di-set, fallback ke window.location.origin.
+ * Jika admin buka dari localhost, QR akan berisi localhost (tidak bisa di-scan HP).
+ * Solusi: akses halaman ini via Network IP (http://192.168.x.x:5173) atau set VITE_APP_URL.
+ */
+function buildQrUrl(path: string): string {
+  const base = import.meta.env.VITE_APP_URL?.replace(/\/$/, '') || window.location.origin
+  return base + path
+}
+
+function isLocalhost(): boolean {
+  const h = window.location.hostname
+  return h === 'localhost' || h === '127.0.0.1' || h === '::1'
+}
+
+function downloadQrSvg(svgRef: React.RefObject<HTMLDivElement | null>, tableName: string) {
+  const svgEl = svgRef.current?.querySelector('svg')
+  if (!svgEl) return
+  const serialized = new XMLSerializer().serializeToString(svgEl)
+  const blob = new Blob([serialized], { type: 'image/svg+xml' })
   const a = document.createElement('a')
   a.href = URL.createObjectURL(blob)
-  a.download = `qr-${name}.svg`
+  a.download = `qr-${tableName}.svg`
   a.click()
+  URL.revokeObjectURL(a.href)
 }
 
 export default function TablesPage() {
@@ -49,6 +69,7 @@ export default function TablesPage() {
   const [editing, setEditing] = useState<Table | null>(null)
   const [qrTarget, setQrTarget] = useState<Table | null>(null)
   const [regenerating, setRegenerating] = useState<number | null>(null)
+  const qrModalRef = useRef<HTMLDivElement>(null)
 
   const {
     register,
@@ -141,6 +162,22 @@ export default function TablesPage() {
         </button>
       </div>
 
+      {/* Warning: akses via localhost — QR tidak bisa di-scan dari HP */}
+      {isLocalhost() && !import.meta.env.VITE_APP_URL && (
+        <div className="mb-5 flex items-start gap-3 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl px-4 py-3 text-sm">
+          <AlertTriangle size={16} className="mt-0.5 flex-shrink-0 text-amber-500" />
+          <div>
+            <p className="font-semibold">QR Code tidak bisa di-scan dari HP</p>
+            <p className="text-amber-700 mt-0.5">
+              Kamu sedang mengakses via <code className="bg-amber-100 px-1 rounded">localhost</code>
+              . Akses halaman ini melalui <strong>Network IP</strong> (lihat output Vite:{' '}
+              <code className="bg-amber-100 px-1 rounded">http://192.168.x.x:5173</code>) agar QR
+              berisi URL yang bisa dijangkau HP.
+            </p>
+          </div>
+        </div>
+      )}
+
       {loading ? (
         <div className="flex justify-center py-12">
           <div className="w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" />
@@ -180,17 +217,13 @@ export default function TablesPage() {
               {/* QR preview */}
               <div className="flex flex-col items-center py-4 px-3">
                 {t.qr_code ? (
-                  <img
-                    src={
-                      t.qr_code.startsWith('data:')
-                        ? t.qr_code
-                        : `data:image/svg+xml;base64,${t.qr_code}`
-                    }
-                    alt={`QR ${t.name}`}
-                    className="w-28 h-28 cursor-pointer"
+                  <div
+                    className="w-28 h-28 cursor-pointer flex items-center justify-center p-1 bg-white"
                     onClick={() => setQrTarget(t)}
                     title="Klik untuk perbesar"
-                  />
+                  >
+                    <QRCode value={buildQrUrl(t.qr_code)} size={104} level="M" />
+                  </div>
                 ) : (
                   <div className="w-28 h-28 bg-gray-100 rounded flex items-center justify-center text-gray-300">
                     <QrCode size={36} />
@@ -208,7 +241,7 @@ export default function TablesPage() {
                   </button>
                   {t.qr_code && (
                     <button
-                      onClick={() => downloadSvg(t.qr_code!, t.name)}
+                      onClick={() => setQrTarget(t)}
                       className="flex-1 flex items-center justify-center gap-1 text-xs border border-gray-200 rounded-lg py-1.5 hover:bg-gray-50 text-gray-600"
                     >
                       <Download size={12} /> Download
@@ -316,17 +349,15 @@ export default function TablesPage() {
       >
         {qrTarget?.qr_code && (
           <div className="flex flex-col items-center gap-4">
-            <img
-              src={
-                qrTarget.qr_code.startsWith('data:')
-                  ? qrTarget.qr_code
-                  : `data:image/svg+xml;base64,${qrTarget.qr_code}`
-              }
-              alt={`QR ${qrTarget.name}`}
-              className="w-56 h-56"
-            />
+            {/* URL yang tertanam di QR — berguna untuk copy/share */}
+            <p className="text-xs text-gray-400 break-all text-center">
+              {buildQrUrl(qrTarget.qr_code)}
+            </p>
+            <div ref={qrModalRef} className="p-3 bg-white rounded-lg border border-gray-200">
+              <QRCode value={buildQrUrl(qrTarget.qr_code)} size={200} level="M" />
+            </div>
             <button
-              onClick={() => downloadSvg(qrTarget.qr_code!, qrTarget.name)}
+              onClick={() => downloadQrSvg(qrModalRef, qrTarget.name)}
               className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg text-sm font-medium"
             >
               <Download size={14} /> Download SVG

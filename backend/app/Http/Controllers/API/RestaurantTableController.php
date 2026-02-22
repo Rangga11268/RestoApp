@@ -10,7 +10,6 @@ use App\Http\Traits\ChecksPlanLimits;
 use App\Models\RestaurantTable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class RestaurantTableController extends Controller
 {
@@ -44,10 +43,9 @@ class RestaurantTableController extends Controller
             'status'    => 'available',
         ]);
 
-        // Generate QR code URL pointing to public menu + table
-        $qrUrl    = config('app.frontend_url') . "/menu/{$restaurant->slug}?table={$table->id}";
-        $qrSvg    = base64_encode(QrCode::format('svg')->size(200)->generate($qrUrl));
-        $table->update(['qr_code' => "data:image/svg+xml;base64,{$qrSvg}"]);
+        // Simpan path saja — frontend generate QR image pakai window.location.origin + path.
+        // Sehingga QR selalu valid di lokal (IP berubah-ubah) maupun production (custom domain).
+        $table->update(['qr_code' => "/menu/{$restaurant->slug}?table={$table->id}"]);
 
         return $this->created($table, 'Meja berhasil ditambahkan.');
     }
@@ -83,9 +81,11 @@ class RestaurantTableController extends Controller
     public function regenerateQr(Request $request, RestaurantTable $restaurantTable): JsonResponse
     {
         $restaurant = $request->user()->restaurant;
-        $qrUrl      = config('app.frontend_url') . "/menu/{$restaurant->slug}?table={$restaurantTable->id}";
-        $qrSvg      = base64_encode(QrCode::format('svg')->size(200)->generate($qrUrl));
-        $restaurantTable->update(['qr_code' => "data:image/svg+xml;base64,{$qrSvg}"]);
+
+        // Re-set path (berguna jika slug berubah atau data lama masih format base64 SVG)
+        $restaurantTable->update([
+            'qr_code' => "/menu/{$restaurant->slug}?table={$restaurantTable->id}",
+        ]);
 
         return $this->success(
             ['qr_code' => $restaurantTable->qr_code],

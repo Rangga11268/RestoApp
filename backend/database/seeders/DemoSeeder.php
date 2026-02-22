@@ -14,7 +14,6 @@ use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class DemoSeeder extends Seeder
 {
@@ -545,8 +544,7 @@ class DemoSeeder extends Seeder
 
     private function generateQr(string $restaurantSlug, int $tableId): string
     {
-        $url = config('app.url') . "/order/{$restaurantSlug}/{$tableId}";
-        $svg = base64_encode(QrCode::format('svg')->size(200)->generate($url));
-        return "data:image/svg+xml;base64,{$svg}";
+        // Simpan path saja — frontend generate QR image pakai window.location.origin + path
+        return "/menu/{$restaurantSlug}?table={$tableId}";
     }
 }
