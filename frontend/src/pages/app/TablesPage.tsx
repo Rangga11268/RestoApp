@@ -1,16 +1,9 @@
-import { useEffect, useState } from "react";
-import {
-  Plus,
-  Pencil,
-  Trash2,
-  RefreshCw,
-  Download,
-  QrCode,
-} from "lucide-react";
-import { useForm, type Resolver } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import Modal from "@/components/Modal";
+import { useEffect, useState } from 'react'
+import { Plus, Pencil, Trash2, RefreshCw, Download, QrCode } from 'lucide-react'
+import { useForm, type Resolver } from 'react-hook-form'
+import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
+import Modal from '@/components/Modal'
 import {
   getTables,
   createTable,
@@ -18,45 +11,44 @@ import {
   deleteTable,
   regenerateQr,
   type Table,
-} from "@/services/tableService";
+} from '@/services/tableService'
+import { Toast, confirmDelete, handleApiError } from '@/lib/swal'
 
 const schema = z.object({
-  name: z.string().min(1, "Nama meja wajib diisi").max(50),
-  capacity: z.coerce.number().min(1, "Minimal 1 orang"),
-  status: z.enum(["available", "occupied", "reserved"]).optional(),
+  name: z.string().min(1, 'Nama meja wajib diisi').max(50),
+  capacity: z.coerce.number().min(1, 'Minimal 1 orang'),
+  status: z.enum(['available', 'occupied', 'reserved']).optional(),
   is_active: z.boolean().optional(),
-});
-type FormData = z.infer<typeof schema>;
+})
+type FormData = z.infer<typeof schema>
 
 const STATUS_LABEL: Record<string, string> = {
-  available: "Tersedia",
-  occupied: "Terisi",
-  reserved: "Dipesan",
-};
+  available: 'Tersedia',
+  occupied: 'Terisi',
+  reserved: 'Dipesan',
+}
 const STATUS_COLOR: Record<string, string> = {
-  available: "bg-green-100 text-green-700",
-  occupied: "bg-red-100 text-red-700",
-  reserved: "bg-amber-100 text-amber-700",
-};
+  available: 'bg-green-100 text-green-700',
+  occupied: 'bg-red-100 text-red-700',
+  reserved: 'bg-amber-100 text-amber-700',
+}
 
 function downloadSvg(qr: string, name: string) {
-  const svg = atob(qr.replace(/^data:image\/svg\+xml;base64,/, ""));
-  const blob = new Blob([svg], { type: "image/svg+xml" });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = `qr-${name}.svg`;
-  a.click();
+  const svg = atob(qr.replace(/^data:image\/svg\+xml;base64,/, ''))
+  const blob = new Blob([svg], { type: 'image/svg+xml' })
+  const a = document.createElement('a')
+  a.href = URL.createObjectURL(blob)
+  a.download = `qr-${name}.svg`
+  a.click()
 }
 
 export default function TablesPage() {
-  const [tables, setTables] = useState<Table[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [editing, setEditing] = useState<Table | null>(null);
-  const [deleteTarget, setDeleteTarget] = useState<Table | null>(null);
-  const [qrTarget, setQrTarget] = useState<Table | null>(null);
-  const [serverError, setServerError] = useState("");
-  const [regenerating, setRegenerating] = useState<number | null>(null);
+  const [tables, setTables] = useState<Table[]>([])
+  const [loading, setLoading] = useState(true)
+  const [modalOpen, setModalOpen] = useState(false)
+  const [editing, setEditing] = useState<Table | null>(null)
+  const [qrTarget, setQrTarget] = useState<Table | null>(null)
+  const [regenerating, setRegenerating] = useState<number | null>(null)
 
   const {
     register,
@@ -65,90 +57,81 @@ export default function TablesPage() {
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     resolver: zodResolver(schema) as Resolver<FormData>,
-  });
+  })
 
   const load = async () => {
-    setLoading(true);
+    setLoading(true)
     try {
-      setTables(await getTables());
+      setTables(await getTables())
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
   useEffect(() => {
-    load();
-  }, []);
+    load()
+  }, [])
 
   const openCreate = () => {
-    setEditing(null);
-    reset({ name: "", capacity: 4, status: "available", is_active: true });
-    setServerError("");
-    setModalOpen(true);
-  };
+    setEditing(null)
+    reset({ name: '', capacity: 4, status: 'available', is_active: true })
+    setModalOpen(true)
+  }
   const openEdit = (t: Table) => {
-    setEditing(t);
+    setEditing(t)
     reset({
       name: t.name,
       capacity: t.capacity,
-      status: t.status as FormData["status"],
+      status: t.status as FormData['status'],
       is_active: t.is_active,
-    });
-    setServerError("");
-    setModalOpen(true);
-  };
+    })
+    setModalOpen(true)
+  }
 
   const onSubmit = async (data: FormData) => {
-    setServerError("");
     try {
-      if (editing) await updateTable(editing.id, data);
-      else await createTable(data);
-      setModalOpen(false);
-      await load();
+      if (editing) {
+        await updateTable(editing.id, data)
+        Toast.fire({ icon: 'success', title: 'Meja berhasil diperbarui' })
+      } else {
+        await createTable(data)
+        Toast.fire({ icon: 'success', title: 'Meja berhasil ditambahkan' })
+      }
+      setModalOpen(false)
+      await load()
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { message?: string } } })
-        ?.response?.data?.message;
-      setServerError(msg ?? "Terjadi kesalahan.");
+      handleApiError(err)
     }
-  };
+  }
 
-  const doDelete = async () => {
-    if (!deleteTarget) return;
+  const handleDelete = async (t: Table) => {
+    const result = await confirmDelete(t.name)
+    if (!result.isConfirmed) return
     try {
-      await deleteTable(deleteTarget.id);
-      setDeleteTarget(null);
-      await load();
+      await deleteTable(t.id)
+      Toast.fire({ icon: 'success', title: 'Meja berhasil dihapus' })
+      await load()
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { message?: string } } })
-        ?.response?.data?.message;
-      setServerError(msg ?? "Gagal menghapus meja.");
-      setDeleteTarget(null);
+      handleApiError(err)
     }
-  };
+  }
 
   const doRegenerate = async (t: Table) => {
-    setRegenerating(t.id);
+    setRegenerating(t.id)
     try {
-      const updated = await regenerateQr(t.id);
-      setTables((prev) =>
-        prev.map((x) =>
-          x.id === t.id ? { ...x, qr_code: updated.qr_code } : x,
-        ),
-      );
-      if (qrTarget?.id === t.id)
-        setQrTarget({ ...qrTarget, qr_code: updated.qr_code });
+      const updated = await regenerateQr(t.id)
+      setTables((prev) => prev.map((x) => (x.id === t.id ? { ...x, qr_code: updated.qr_code } : x)))
+      if (qrTarget?.id === t.id) setQrTarget({ ...qrTarget, qr_code: updated.qr_code })
     } finally {
-      setRegenerating(null);
+      setRegenerating(null)
     }
-  };
+  }
 
   return (
     <div className="w-full">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Meja</h1>
-          <p className="text-sm text-gray-500 mt-0.5">
-            {tables.length} meja terdaftar
-          </p>
+          <p className="text-sm text-gray-500 mt-0.5">{tables.length} meja terdaftar</p>
         </div>
         <button
           onClick={openCreate}
@@ -157,12 +140,6 @@ export default function TablesPage() {
           <Plus size={16} /> Tambah Meja
         </button>
       </div>
-
-      {serverError && (
-        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
-          {serverError}
-        </div>
-      )}
 
       {loading ? (
         <div className="flex justify-center py-12">
@@ -186,7 +163,7 @@ export default function TablesPage() {
           {tables.map((t) => (
             <div
               key={t.id}
-              className={`bg-white rounded-xl border overflow-hidden transition hover:shadow-sm ${!t.is_active ? "opacity-60" : "border-gray-200"}`}
+              className={`bg-white rounded-xl border overflow-hidden transition hover:shadow-sm ${!t.is_active ? 'opacity-60' : 'border-gray-200'}`}
             >
               <div className="bg-gray-50 px-4 py-3 flex items-center justify-between">
                 <div>
@@ -194,7 +171,7 @@ export default function TablesPage() {
                   <p className="text-xs text-gray-400">{t.capacity} kursi</p>
                 </div>
                 <span
-                  className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_COLOR[t.status] ?? "bg-gray-100 text-gray-500"}`}
+                  className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_COLOR[t.status] ?? 'bg-gray-100 text-gray-500'}`}
                 >
                   {STATUS_LABEL[t.status] ?? t.status}
                 </span>
@@ -205,7 +182,7 @@ export default function TablesPage() {
                 {t.qr_code ? (
                   <img
                     src={
-                      t.qr_code.startsWith("data:")
+                      t.qr_code.startsWith('data:')
                         ? t.qr_code
                         : `data:image/svg+xml;base64,${t.qr_code}`
                     }
@@ -226,10 +203,7 @@ export default function TablesPage() {
                     disabled={regenerating === t.id}
                     className="flex-1 flex items-center justify-center gap-1 text-xs border border-gray-200 rounded-lg py-1.5 hover:bg-gray-50 text-gray-600 disabled:opacity-50"
                   >
-                    <RefreshCw
-                      size={12}
-                      className={regenerating === t.id ? "animate-spin" : ""}
-                    />{" "}
+                    <RefreshCw size={12} className={regenerating === t.id ? 'animate-spin' : ''} />{' '}
                     QR Baru
                   </button>
                   {t.qr_code && (
@@ -251,7 +225,7 @@ export default function TablesPage() {
                   <Pencil size={13} />
                 </button>
                 <button
-                  onClick={() => setDeleteTarget(t)}
+                  onClick={() => handleDelete(t)}
                   className="p-1.5 rounded-lg hover:bg-red-50 text-red-500"
                 >
                   <Trash2 size={13} />
@@ -266,28 +240,18 @@ export default function TablesPage() {
       <Modal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
-        title={editing ? "Edit Meja" : "Tambah Meja"}
+        title={editing ? 'Edit Meja' : 'Tambah Meja'}
         size="sm"
       >
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {serverError && (
-            <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
-              {serverError}
-            </div>
-          )}
-
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Nama Meja
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Nama Meja</label>
             <input
-              {...register("name")}
+              {...register('name')}
               placeholder="cth: Meja 1 / VIP-A"
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
             />
-            {errors.name && (
-              <p className="text-xs text-red-500 mt-1">{errors.name.message}</p>
-            )}
+            {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name.message}</p>}
           </div>
 
           <div>
@@ -295,25 +259,21 @@ export default function TablesPage() {
               Kapasitas (orang)
             </label>
             <input
-              {...register("capacity")}
+              {...register('capacity')}
               type="number"
               min={1}
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
             />
             {errors.capacity && (
-              <p className="text-xs text-red-500 mt-1">
-                {errors.capacity.message}
-              </p>
+              <p className="text-xs text-red-500 mt-1">{errors.capacity.message}</p>
             )}
           </div>
 
           {editing && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Status
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
               <select
-                {...register("status")}
+                {...register('status')}
                 className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:border-orange-500"
               >
                 <option value="available">Tersedia</option>
@@ -324,11 +284,7 @@ export default function TablesPage() {
           )}
 
           <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
-            <input
-              {...register("is_active")}
-              type="checkbox"
-              className="rounded"
-            />
+            <input {...register('is_active')} type="checkbox" className="rounded" />
             Aktif
           </label>
 
@@ -345,40 +301,10 @@ export default function TablesPage() {
               disabled={isSubmitting}
               className="flex-1 bg-orange-500 hover:bg-orange-600 disabled:opacity-60 text-white py-2.5 rounded-lg text-sm font-medium"
             >
-              {isSubmitting
-                ? "Menyimpan..."
-                : editing
-                  ? "Simpan Perubahan"
-                  : "Tambah Meja"}
+              {isSubmitting ? 'Menyimpan...' : editing ? 'Simpan Perubahan' : 'Tambah Meja'}
             </button>
           </div>
         </form>
-      </Modal>
-
-      {/* Confirm delete */}
-      <Modal
-        open={!!deleteTarget}
-        onClose={() => setDeleteTarget(null)}
-        title="Hapus Meja"
-        size="sm"
-      >
-        <p className="text-sm text-gray-600 mb-6">
-          Yakin ingin menghapus meja <strong>{deleteTarget?.name}</strong>?
-        </p>
-        <div className="flex gap-3">
-          <button
-            onClick={() => setDeleteTarget(null)}
-            className="flex-1 border border-gray-300 text-gray-600 py-2 rounded-lg text-sm hover:bg-gray-50"
-          >
-            Batal
-          </button>
-          <button
-            onClick={doDelete}
-            className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg text-sm font-medium"
-          >
-            Hapus
-          </button>
-        </div>
       </Modal>
 
       {/* QR zoom modal */}
@@ -392,7 +318,7 @@ export default function TablesPage() {
           <div className="flex flex-col items-center gap-4">
             <img
               src={
-                qrTarget.qr_code.startsWith("data:")
+                qrTarget.qr_code.startsWith('data:')
                   ? qrTarget.qr_code
                   : `data:image/svg+xml;base64,${qrTarget.qr_code}`
               }
@@ -409,5 +335,5 @@ export default function TablesPage() {
         )}
       </Modal>
     </div>
-  );
+  )
 }

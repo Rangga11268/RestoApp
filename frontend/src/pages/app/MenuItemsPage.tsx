@@ -14,6 +14,7 @@ import {
   type MenuItem,
   type Category,
 } from '@/services/menuService'
+import { Toast, confirmDelete, handleApiError } from '@/lib/swal'
 
 const schema = z.object({
   category_id: z.coerce.number().min(1, 'Pilih kategori'),
@@ -40,8 +41,6 @@ export default function MenuItemsPage() {
   const [filterCat, setFilterCat] = useState('')
   const [modalOpen, setModalOpen] = useState(false)
   const [editing, setEditing] = useState<MenuItem | null>(null)
-  const [deleteTarget, setDeleteTarget] = useState<MenuItem | null>(null)
-  const [serverError, setServerError] = useState('')
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
 
@@ -106,7 +105,6 @@ export default function MenuItemsPage() {
   }
 
   const onSubmit = async (data: FormData) => {
-    setServerError('')
     const fd = new FormData()
     Object.entries(data).forEach(([k, v]) => {
       if (v === undefined || v === null) return
@@ -121,26 +119,15 @@ export default function MenuItemsPage() {
     try {
       if (editing) {
         await updateMenuItem(editing.id, fd)
+        Toast.fire({ icon: 'success', title: 'Menu berhasil diperbarui' })
       } else {
         await createMenuItem(fd)
+        Toast.fire({ icon: 'success', title: 'Menu berhasil ditambahkan' })
       }
       setModalOpen(false)
       await load()
     } catch (err: unknown) {
-      const res = (
-        err as {
-          response?: {
-            data?: { message?: string; errors?: Record<string, string[]> }
-          }
-        }
-      )?.response?.data
-      if (res?.errors) {
-        Object.entries(res.errors).forEach(([k, v]) =>
-          setFieldErr(k as keyof FormData, { message: v[0] })
-        )
-      } else {
-        setServerError(res?.message ?? 'Terjadi kesalahan.')
-      }
+      handleApiError(err, (k, e) => setFieldErr(k as keyof FormData, e))
     }
   }
 
@@ -151,16 +138,15 @@ export default function MenuItemsPage() {
     )
   }
 
-  const doDelete = async () => {
-    if (!deleteTarget) return
+  const handleDelete = async (item: MenuItem) => {
+    const result = await confirmDelete(item.name)
+    if (!result.isConfirmed) return
     try {
-      await deleteMenuItem(deleteTarget.id)
-      setDeleteTarget(null)
+      await deleteMenuItem(item.id)
+      Toast.fire({ icon: 'success', title: 'Menu berhasil dihapus' })
       await load()
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message
-      setServerError(msg ?? 'Gagal menghapus menu.')
-      setDeleteTarget(null)
+      handleApiError(err)
     }
   }
 
@@ -192,12 +178,6 @@ export default function MenuItemsPage() {
           </button>
         </div>
       </div>
-
-      {serverError && (
-        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
-          {serverError}
-        </div>
-      )}
 
       {loading ? (
         <div className="flex justify-center py-12">
@@ -266,7 +246,7 @@ export default function MenuItemsPage() {
                       <Pencil size={12} />
                     </button>
                     <button
-                      onClick={() => setDeleteTarget(item)}
+                      onClick={() => handleDelete(item)}
                       className="p-1.5 rounded-lg hover:bg-red-50 text-red-500"
                     >
                       <Trash2 size={12} />
@@ -287,12 +267,6 @@ export default function MenuItemsPage() {
         size="lg"
       >
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {serverError && (
-            <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
-              {serverError}
-            </div>
-          )}
-
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="sm:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-1">Nama Menu</label>
@@ -409,32 +383,6 @@ export default function MenuItemsPage() {
             </button>
           </div>
         </form>
-      </Modal>
-
-      {/* Confirm delete */}
-      <Modal
-        open={!!deleteTarget}
-        onClose={() => setDeleteTarget(null)}
-        title="Hapus Menu"
-        size="sm"
-      >
-        <p className="text-sm text-gray-600 mb-6">
-          Yakin ingin menghapus menu <strong>{deleteTarget?.name}</strong>?
-        </p>
-        <div className="flex gap-3">
-          <button
-            onClick={() => setDeleteTarget(null)}
-            className="flex-1 border border-gray-300 text-gray-600 py-2 rounded-lg text-sm hover:bg-gray-50"
-          >
-            Batal
-          </button>
-          <button
-            onClick={doDelete}
-            className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg text-sm font-medium"
-          >
-            Hapus
-          </button>
-        </div>
       </Modal>
     </div>
   )
