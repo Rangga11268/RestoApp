@@ -14,6 +14,7 @@ use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class DemoSeeder extends Seeder
 {
@@ -223,10 +224,14 @@ class DemoSeeder extends Seeder
             ['name' => 'VIP B',  'capacity' => 8, 'status' => 'available'],
         ];
         foreach ($tableData as $td) {
-            $tables1[] = RestaurantTable::updateOrCreate(
+            $table = RestaurantTable::updateOrCreate(
                 ['restaurant_id' => $resto1->id, 'name' => $td['name']],
                 ['capacity' => $td['capacity'], 'status' => $td['status'], 'is_active' => true]
             );
+            if (empty($table->qr_code)) {
+                $table->update(['qr_code' => $this->generateQr($resto1->slug, $table->id)]);
+            }
+            $tables1[] = $table;
         }
 
         // Sample Orders — berbagai status
@@ -346,10 +351,14 @@ class DemoSeeder extends Seeder
                 ['name' => 'Outdoor', 'capacity' => 6],
             ] as $td
         ) {
-            $tables2[] = RestaurantTable::updateOrCreate(
+            $table = RestaurantTable::updateOrCreate(
                 ['restaurant_id' => $resto2->id, 'name' => $td['name']],
                 ['capacity' => $td['capacity'], 'status' => 'available', 'is_active' => true]
             );
+            if (empty($table->qr_code)) {
+                $table->update(['qr_code' => $this->generateQr($resto2->slug, $table->id)]);
+            }
+            $tables2[] = $table;
         }
 
         // Satu order pending untuk resto2
@@ -532,5 +541,12 @@ class DemoSeeder extends Seeder
                 $itemRows
             ));
         }
+    }
+
+    private function generateQr(string $restaurantSlug, int $tableId): string
+    {
+        $url = config('app.url') . "/order/{$restaurantSlug}/{$tableId}";
+        $svg = base64_encode(QrCode::format('svg')->size(200)->generate($url));
+        return "data:image/svg+xml;base64,{$svg}";
     }
 }

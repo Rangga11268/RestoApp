@@ -1,16 +1,9 @@
-import { useEffect, useRef, useState } from "react";
-import {
-  Plus,
-  Pencil,
-  Trash2,
-  ImageOff,
-  ToggleRight,
-  ToggleLeft,
-} from "lucide-react";
-import { useForm, type Resolver } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import Modal from "@/components/Modal";
+import { useEffect, useRef, useState } from 'react'
+import { Plus, Pencil, Trash2, ImageOff, ToggleRight, ToggleLeft } from 'lucide-react'
+import { useForm, type Resolver } from 'react-hook-form'
+import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
+import Modal from '@/components/Modal'
 import {
   getMenuItems,
   createMenuItem,
@@ -20,37 +13,37 @@ import {
   getCategories,
   type MenuItem,
   type Category,
-} from "@/services/menuService";
+} from '@/services/menuService'
 
 const schema = z.object({
-  category_id: z.coerce.number().min(1, "Pilih kategori"),
-  name: z.string().min(1, "Nama wajib diisi").max(150),
+  category_id: z.coerce.number().min(1, 'Pilih kategori'),
+  name: z.string().min(1, 'Nama wajib diisi').max(150),
   description: z.string().max(1000).optional(),
-  price: z.coerce.number().min(0, "Harga tidak boleh negatif"),
+  price: z.coerce.number().min(0, 'Harga tidak boleh negatif'),
   preparation_time: z.coerce.number().min(0).optional(),
   is_available: z.boolean().optional(),
   is_featured: z.boolean().optional(),
-});
-type FormData = z.infer<typeof schema>;
+})
+type FormData = z.infer<typeof schema>
 
 const formatCurrency = (n: number) =>
-  new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
+  new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
     maximumFractionDigits: 0,
-  }).format(n);
+  }).format(n)
 
 export default function MenuItemsPage() {
-  const [items, setItems] = useState<MenuItem[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [filterCat, setFilterCat] = useState("");
-  const [modalOpen, setModalOpen] = useState(false);
-  const [editing, setEditing] = useState<MenuItem | null>(null);
-  const [deleteTarget, setDeleteTarget] = useState<MenuItem | null>(null);
-  const [serverError, setServerError] = useState("");
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const fileRef = useRef<HTMLInputElement>(null);
+  const [items, setItems] = useState<MenuItem[]>([])
+  const [categories, setCategories] = useState<Category[]>([])
+  const [loading, setLoading] = useState(true)
+  const [filterCat, setFilterCat] = useState('')
+  const [modalOpen, setModalOpen] = useState(false)
+  const [editing, setEditing] = useState<MenuItem | null>(null)
+  const [deleteTarget, setDeleteTarget] = useState<MenuItem | null>(null)
+  const [serverError, setServerError] = useState('')
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
+  const fileRef = useRef<HTMLInputElement>(null)
 
   const {
     register,
@@ -60,122 +53,123 @@ export default function MenuItemsPage() {
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     resolver: zodResolver(schema) as Resolver<FormData>,
-  });
+  })
 
   const load = async () => {
-    setLoading(true);
+    setLoading(true)
     try {
       const [its, cats] = await Promise.all([
         getMenuItems(filterCat ? { category_id: filterCat } : {}),
         getCategories(),
-      ]);
-      setItems(its);
-      setCategories(cats);
+      ])
+      setItems(its)
+      setCategories(cats)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   useEffect(() => {
-    load();
-  }, [filterCat]);
+    load()
+  }, [filterCat])
 
   const openCreate = () => {
-    setEditing(null);
-    setImagePreview(null);
-    if (fileRef.current) fileRef.current.value = "";
+    setEditing(null)
+    setImagePreview(null)
+    if (fileRef.current) fileRef.current.value = ''
     reset({
       category_id: 0,
-      name: "",
-      description: "",
+      name: '',
+      description: '',
       price: 0,
       preparation_time: 0,
       is_available: true,
       is_featured: false,
-    });
-    setModalOpen(true);
-  };
+    })
+    setModalOpen(true)
+  }
 
   const openEdit = (item: MenuItem) => {
-    setEditing(item);
-    setImagePreview(item.image_url);
-    if (fileRef.current) fileRef.current.value = "";
+    setEditing(item)
+    setImagePreview(item.image_url)
+    if (fileRef.current) fileRef.current.value = ''
     reset({
       category_id: item.category_id,
       name: item.name,
-      description: item.description ?? "",
+      description: item.description ?? '',
       price: item.price,
       preparation_time: item.preparation_time,
       is_available: item.is_available,
       is_featured: item.is_featured,
-    });
-    setModalOpen(true);
-  };
+    })
+    setModalOpen(true)
+  }
 
   const onSubmit = async (data: FormData) => {
-    setServerError("");
-    const fd = new FormData();
-    Object.entries(data).forEach(([k, v]) => fd.append(k, String(v ?? "")));
-    if (fileRef.current?.files?.[0])
-      fd.append("image", fileRef.current.files[0]);
+    setServerError('')
+    const fd = new FormData()
+    Object.entries(data).forEach(([k, v]) => {
+      if (v === undefined || v === null) return
+      if (typeof v === 'boolean') {
+        fd.append(k, v ? '1' : '0')
+      } else {
+        fd.append(k, String(v))
+      }
+    })
+    if (fileRef.current?.files?.[0]) fd.append('image', fileRef.current.files[0])
 
     try {
       if (editing) {
-        await updateMenuItem(editing.id, fd);
+        await updateMenuItem(editing.id, fd)
       } else {
-        await createMenuItem(fd);
+        await createMenuItem(fd)
       }
-      setModalOpen(false);
-      await load();
+      setModalOpen(false)
+      await load()
     } catch (err: unknown) {
       const res = (
         err as {
           response?: {
-            data?: { message?: string; errors?: Record<string, string[]> };
-          };
+            data?: { message?: string; errors?: Record<string, string[]> }
+          }
         }
-      )?.response?.data;
+      )?.response?.data
       if (res?.errors) {
         Object.entries(res.errors).forEach(([k, v]) =>
-          setFieldErr(k as keyof FormData, { message: v[0] }),
-        );
+          setFieldErr(k as keyof FormData, { message: v[0] })
+        )
       } else {
-        setServerError(res?.message ?? "Terjadi kesalahan.");
+        setServerError(res?.message ?? 'Terjadi kesalahan.')
       }
     }
-  };
+  }
 
   const doToggle = async (item: MenuItem) => {
-    await toggleMenuItem(item.id);
+    await toggleMenuItem(item.id)
     setItems((prev) =>
-      prev.map((i) =>
-        i.id === item.id ? { ...i, is_available: !i.is_available } : i,
-      ),
-    );
-  };
+      prev.map((i) => (i.id === item.id ? { ...i, is_available: !i.is_available } : i))
+    )
+  }
 
   const doDelete = async () => {
-    if (!deleteTarget) return;
+    if (!deleteTarget) return
     try {
-      await deleteMenuItem(deleteTarget.id);
-      setDeleteTarget(null);
-      await load();
+      await deleteMenuItem(deleteTarget.id)
+      setDeleteTarget(null)
+      await load()
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { message?: string } } })
-        ?.response?.data?.message;
-      setServerError(msg ?? "Gagal menghapus menu.");
-      setDeleteTarget(null);
+      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message
+      setServerError(msg ?? 'Gagal menghapus menu.')
+      setDeleteTarget(null)
     }
-  };
+  }
 
   return (
     <div className="w-full">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Menu</h1>
-          <p className="text-sm text-gray-500 mt-0.5">
-            {items.length} item menu
-          </p>
+          <p className="text-sm text-gray-500 mt-0.5">{items.length} item menu</p>
         </div>
         <div className="flex gap-2">
           <select
@@ -230,11 +224,7 @@ export default function MenuItemsPage() {
               className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-sm transition"
             >
               {item.image_url ? (
-                <img
-                  src={item.image_url}
-                  alt={item.name}
-                  className="w-full h-36 object-cover"
-                />
+                <img src={item.image_url} alt={item.name} className="w-full h-36 object-cover" />
               ) : (
                 <div className="w-full h-36 bg-gray-100 flex items-center justify-center text-gray-300">
                   <ImageOff size={28} />
@@ -242,25 +232,21 @@ export default function MenuItemsPage() {
               )}
               <div className="p-3">
                 <div className="flex items-start justify-between gap-2">
-                  <p className="font-semibold text-gray-900 text-sm line-clamp-1">
-                    {item.name}
-                  </p>
+                  <p className="font-semibold text-gray-900 text-sm line-clamp-1">{item.name}</p>
                   {item.is_featured && (
                     <span className="flex-shrink-0 text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded">
                       ⭐
                     </span>
                   )}
                 </div>
-                <p className="text-xs text-gray-400 mt-0.5">
-                  {item.category?.name}
-                </p>
+                <p className="text-xs text-gray-400 mt-0.5">{item.category?.name}</p>
                 <p className="text-orange-600 font-bold text-sm mt-1">
                   {formatCurrency(item.price)}
                 </p>
                 <div className="flex items-center justify-between mt-3">
                   <button
                     onClick={() => doToggle(item)}
-                    className={`flex items-center gap-1 text-xs px-2 py-1 rounded-full transition ${item.is_available ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}
+                    className={`flex items-center gap-1 text-xs px-2 py-1 rounded-full transition ${item.is_available ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}
                   >
                     {item.is_available ? (
                       <>
@@ -297,7 +283,7 @@ export default function MenuItemsPage() {
       <Modal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
-        title={editing ? "Edit Menu" : "Tambah Menu"}
+        title={editing ? 'Edit Menu' : 'Tambah Menu'}
         size="lg"
       >
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -309,27 +295,19 @@ export default function MenuItemsPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="sm:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Nama Menu
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Nama Menu</label>
               <input
-                {...register("name")}
+                {...register('name')}
                 className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
                 placeholder="cth: Nasi Goreng Spesial"
               />
-              {errors.name && (
-                <p className="text-xs text-red-500 mt-1">
-                  {errors.name.message}
-                </p>
-              )}
+              {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name.message}</p>}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Kategori
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Kategori</label>
               <select
-                {...register("category_id")}
+                {...register('category_id')}
                 className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:border-orange-500"
               >
                 <option value={0}>-- Pilih Kategori --</option>
@@ -340,28 +318,20 @@ export default function MenuItemsPage() {
                 ))}
               </select>
               {errors.category_id && (
-                <p className="text-xs text-red-500 mt-1">
-                  {errors.category_id.message}
-                </p>
+                <p className="text-xs text-red-500 mt-1">{errors.category_id.message}</p>
               )}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Harga (Rp)
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Harga (Rp)</label>
               <input
-                {...register("price")}
+                {...register('price')}
                 type="number"
                 min={0}
                 className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
                 placeholder="0"
               />
-              {errors.price && (
-                <p className="text-xs text-red-500 mt-1">
-                  {errors.price.message}
-                </p>
-              )}
+              {errors.price && <p className="text-xs text-red-500 mt-1">{errors.price.message}</p>}
             </div>
 
             <div className="sm:col-span-2">
@@ -369,7 +339,7 @@ export default function MenuItemsPage() {
                 Deskripsi <span className="text-gray-400">(opsional)</span>
               </label>
               <textarea
-                {...register("description")}
+                {...register('description')}
                 rows={2}
                 className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100 resize-none"
               />
@@ -380,7 +350,7 @@ export default function MenuItemsPage() {
                 Waktu Masak (menit)
               </label>
               <input
-                {...register("preparation_time")}
+                {...register('preparation_time')}
                 type="number"
                 min={0}
                 className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
@@ -389,16 +359,15 @@ export default function MenuItemsPage() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Foto Menu{" "}
-                <span className="text-gray-400">(opsional, max 2MB)</span>
+                Foto Menu <span className="text-gray-400">(opsional, max 2MB)</span>
               </label>
               <input
                 ref={fileRef}
                 type="file"
                 accept="image/*"
                 onChange={(e) => {
-                  const f = e.target.files?.[0];
-                  if (f) setImagePreview(URL.createObjectURL(f));
+                  const f = e.target.files?.[0]
+                  if (f) setImagePreview(URL.createObjectURL(f))
                 }}
                 className="w-full text-sm text-gray-600 file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100"
               />
@@ -413,20 +382,12 @@ export default function MenuItemsPage() {
 
             <div className="flex items-center gap-4 sm:col-span-2">
               <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
-                <input
-                  {...register("is_available")}
-                  type="checkbox"
-                  className="rounded"
-                />
+                <input {...register('is_available')} type="checkbox" className="rounded" />
                 Tersedia
               </label>
               <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
-                <input
-                  {...register("is_featured")}
-                  type="checkbox"
-                  className="rounded"
-                />
-                ⭐ Unggulan
+                <input {...register('is_featured')} type="checkbox" className="rounded" />⭐
+                Unggulan
               </label>
             </div>
           </div>
@@ -444,11 +405,7 @@ export default function MenuItemsPage() {
               disabled={isSubmitting}
               className="flex-1 bg-orange-500 hover:bg-orange-600 disabled:opacity-60 text-white py-2.5 rounded-lg text-sm font-medium transition"
             >
-              {isSubmitting
-                ? "Menyimpan..."
-                : editing
-                  ? "Simpan Perubahan"
-                  : "Tambah Menu"}
+              {isSubmitting ? 'Menyimpan...' : editing ? 'Simpan Perubahan' : 'Tambah Menu'}
             </button>
           </div>
         </form>
@@ -480,5 +437,5 @@ export default function MenuItemsPage() {
         </div>
       </Modal>
     </div>
-  );
+  )
 }
