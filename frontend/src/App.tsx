@@ -21,7 +21,20 @@ const PaymentPage = lazy(() => import("@/pages/app/PaymentPage"));
 const InvoicePage = lazy(() => import("@/pages/app/InvoicePage"));
 const PaymentHistoryPage = lazy(() => import("@/pages/app/PaymentHistoryPage"));
 const ReportsPage = lazy(() => import("@/pages/app/ReportsPage"));
+const StaffPage = lazy(() => import("@/pages/app/StaffPage"));
+const SubscriptionPage = lazy(() => import("@/pages/app/SubscriptionPage"));
 const UnauthorizedPage = lazy(() => import("@/pages/UnauthorizedPage"));
+
+// Super Admin pages
+const SuperAdminDashboardPage = lazy(
+  () => import("@/pages/superadmin/SuperAdminDashboardPage"),
+);
+const SuperAdminRestaurantsPage = lazy(
+  () => import("@/pages/superadmin/SuperAdminRestaurantsPage"),
+);
+const SuperAdminLogsPage = lazy(
+  () => import("@/pages/superadmin/SuperAdminLogsPage"),
+);
 
 // Public pages (no auth)
 const PublicMenuPage = lazy(() => import("@/pages/public/PublicMenuPage"));
@@ -136,6 +149,47 @@ export default function App() {
               element={
                 <ShellRoute>
                   <ReportsPage />
+                </ShellRoute>
+              }
+            />
+            <Route
+              path="/staff"
+              element={
+                <ShellRoute>
+                  <StaffPage />
+                </ShellRoute>
+              }
+            />
+            <Route
+              path="/subscription"
+              element={
+                <ShellRoute>
+                  <SubscriptionPage />
+                </ShellRoute>
+              }
+            />
+            {/* Super Admin routes */}
+            <Route
+              path="/superadmin"
+              element={
+                <ShellRoute>
+                  <SuperAdminDashboardPage />
+                </ShellRoute>
+              }
+            />
+            <Route
+              path="/superadmin/restaurants"
+              element={
+                <ShellRoute>
+                  <SuperAdminRestaurantsPage />
+                </ShellRoute>
+              }
+            />
+            <Route
+              path="/superadmin/logs"
+              element={
+                <ShellRoute>
+                  <SuperAdminLogsPage />
                 </ShellRoute>
               }
             />
