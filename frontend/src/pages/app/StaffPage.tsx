@@ -11,6 +11,7 @@ import {
   UserCog,
   CreditCard,
 } from 'lucide-react'
+import { Button, Input } from '@/components/ui'
 import {
   getStaff,
   createStaff,
@@ -170,12 +171,11 @@ function StaffModal({ initial, onSave, onClose }: ModalProps) {
           ].map(({ key, label, type, placeholder }) => (
             <div key={key}>
               <label className="block text-xs font-semibold text-gray-600 mb-1">{label}</label>
-              <input
+              <Input
                 type={type}
                 value={(form[key] as string) ?? ''}
                 onChange={(e) => set(key, e.target.value)}
                 placeholder={placeholder}
-                className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-400"
               />
               {errors[key] && <p className="text-xs text-red-500 mt-1">{errors[key]}</p>}
             </div>
@@ -200,12 +200,11 @@ function StaffModal({ initial, onSave, onClose }: ModalProps) {
             <label className="block text-xs font-semibold text-gray-600 mb-1">
               {initial ? 'Password Baru (kosongkan jika tidak diubah)' : 'Password'}
             </label>
-            <input
+            <Input
               type="password"
               value={form.password ?? ''}
               onChange={(e) => set('password', e.target.value)}
               placeholder="Min. 8 karakter"
-              className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-400"
             />
             {errors.password && <p className="text-xs text-red-500 mt-1">{errors.password}</p>}
           </div>
@@ -215,12 +214,11 @@ function StaffModal({ initial, onSave, onClose }: ModalProps) {
               <label className="block text-xs font-semibold text-gray-600 mb-1">
                 Konfirmasi Password
               </label>
-              <input
+              <Input
                 type="password"
                 value={form.password_confirmation ?? ''}
                 onChange={(e) => set('password_confirmation', e.target.value)}
                 placeholder="Ulangi password"
-                className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-400"
               />
               {errors.password_confirmation && (
                 <p className="text-xs text-red-500 mt-1">{errors.password_confirmation}</p>
@@ -229,21 +227,13 @@ function StaffModal({ initial, onSave, onClose }: ModalProps) {
           )}
 
           <div className="flex gap-3 pt-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 py-2 border border-gray-200 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50"
-            >
+            <Button type="button" variant="secondary" onClick={onClose} className="flex-1">
               Batal
-            </button>
-            <button
-              type="submit"
-              disabled={saving}
-              className="flex-1 py-2 bg-orange-500 hover:bg-orange-600 disabled:opacity-60 text-white rounded-xl text-sm font-semibold flex items-center justify-center gap-2"
-            >
+            </Button>
+            <Button type="submit" variant="primary" className="flex-1" disabled={saving}>
               {saving && <Loader2 size={14} className="animate-spin" />}
               Simpan
-            </button>
+            </Button>
           </div>
         </form>
       </div>
@@ -318,13 +308,13 @@ export default function StaffPage() {
           <h1 className="text-2xl font-bold text-gray-900">Manajemen Staff</h1>
           <p className="text-sm text-gray-500 mt-0.5">Kelola akun staff restoran Anda</p>
         </div>
-        <button
+        <Button
           onClick={() => setModal({ open: true, staff: null })}
-          className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold px-4 py-2 rounded-xl transition"
+          className="inline-flex items-center gap-2"
         >
           <UserPlus size={16} />
           Tambah Staff
-        </button>
+        </Button>
       </div>
 
       {/* Table */}

@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useEffect, useState } from 'react'
+import { useParams, useNavigate, Link } from 'react-router-dom'
 import {
   ArrowLeft,
   ShoppingCart,
@@ -14,7 +14,8 @@ import {
   Loader2,
   Banknote,
   Receipt,
-} from "lucide-react";
+} from 'lucide-react'
+import { Button } from '@/components/ui'
 import {
   getOrder,
   updateOrderStatus,
@@ -24,27 +25,27 @@ import {
   ORDER_TYPE_LABELS,
   type Order,
   type OrderStatus,
-} from "@/services/orderService";
-import { cn } from "@/lib/utils";
+} from '@/services/orderService'
+import { cn } from '@/lib/utils'
 
 // ─── Utils ───────────────────────────────────────────────
 
 function formatCurrency(n: number) {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
+  return new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
     minimumFractionDigits: 0,
-  }).format(n);
+  }).format(n)
 }
 
 function formatDateTime(str: string) {
-  return new Date(str).toLocaleString("id-ID", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  return new Date(str).toLocaleString('id-ID', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
 }
 
 // ─── Next-status button config ────────────────────────────
@@ -53,79 +54,67 @@ const NEXT_STATUS_CONFIG: Partial<
   Record<OrderStatus, { label: string; icon: React.ReactNode; color: string }>
 > = {
   confirmed: {
-    label: "Konfirmasi",
+    label: 'Konfirmasi',
     icon: <CheckCircle2 size={16} />,
-    color: "bg-blue-500 hover:bg-blue-600 text-white",
+    color: 'bg-blue-500 hover:bg-blue-600 text-white',
   },
   cooking: {
-    label: "Mulai Masak",
+    label: 'Mulai Masak',
     icon: <CookingPot size={16} />,
-    color: "bg-orange-500 hover:bg-orange-600 text-white",
+    color: 'bg-orange-500 hover:bg-orange-600 text-white',
   },
   ready: {
-    label: "Tandai Siap",
+    label: 'Tandai Siap',
     icon: <BellRing size={16} />,
-    color: "bg-green-500 hover:bg-green-600 text-white",
+    color: 'bg-green-500 hover:bg-green-600 text-white',
   },
   completed: {
-    label: "Selesaikan",
+    label: 'Selesaikan',
     icon: <CheckCircle2 size={16} />,
-    color: "bg-gray-700 hover:bg-gray-800 text-white",
+    color: 'bg-gray-700 hover:bg-gray-800 text-white',
   },
-};
+}
 
 // ─── Status steps indicator ───────────────────────────────
 
-const STEPS: OrderStatus[] = [
-  "pending",
-  "confirmed",
-  "cooking",
-  "ready",
-  "completed",
-];
+const STEPS: OrderStatus[] = ['pending', 'confirmed', 'cooking', 'ready', 'completed']
 
 function StatusStepper({ status }: { status: OrderStatus }) {
-  if (status === "cancelled") {
+  if (status === 'cancelled') {
     return (
       <div className="flex items-center gap-2 text-red-500 text-sm font-medium">
         <XCircle size={16} /> Pesanan Dibatalkan
       </div>
-    );
+    )
   }
 
-  const currentIdx = STEPS.indexOf(status);
+  const currentIdx = STEPS.indexOf(status)
 
   return (
     <div className="flex items-center gap-1">
       {STEPS.map((step, i) => {
-        const done = i < currentIdx;
-        const active = i === currentIdx;
+        const done = i < currentIdx
+        const active = i === currentIdx
 
         return (
           <div key={step} className="flex items-center">
-            <div className={cn("flex flex-col items-center")}>
+            <div className={cn('flex flex-col items-center')}>
               <div
                 className={cn(
-                  "w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold border-2",
+                  'w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold border-2',
                   done
-                    ? "bg-green-500 border-green-500 text-white"
+                    ? 'bg-green-500 border-green-500 text-white'
                     : active
-                      ? "bg-orange-500 border-orange-500 text-white"
-                      : "bg-white border-gray-200 text-gray-300",
+                      ? 'bg-orange-500 border-orange-500 text-white'
+                      : 'bg-white border-gray-200 text-gray-300'
                 )}
               >
-                {done ? (
-                  <CheckCircle2 size={14} />
-                ) : active ? (
-                  <CircleDashed size={14} />
-                ) : (
-                  i + 1
-                )}
+                {done ? <CheckCircle2 size={14} /> : active ? <CircleDashed size={14} /> : i + 1}
               </div>
               <span
                 className={cn(
-                  "text-[10px] mt-1 whitespace-nowrap",
-                  done || active ? "text-gray-700" : "text-gray-400",
+                  'text-[10px] mt-1 whitespace-nowrap',
+                  done || active ? 'text-gray-700' : 'text-gray-400'
                 )}
               >
                 {STATUS_LABELS[step]}
@@ -133,70 +122,67 @@ function StatusStepper({ status }: { status: OrderStatus }) {
             </div>
             {i < STEPS.length - 1 && (
               <div
-                className={cn(
-                  "h-0.5 w-6 sm:w-10 mx-1 mb-4",
-                  done ? "bg-green-400" : "bg-gray-200",
-                )}
+                className={cn('h-0.5 w-6 sm:w-10 mx-1 mb-4', done ? 'bg-green-400' : 'bg-gray-200')}
               />
             )}
           </div>
-        );
+        )
       })}
     </div>
-  );
+  )
 }
 
 // ─── Main page ────────────────────────────────────────────
 
 export default function OrderDetailPage() {
-  const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>()
+  const navigate = useNavigate()
 
-  const [order, setOrder] = useState<Order | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [actionLoading, setActionLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [actionError, setActionError] = useState<string | null>(null);
+  const [order, setOrder] = useState<Order | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [actionLoading, setActionLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [actionError, setActionError] = useState<string | null>(null)
 
   useEffect(() => {
-    if (!id) return;
-    setLoading(true);
+    if (!id) return
+    setLoading(true)
     getOrder(Number(id))
       .then(setOrder)
-      .catch(() => setError("Pesanan tidak ditemukan."))
-      .finally(() => setLoading(false));
-  }, [id]);
+      .catch(() => setError('Pesanan tidak ditemukan.'))
+      .finally(() => setLoading(false))
+  }, [id])
 
   async function handleStatusUpdate(status: OrderStatus) {
-    if (!order) return;
-    setActionLoading(true);
-    setActionError(null);
+    if (!order) return
+    setActionLoading(true)
+    setActionError(null)
     try {
-      const updated = await updateOrderStatus(order.id, status);
-      setOrder(updated);
+      const updated = await updateOrderStatus(order.id, status)
+      setOrder(updated)
     } catch (e: unknown) {
       const msg =
-        (e as { response?: { data?: { message?: string } } })?.response?.data
-          ?.message ?? "Gagal memperbarui status.";
-      setActionError(msg);
+        (e as { response?: { data?: { message?: string } } })?.response?.data?.message ??
+        'Gagal memperbarui status.'
+      setActionError(msg)
     } finally {
-      setActionLoading(false);
+      setActionLoading(false)
     }
   }
 
   async function handleCancel() {
-    if (!order || !confirm("Batalkan pesanan ini?")) return;
-    setActionLoading(true);
-    setActionError(null);
+    if (!order || !confirm('Batalkan pesanan ini?')) return
+    setActionLoading(true)
+    setActionError(null)
     try {
-      await cancelOrder(order.id);
-      navigate("/orders");
+      await cancelOrder(order.id)
+      navigate('/orders')
     } catch (e: unknown) {
       const msg =
-        (e as { response?: { data?: { message?: string } } })?.response?.data
-          ?.message ?? "Gagal membatalkan pesanan.";
-      setActionError(msg);
-      setActionLoading(false);
+        (e as { response?: { data?: { message?: string } } })?.response?.data?.message ??
+        'Gagal membatalkan pesanan.'
+      setActionError(msg)
+      setActionLoading(false)
     }
   }
 
@@ -206,15 +192,13 @@ export default function OrderDetailPage() {
         <Loader2 size={24} className="animate-spin mr-2" />
         Memuat…
       </div>
-    );
+    )
   }
 
   if (error || !order) {
     return (
       <div className="max-w-2xl mx-auto">
-        <p className="text-sm text-red-500 mb-4">
-          {error ?? "Pesanan tidak ditemukan."}
-        </p>
+        <p className="text-sm text-red-500 mb-4">{error ?? 'Pesanan tidak ditemukan.'}</p>
         <Link
           to="/orders"
           className="text-sm text-orange-600 hover:underline flex items-center gap-1"
@@ -222,24 +206,24 @@ export default function OrderDetailPage() {
           <ArrowLeft size={14} /> Kembali ke pesanan
         </Link>
       </div>
-    );
+    )
   }
 
   // Derive allowed next statuses on the frontend (mirrors backend allowedNextStatuses())
   const nextStatuses = ((): OrderStatus[] => {
     switch (order.status) {
-      case "pending":
-        return ["confirmed", "cancelled"];
-      case "confirmed":
-        return ["cooking", "cancelled"];
-      case "cooking":
-        return ["ready"];
-      case "ready":
-        return ["completed"];
+      case 'pending':
+        return ['confirmed', 'cancelled']
+      case 'confirmed':
+        return ['cooking', 'cancelled']
+      case 'cooking':
+        return ['ready']
+      case 'ready':
+        return ['completed']
       default:
-        return [];
+        return []
     }
-  })();
+  })()
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -255,17 +239,13 @@ export default function OrderDetailPage() {
       {/* Title row */}
       <div className="flex items-start justify-between gap-4 mb-5">
         <div>
-          <h1 className="text-xl font-bold text-gray-900">
-            {order.order_number}
-          </h1>
-          <p className="text-sm text-gray-500 mt-0.5">
-            {formatDateTime(order.created_at)}
-          </p>
+          <h1 className="text-xl font-bold text-gray-900">{order.order_number}</h1>
+          <p className="text-sm text-gray-500 mt-0.5">{formatDateTime(order.created_at)}</p>
         </div>
         <span
           className={cn(
-            "inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold flex-shrink-0",
-            STATUS_COLORS[order.status],
+            'inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold flex-shrink-0',
+            STATUS_COLORS[order.status]
           )}
         >
           {STATUS_LABELS[order.status]}
@@ -282,50 +262,45 @@ export default function OrderDetailPage() {
         {[
           {
             icon: <ShoppingCart size={14} />,
-            label: "Tipe",
+            label: 'Tipe',
             value: ORDER_TYPE_LABELS[order.order_type],
           },
           {
             icon: <Table2 size={14} />,
-            label: "Meja",
-            value: order.table?.name ?? "—",
+            label: 'Meja',
+            value: order.table?.name ?? '—',
           },
           {
             icon: <User size={14} />,
-            label: "Kasir",
-            value: order.cashier?.name ?? "—",
+            label: 'Kasir',
+            value: order.cashier?.name ?? '—',
           },
           order.customer_name
             ? {
                 icon: <User size={14} />,
-                label: "Pelanggan",
+                label: 'Pelanggan',
                 value: order.customer_name,
               }
             : null,
           {
             icon: <Clock size={14} />,
-            label: "Pembayaran",
+            label: 'Pembayaran',
             value:
-              order.payment_status === "paid"
-                ? "Sudah bayar"
-                : order.payment_status === "refunded"
-                  ? "Direfund"
-                  : "Belum bayar",
+              order.payment_status === 'paid'
+                ? 'Sudah bayar'
+                : order.payment_status === 'refunded'
+                  ? 'Direfund'
+                  : 'Belum bayar',
           },
         ]
           .filter(Boolean)
           .map((item) => (
-            <div
-              key={item!.label}
-              className="bg-white rounded-xl border border-gray-200 px-4 py-3"
-            >
+            <div key={item!.label} className="bg-white rounded-xl border border-gray-200 px-4 py-3">
               <div className="flex items-center gap-1.5 text-gray-400 text-xs mb-1">
                 {item!.icon}
                 {item!.label}
               </div>
-              <p className="text-sm font-semibold text-gray-800">
-                {item!.value}
-              </p>
+              <p className="text-sm font-semibold text-gray-800">{item!.value}</p>
             </div>
           ))}
       </div>
@@ -349,14 +324,8 @@ export default function OrderDetailPage() {
                 {item.quantity}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-800">
-                  {item.menu_item_name}
-                </p>
-                {item.notes && (
-                  <p className="text-xs text-gray-400 italic mt-0.5">
-                    {item.notes}
-                  </p>
-                )}
+                <p className="text-sm font-medium text-gray-800">{item.menu_item_name}</p>
+                {item.notes && <p className="text-xs text-gray-400 italic mt-0.5">{item.notes}</p>}
                 <p className="text-xs text-gray-400 mt-0.5">
                   {formatCurrency(item.price_snapshot)} / pcs
                 </p>
@@ -399,68 +368,67 @@ export default function OrderDetailPage() {
       {nextStatuses.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {nextStatuses
-            .filter((s) => s !== "cancelled")
+            .filter((s) => s !== 'cancelled')
             .map((s) => {
-              const cfg = NEXT_STATUS_CONFIG[s];
-              if (!cfg) return null;
+              const cfg = NEXT_STATUS_CONFIG[s]
+              if (!cfg) return null
               return (
-                <button
+                <Button
                   key={s}
                   onClick={() => handleStatusUpdate(s)}
                   disabled={actionLoading}
                   className={cn(
-                    "inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition disabled:opacity-60",
                     cfg.color,
+                    'inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition'
                   )}
                 >
-                  {actionLoading ? (
-                    <Loader2 size={15} className="animate-spin" />
-                  ) : (
-                    cfg.icon
-                  )}
+                  {actionLoading ? <Loader2 size={15} className="animate-spin" /> : cfg.icon}
                   {cfg.label}
-                </button>
-              );
+                </Button>
+              )
             })}
 
-          {nextStatuses.includes("cancelled") && (
-            <button
+          {nextStatuses.includes('cancelled') && (
+            <Button
+              variant="danger"
               onClick={handleCancel}
               disabled={actionLoading}
-              className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold border border-red-200 text-red-600 hover:bg-red-50 transition disabled:opacity-60"
+              className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold"
             >
               <XCircle size={15} />
               Batalkan
-            </button>
+            </Button>
           )}
         </div>
       )}
 
       {/* ── Payment CTA ─────────────────────────────────── */}
-      {order.payment_status === "unpaid" && order.status !== "cancelled" && (
+      {order.payment_status === 'unpaid' && order.status !== 'cancelled' && (
         <div className="mt-3">
-          <button
+          <Button
+            variant="primary"
             onClick={() => navigate(`/orders/${order.id}/payment`)}
-            className="inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold bg-green-600 hover:bg-green-700 text-white transition"
+            className="inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold"
           >
             <Banknote size={16} />
             Proses Pembayaran
-          </button>
+          </Button>
         </div>
       )}
 
       {/* ── Invoice CTA ──────────────────────────────────── */}
-      {order.payment_status !== "unpaid" && (
+      {order.payment_status !== 'unpaid' && (
         <div className="mt-3">
-          <button
+          <Button
+            variant="secondary"
             onClick={() => navigate(`/orders/${order.id}/invoice`)}
-            className="inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold border border-gray-200 text-gray-700 hover:bg-gray-50 transition"
+            className="inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold"
           >
             <Receipt size={16} />
             Lihat Invoice
-          </button>
+          </Button>
         </div>
       )}
     </div>
-  );
+  )
 }

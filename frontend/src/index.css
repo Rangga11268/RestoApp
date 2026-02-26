@@ -1,7 +1,8 @@
-@import "tailwindcss";
+@import 'tailwindcss';
+@import './styles/tokens.css';
 
 @theme {
-  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --color-primary: #f97316;
   --color-primary-hover: #ea6c0a;
 }

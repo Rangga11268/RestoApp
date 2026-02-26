@@ -1,0 +1,32 @@
+/* Design tokens v1 - CSS Custom Properties */
+:root {
+  /* Colors */
+  --color-primary: #f97316; /* orange-500 */
+  --color-primary-600: #ea6c0a; /* orange-600 */
+  --color-muted: #6b7280; /* gray-500 */
+  --color-success: #16a34a; /* green-600 */
+  --color-info: #2563eb; /* blue-600 */
+  --color-warning: #f59e0b; /* amber-500 */
+  --color-danger: #dc2626; /* red-600 */
+
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05);
+  --shadow-md: 0 6px 18px rgba(16, 24, 40, 0.08);
+}
+
+/* Utility tokens for components (fallbacks for non-css-var use) */
+.btn-primary {
+  background-color: var(--color-primary);
+  color: white;
+}

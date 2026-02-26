@@ -1,52 +1,47 @@
-import { lazy, Suspense } from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import ProtectedRoute from "@/components/ProtectedRoute";
-import AppShell from "@/components/AppShell";
+import { lazy, Suspense } from 'react'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import ProtectedRoute from '@/components/ProtectedRoute'
+import AppShell from '@/components/AppShell'
 
 // Auth pages (eager loaded — fast initial paint)
-import LoginPage from "@/pages/auth/LoginPage";
-import RegisterPage from "@/pages/auth/RegisterPage";
-import ForgotPasswordPage from "@/pages/auth/ForgotPasswordPage";
-import ResetPasswordPage from "@/pages/auth/ResetPasswordPage";
+import LoginPage from '@/pages/auth/LoginPage'
+import RegisterPage from '@/pages/auth/RegisterPage'
+import ForgotPasswordPage from '@/pages/auth/ForgotPasswordPage'
+import ResetPasswordPage from '@/pages/auth/ResetPasswordPage'
 
 // App pages (lazy loaded)
-const DashboardPage = lazy(() => import("@/pages/app/DashboardPage"));
-const CategoriesPage = lazy(() => import("@/pages/app/CategoriesPage"));
-const MenuItemsPage = lazy(() => import("@/pages/app/MenuItemsPage"));
-const TablesPage = lazy(() => import("@/pages/app/TablesPage"));
-const SettingsPage = lazy(() => import("@/pages/app/SettingsPage"));
-const OrdersPage = lazy(() => import("@/pages/app/OrdersPage"));
-const OrderDetailPage = lazy(() => import("@/pages/app/OrderDetailPage"));
-const PaymentPage = lazy(() => import("@/pages/app/PaymentPage"));
-const InvoicePage = lazy(() => import("@/pages/app/InvoicePage"));
-const PaymentHistoryPage = lazy(() => import("@/pages/app/PaymentHistoryPage"));
-const ReportsPage = lazy(() => import("@/pages/app/ReportsPage"));
-const StaffPage = lazy(() => import("@/pages/app/StaffPage"));
-const SubscriptionPage = lazy(() => import("@/pages/app/SubscriptionPage"));
-const UnauthorizedPage = lazy(() => import("@/pages/UnauthorizedPage"));
+const DashboardPage = lazy(() => import('@/pages/app/DashboardPage'))
+const CategoriesPage = lazy(() => import('@/pages/app/CategoriesPage'))
+const MenuItemsPage = lazy(() => import('@/pages/app/MenuItemsPage'))
+const TablesPage = lazy(() => import('@/pages/app/TablesPage'))
+const SettingsPage = lazy(() => import('@/pages/app/SettingsPage'))
+const OrdersPage = lazy(() => import('@/pages/app/OrdersPage'))
+const OrderDetailPage = lazy(() => import('@/pages/app/OrderDetailPage'))
+const ComponentsPreviewPage = lazy(() => import('@/pages/dev/ComponentsPreviewPage'))
+const PaymentPage = lazy(() => import('@/pages/app/PaymentPage'))
+const InvoicePage = lazy(() => import('@/pages/app/InvoicePage'))
+const PaymentHistoryPage = lazy(() => import('@/pages/app/PaymentHistoryPage'))
+const ReportsPage = lazy(() => import('@/pages/app/ReportsPage'))
+const StaffPage = lazy(() => import('@/pages/app/StaffPage'))
+const SubscriptionPage = lazy(() => import('@/pages/app/SubscriptionPage'))
+const UnauthorizedPage = lazy(() => import('@/pages/UnauthorizedPage'))
 
 // Super Admin pages
-const SuperAdminDashboardPage = lazy(
-  () => import("@/pages/superadmin/SuperAdminDashboardPage"),
-);
-const SuperAdminRestaurantsPage = lazy(
-  () => import("@/pages/superadmin/SuperAdminRestaurantsPage"),
-);
-const SuperAdminLogsPage = lazy(
-  () => import("@/pages/superadmin/SuperAdminLogsPage"),
-);
+const SuperAdminDashboardPage = lazy(() => import('@/pages/superadmin/SuperAdminDashboardPage'))
+const SuperAdminRestaurantsPage = lazy(() => import('@/pages/superadmin/SuperAdminRestaurantsPage'))
+const SuperAdminLogsPage = lazy(() => import('@/pages/superadmin/SuperAdminLogsPage'))
 
 // Public pages (no auth)
-const PublicMenuPage = lazy(() => import("@/pages/public/PublicMenuPage"));
+const PublicMenuPage = lazy(() => import('@/pages/public/PublicMenuPage'))
 
 const Loader = () => (
   <div className="flex items-center justify-center h-full min-h-[200px]">
     <div className="w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" />
   </div>
-);
+)
 
 function ShellRoute({ children }: { children: React.ReactNode }) {
-  return <AppShell>{children}</AppShell>;
+  return <AppShell>{children}</AppShell>
 }
 
 export default function App() {
@@ -137,6 +132,14 @@ export default function App() {
               }
             />
             <Route
+              path="/dev/components"
+              element={
+                <ShellRoute>
+                  <ComponentsPreviewPage />
+                </ShellRoute>
+              }
+            />
+            <Route
               path="/payments"
               element={
                 <ShellRoute>
@@ -201,5 +204,5 @@ export default function App() {
         </Routes>
       </Suspense>
     </BrowserRouter>
-  );
+  )
 }

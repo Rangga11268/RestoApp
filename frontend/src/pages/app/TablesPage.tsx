@@ -5,6 +5,7 @@ import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import QRCode from 'react-qr-code'
 import Modal from '@/components/Modal'
+import { Button, Input } from '@/components/ui'
 import {
   getTables,
   createTable,
@@ -154,12 +155,9 @@ export default function TablesPage() {
           <h1 className="text-2xl font-bold text-gray-900">Meja</h1>
           <p className="text-sm text-gray-500 mt-0.5">{tables.length} meja terdaftar</p>
         </div>
-        <button
-          onClick={openCreate}
-          className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition"
-        >
+        <Button onClick={openCreate} className="flex items-center gap-2">
           <Plus size={16} /> Tambah Meja
-        </button>
+        </Button>
       </div>
 
       {/* Warning: akses via localhost — QR tidak bisa di-scan dari HP */}
@@ -188,12 +186,13 @@ export default function TablesPage() {
           <p className="text-gray-500 text-sm">
             Belum ada meja. Tambahkan meja agar pelanggan bisa scan QR.
           </p>
-          <button
+          <Button
             onClick={openCreate}
+            variant="ghost"
             className="mt-4 text-orange-500 hover:text-orange-600 text-sm font-medium"
           >
             + Tambah meja pertama
-          </button>
+          </Button>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -231,38 +230,38 @@ export default function TablesPage() {
                 )}
 
                 <div className="flex gap-2 mt-3 w-full">
-                  <button
+                  <Button
                     onClick={() => doRegenerate(t)}
                     disabled={regenerating === t.id}
-                    className="flex-1 flex items-center justify-center gap-1 text-xs border border-gray-200 rounded-lg py-1.5 hover:bg-gray-50 text-gray-600 disabled:opacity-50"
+                    variant="secondary"
+                    className="flex-1 flex items-center justify-center gap-1 text-xs py-1.5"
                   >
                     <RefreshCw size={12} className={regenerating === t.id ? 'animate-spin' : ''} />{' '}
                     QR Baru
-                  </button>
+                  </Button>
                   {t.qr_code && (
-                    <button
+                    <Button
                       onClick={() => setQrTarget(t)}
-                      className="flex-1 flex items-center justify-center gap-1 text-xs border border-gray-200 rounded-lg py-1.5 hover:bg-gray-50 text-gray-600"
+                      variant="secondary"
+                      className="flex-1 flex items-center justify-center gap-1 text-xs py-1.5"
                     >
                       <Download size={12} /> Download
-                    </button>
+                    </Button>
                   )}
                 </div>
               </div>
 
               <div className="border-t border-gray-100 px-3 py-2 flex justify-end gap-1">
-                <button
-                  onClick={() => openEdit(t)}
-                  className="p-1.5 rounded-lg hover:bg-blue-50 text-blue-500"
-                >
+                <Button variant="ghost" onClick={() => openEdit(t)} className="p-1.5 text-blue-500">
                   <Pencil size={13} />
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant="ghost"
                   onClick={() => handleDelete(t)}
-                  className="p-1.5 rounded-lg hover:bg-red-50 text-red-500"
+                  className="p-1.5 text-red-500"
                 >
                   <Trash2 size={13} />
-                </button>
+                </Button>
               </div>
             </div>
           ))}
@@ -279,11 +278,7 @@ export default function TablesPage() {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Nama Meja</label>
-            <input
-              {...register('name')}
-              placeholder="cth: Meja 1 / VIP-A"
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
-            />
+            <Input {...register('name')} placeholder="cth: Meja 1 / VIP-A" className="" />
             {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name.message}</p>}
           </div>
 
@@ -291,12 +286,7 @@ export default function TablesPage() {
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Kapasitas (orang)
             </label>
-            <input
-              {...register('capacity')}
-              type="number"
-              min={1}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
-            />
+            <Input {...register('capacity')} type="number" min={1} className="" />
             {errors.capacity && (
               <p className="text-xs text-red-500 mt-1">{errors.capacity.message}</p>
             )}
@@ -322,20 +312,17 @@ export default function TablesPage() {
           </label>
 
           <div className="flex gap-3 pt-2">
-            <button
+            <Button
               type="button"
+              variant="secondary"
               onClick={() => setModalOpen(false)}
-              className="flex-1 border border-gray-300 text-gray-600 py-2.5 rounded-lg text-sm hover:bg-gray-50"
+              className="flex-1"
             >
               Batal
-            </button>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="flex-1 bg-orange-500 hover:bg-orange-600 disabled:opacity-60 text-white py-2.5 rounded-lg text-sm font-medium"
-            >
+            </Button>
+            <Button type="submit" variant="primary" className="flex-1" disabled={isSubmitting}>
               {isSubmitting ? 'Menyimpan...' : editing ? 'Simpan Perubahan' : 'Tambah Meja'}
-            </button>
+            </Button>
           </div>
         </form>
       </Modal>
@@ -356,12 +343,13 @@ export default function TablesPage() {
             <div ref={qrModalRef} className="p-3 bg-white rounded-lg border border-gray-200">
               <QRCode value={buildQrUrl(qrTarget.qr_code)} size={200} level="M" />
             </div>
-            <button
+            <Button
               onClick={() => downloadQrSvg(qrModalRef, qrTarget.name)}
-              className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg text-sm font-medium"
+              variant="primary"
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium"
             >
               <Download size={14} /> Download SVG
-            </button>
+            </Button>
           </div>
         )}
       </Modal>

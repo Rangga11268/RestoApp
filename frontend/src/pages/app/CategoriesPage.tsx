@@ -4,6 +4,7 @@ import { useForm, type Resolver } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Modal from '@/components/Modal'
+import { Button, Input } from '@/components/ui'
 import {
   getCategories,
   createCategory,
@@ -101,12 +102,9 @@ export default function CategoriesPage() {
           <h1 className="text-2xl font-bold text-gray-900">Kategori Menu</h1>
           <p className="text-sm text-gray-500 mt-0.5">{categories.length} kategori terdaftar</p>
         </div>
-        <button
-          onClick={openCreate}
-          className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition"
-        >
+        <Button onClick={openCreate} className="flex items-center gap-2">
           <Plus size={16} /> Tambah Kategori
-        </button>
+        </Button>
       </div>
 
       {loading ? (
@@ -117,12 +115,9 @@ export default function CategoriesPage() {
         <div className="text-center py-16 bg-white rounded-xl border border-gray-200">
           <div className="text-4xl mb-3">📂</div>
           <p className="text-gray-500 text-sm">Belum ada kategori menu.</p>
-          <button
-            onClick={openCreate}
-            className="mt-4 text-orange-500 hover:text-orange-600 text-sm font-medium"
-          >
+          <Button variant="ghost" onClick={openCreate} className="mt-4">
             + Tambah kategori pertama
-          </button>
+          </Button>
         </div>
       ) : (
         <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
@@ -165,18 +160,20 @@ export default function CategoriesPage() {
                   </td>
                   <td className="px-4 py-3 text-right">
                     <div className="flex justify-end gap-2">
-                      <button
+                      <Button
+                        variant="ghost"
                         onClick={() => openEdit(cat)}
-                        className="p-1.5 rounded-lg hover:bg-blue-50 text-blue-500 transition"
+                        className="p-1.5 text-blue-500"
                       >
                         <Pencil size={14} />
-                      </button>
-                      <button
+                      </Button>
+                      <Button
+                        variant="ghost"
                         onClick={() => handleDelete(cat)}
-                        className="p-1.5 rounded-lg hover:bg-red-50 text-red-500 transition"
+                        className="p-1.5 text-red-500"
                       >
                         <Trash2 size={14} />
-                      </button>
+                      </Button>
                     </div>
                   </td>
                 </tr>
@@ -196,11 +193,7 @@ export default function CategoriesPage() {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Nama Kategori</label>
-            <input
-              {...register('name')}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
-              placeholder="cth: Makanan Utama"
-            />
+            <Input {...register('name')} placeholder="cth: Makanan Utama" />
             {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name.message}</p>}
           </div>
           <div>
@@ -216,12 +209,7 @@ export default function CategoriesPage() {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Urutan tampil</label>
-            <input
-              {...register('sort_order')}
-              type="number"
-              min={0}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
-            />
+            <Input {...register('sort_order')} type="number" min={0} />
           </div>
           <div className="flex items-center gap-2">
             <input {...register('is_active')} type="checkbox" id="is_active" className="rounded" />
@@ -230,20 +218,17 @@ export default function CategoriesPage() {
             </label>
           </div>
           <div className="flex gap-3 pt-2">
-            <button
+            <Button
               type="button"
+              variant="secondary"
               onClick={() => setModalOpen(false)}
-              className="flex-1 border border-gray-300 text-gray-600 py-2 rounded-lg text-sm hover:bg-gray-50 transition"
+              className="flex-1"
             >
               Batal
-            </button>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="flex-1 bg-orange-500 hover:bg-orange-600 disabled:opacity-60 text-white py-2 rounded-lg text-sm font-medium transition"
-            >
+            </Button>
+            <Button type="submit" variant="primary" className="flex-1" disabled={isSubmitting}>
               {isSubmitting ? 'Menyimpan...' : editing ? 'Simpan Perubahan' : 'Tambah'}
-            </button>
+            </Button>
           </div>
         </form>
       </Modal>

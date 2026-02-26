@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import api from "@/lib/axios";
 import { cn } from "@/lib/utils";
+import { Button, Input } from '@/components/ui'
 
 type CartMap = Map<number, number>;
 
@@ -172,21 +173,22 @@ function CartPanel(props: OrderFormProps) {
                 </p>
               </div>
               <div className="flex items-center gap-1.5 bg-gray-50 rounded-full px-1 py-1 border border-gray-100 flex-shrink-0">
-                <button
+                <Button
                   onClick={() => onUpdateQty(item.id, item.qty - 1)}
-                  className="w-5 h-5 rounded-full bg-white shadow-sm flex items-center justify-center text-gray-500 hover:text-orange-600 transition-colors"
+                  variant="ghost"
+                  className="w-5 h-5 rounded-full bg-white shadow-sm flex items-center justify-center text-gray-500 hover:text-orange-600 transition-colors p-0"
                 >
                   <Minus size={11} />
-                </button>
+                </Button>
                 <span className="text-xs font-bold text-gray-900 w-3 text-center">
                   {item.qty}
                 </span>
-                <button
+                <Button
                   onClick={() => onUpdateQty(item.id, item.qty + 1)}
-                  className="w-5 h-5 rounded-full bg-orange-500 flex items-center justify-center text-white hover:bg-orange-600 transition-colors"
+                  className="w-5 h-5 rounded-full bg-orange-500 flex items-center justify-center text-white hover:bg-orange-600 transition-colors p-0"
                 >
                   <Plus size={11} />
-                </button>
+                </Button>
               </div>
             </div>
           ))
@@ -199,13 +201,13 @@ function CartPanel(props: OrderFormProps) {
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <User size={13} className="text-gray-400" />
           </div>
-          <input
-            type="text"
-            value={customerName}
-            onChange={(e) => setCustomerName(e.target.value)}
-            placeholder="Nama pemesan (Opsional)"
-            className="w-full pl-8 pr-3 py-2 bg-white border border-gray-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all"
-          />
+                <Input
+                  type="text"
+                  value={customerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                  placeholder="Nama pemesan (Opsional)"
+                  className="w-full pl-8 pr-3 py-2 text-xs"
+                />
         </div>
         <div className="relative">
           <div className="absolute top-2.5 left-3 pointer-events-none">
@@ -230,18 +232,15 @@ function CartPanel(props: OrderFormProps) {
             {error}
           </p>
         )}
-        <button
+        <Button
           onClick={handleOrder}
           disabled={loading || cartItems.length === 0}
-          className="w-full bg-orange-500 hover:bg-orange-600 text-white rounded-xl py-2.5 font-bold text-xs transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-orange-500/25"
+          className="w-full flex items-center justify-center gap-2 py-2.5 text-xs font-bold"
+          variant="primary"
         >
-          {loading ? (
-            <Loader2 size={14} className="animate-spin" />
-          ) : (
-            <Receipt size={14} />
-          )}
+          {loading ? <Loader2 size={14} className="animate-spin" /> : <Receipt size={14} />}
           {loading ? "Mengirim…" : "Buat Pesanan"}
-        </button>
+        </Button>
       </div>
     </div>
   );
@@ -286,12 +285,13 @@ function CartDrawer({
               {cartItems.length} item terpilih
             </p>
           </div>
-          <button
+          <Button
+            variant="ghost"
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-gray-200 transition-colors"
+            className="w-8 h-8 rounded-full p-0 text-gray-500 hover:bg-gray-200"
           >
             <X size={18} />
-          </button>
+          </Button>
         </div>
         <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
           <div className="flex items-center gap-2 bg-orange-50 text-orange-700 px-3 py-2 rounded-lg text-sm font-semibold">
@@ -320,21 +320,22 @@ function CartDrawer({
                 </p>
               </div>
               <div className="flex items-center gap-2 bg-gray-50 rounded-full px-1.5 py-1 border border-gray-100 flex-shrink-0">
-                <button
+                <Button
                   onClick={() => onUpdateQty(item.id, item.qty - 1)}
-                  className="w-7 h-7 rounded-full bg-white shadow-sm flex items-center justify-center text-gray-600 hover:text-orange-600 transition-colors"
+                  variant="ghost"
+                  className="w-7 h-7 rounded-full bg-white shadow-sm flex items-center justify-center text-gray-600 hover:text-orange-600 transition-colors p-0"
                 >
                   <Minus size={14} />
-                </button>
+                </Button>
                 <span className="text-sm font-bold text-gray-900 w-4 text-center">
                   {item.qty}
                 </span>
-                <button
+                <Button
                   onClick={() => onUpdateQty(item.id, item.qty + 1)}
-                  className="w-7 h-7 rounded-full bg-orange-500 flex items-center justify-center text-white hover:bg-orange-600 transition-colors"
+                  className="w-7 h-7 rounded-full bg-orange-500 flex items-center justify-center text-white hover:bg-orange-600 transition-colors p-0"
                 >
                   <Plus size={14} />
-                </button>
+                </Button>
               </div>
             </div>
           ))}
@@ -344,12 +345,12 @@ function CartDrawer({
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <User size={16} className="text-gray-400" />
             </div>
-            <input
+            <Input
               type="text"
               value={customerName}
               onChange={(e) => setCustomerName(e.target.value)}
               placeholder="Nama Pemesan (Opsional)"
-              className="w-full pl-10 pr-3 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all"
+              className="w-full pl-10 pr-3 py-2.5 text-sm"
             />
           </div>
           <div className="relative">
@@ -371,19 +372,14 @@ function CartDrawer({
                 {fmt(subtotal, currency)}
               </p>
             </div>
-            <button
+            <Button
               onClick={handleOrder}
               disabled={loading || cartItems.length === 0}
-              className="bg-orange-500 hover:bg-orange-600 text-white rounded-xl px-6 py-3 font-bold text-sm transition-all disabled:opacity-60 flex items-center justify-center gap-2 shadow-lg shadow-orange-500/30"
+              variant="primary"
+              className="px-6 py-3 font-bold text-sm flex items-center justify-center gap-2"
             >
-              {loading ? (
-                <Loader2 size={18} className="animate-spin" />
-              ) : (
-                <>
-                  Pesan <ChevronRight size={18} />
-                </>
-              )}
-            </button>
+              {loading ? <Loader2 size={18} className="animate-spin" /> : <>Pesan <ChevronRight size={18} /></>}
+            </Button>
           </div>
           {error && (
             <p className="text-xs text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2 text-center">
@@ -424,12 +420,9 @@ function SuccessScreen({
             {orderNumber}
           </div>
         </div>
-        <button
-          onClick={onReset}
-          className="w-full max-w-xs py-3.5 bg-orange-500 text-white rounded-xl text-sm font-bold hover:bg-orange-600 shadow-lg shadow-orange-500/30 transition-all"
-        >
-          Pesan Menu Lainnya
-        </button>
+            <Button onClick={onReset} variant="primary" className="w-full max-w-xs py-3.5">
+              Pesan Menu Lainnya
+            </Button>
       </div>
     </div>
   );
@@ -496,29 +489,31 @@ function MenuCard({
             )}
           </div>
           {qty === 0 ? (
-            <button
+            <Button
               onClick={() => onUpdateQty(item.id, 1)}
+              variant="ghost"
               className="bg-orange-50 text-orange-600 hover:bg-orange-500 hover:text-white text-xs font-bold px-3 py-1.5 rounded-full transition-all border border-orange-200 hover:border-orange-500"
             >
               + Tambah
-            </button>
+            </Button>
           ) : (
             <div className="flex items-center gap-2 bg-gray-50 rounded-full p-1 border border-gray-200">
-              <button
+              <Button
                 onClick={() => onUpdateQty(item.id, qty - 1)}
-                className="w-6 h-6 rounded-full bg-white shadow-sm flex items-center justify-center text-gray-600 hover:text-orange-600 transition-colors"
+                variant="ghost"
+                className="w-6 h-6 rounded-full bg-white shadow-sm flex items-center justify-center text-gray-600 hover:text-orange-600 transition-colors p-0"
               >
                 <Minus size={12} />
-              </button>
+              </Button>
               <span className="text-xs font-bold text-gray-900 w-3 text-center">
                 {qty}
               </span>
-              <button
+              <Button
                 onClick={() => onUpdateQty(item.id, qty + 1)}
-                className="w-6 h-6 rounded-full bg-orange-500 flex items-center justify-center text-white hover:bg-orange-600 transition-colors"
+                className="w-6 h-6 rounded-full bg-orange-500 flex items-center justify-center text-white hover:bg-orange-600 transition-colors p-0"
               >
                 <Plus size={12} />
-              </button>
+              </Button>
             </div>
           )}
         </div>
@@ -707,18 +702,18 @@ export default function PublicMenuPage() {
               Kategori
             </p>
             {allCats.map((c) => (
-              <button
+              <Button
                 key={c.id}
                 onClick={() => setActiveTab(c.id)}
                 className={cn(
                   "w-full text-left px-3 py-2.5 rounded-xl text-sm font-semibold transition-all",
                   activeTab === c.id
                     ? "bg-orange-500 text-white shadow-sm"
-                    : "text-gray-600 hover:bg-gray-50 hover:text-gray-900",
+                    : "bg-orange-50 text-orange-700 hover:bg-orange-100",
                 )}
               >
                 {c.name}
-              </button>
+              </Button>
             ))}
           </nav>
         </aside>
@@ -771,18 +766,18 @@ export default function PublicMenuPage() {
             >
               <div className="flex gap-2 px-5 py-3 overflow-x-auto scrollbar-hide snap-x">
                 {allCats.map((c) => (
-                  <button
+                  <Button
                     key={c.id}
                     onClick={() => setActiveTab(c.id)}
                     className={cn(
                       "flex-shrink-0 px-4 py-2 rounded-full text-xs font-bold transition-all snap-start",
                       activeTab === c.id
-                        ? "bg-gray-900 text-white shadow-md"
-                        : "bg-white border border-gray-200 text-gray-600 hover:bg-gray-50",
+                        ? "bg-orange-500 text-white shadow-md"
+                        : "bg-orange-50 text-orange-700 border border-orange-100 hover:bg-orange-100",
                     )}
                   >
                     {c.name}
-                  </button>
+                  </Button>
                 ))}
               </div>
             </div>
@@ -850,7 +845,7 @@ export default function PublicMenuPage() {
       {/* ── MOBILE floating cart button ──────────────────────────────── */}
       {cartCount > 0 && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-full max-w-sm px-5 z-20 lg:hidden">
-          <button
+          <Button
             onClick={() => setCartOpen(true)}
             className="w-full bg-gray-900 hover:bg-black text-white rounded-2xl p-1.5 flex items-center justify-between shadow-2xl shadow-gray-900/25 transition-transform active:scale-[0.98]"
           >
@@ -873,7 +868,7 @@ export default function PublicMenuPage() {
             <div className="bg-orange-500 text-white px-5 py-3 rounded-xl font-bold text-sm flex items-center gap-1">
               Keranjang <ChevronRight size={16} />
             </div>
-          </button>
+          </Button>
         </div>
       )}
 

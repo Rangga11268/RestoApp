@@ -4,6 +4,7 @@ import { useForm, type Resolver } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Modal from '@/components/Modal'
+import { Button, Input } from '@/components/ui'
 import {
   getMenuItems,
   createMenuItem,
@@ -170,12 +171,9 @@ export default function MenuItemsPage() {
               </option>
             ))}
           </select>
-          <button
-            onClick={openCreate}
-            className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition"
-          >
+          <Button onClick={openCreate} className="flex items-center gap-2">
             <Plus size={16} /> Tambah Menu
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -189,12 +187,9 @@ export default function MenuItemsPage() {
           <p className="text-gray-500 text-sm">
             Belum ada menu. Mulai tambahkan menu restoran Anda.
           </p>
-          <button
-            onClick={openCreate}
-            className="mt-4 text-orange-500 hover:text-orange-600 text-sm font-medium"
-          >
+          <Button variant="ghost" onClick={openCreate} className="mt-4">
             + Tambah menu pertama
-          </button>
+          </Button>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -270,11 +265,7 @@ export default function MenuItemsPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="sm:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-1">Nama Menu</label>
-              <input
-                {...register('name')}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
-                placeholder="cth: Nasi Goreng Spesial"
-              />
+              <Input {...register('name')} placeholder="cth: Nasi Goreng Spesial" />
               {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name.message}</p>}
             </div>
 
@@ -298,13 +289,7 @@ export default function MenuItemsPage() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Harga (Rp)</label>
-              <input
-                {...register('price')}
-                type="number"
-                min={0}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
-                placeholder="0"
-              />
+              <Input {...register('price')} type="number" min={0} placeholder="0" />
               {errors.price && <p className="text-xs text-red-500 mt-1">{errors.price.message}</p>}
             </div>
 
@@ -323,12 +308,7 @@ export default function MenuItemsPage() {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Waktu Masak (menit)
               </label>
-              <input
-                {...register('preparation_time')}
-                type="number"
-                min={0}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
-              />
+              <Input {...register('preparation_time')} type="number" min={0} />
             </div>
 
             <div>
@@ -367,20 +347,17 @@ export default function MenuItemsPage() {
           </div>
 
           <div className="flex gap-3 pt-2">
-            <button
+            <Button
+              variant="secondary"
               type="button"
               onClick={() => setModalOpen(false)}
-              className="flex-1 border border-gray-300 text-gray-600 py-2.5 rounded-lg text-sm hover:bg-gray-50 transition"
+              className="flex-1"
             >
               Batal
-            </button>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="flex-1 bg-orange-500 hover:bg-orange-600 disabled:opacity-60 text-white py-2.5 rounded-lg text-sm font-medium transition"
-            >
+            </Button>
+            <Button variant="primary" type="submit" className="flex-1" disabled={isSubmitting}>
               {isSubmitting ? 'Menyimpan...' : editing ? 'Simpan Perubahan' : 'Tambah Menu'}
-            </button>
+            </Button>
           </div>
         </form>
       </Modal>

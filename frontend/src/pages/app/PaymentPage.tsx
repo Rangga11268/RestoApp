@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useEffect, useRef, useState } from 'react'
+import { useParams, useNavigate, Link } from 'react-router-dom'
 import {
   ArrowLeft,
   CheckCircle2,
@@ -10,76 +10,77 @@ import {
   Smartphone,
   Building2,
   AlertCircle,
-} from "lucide-react";
-import { getOrder, type Order } from "@/services/orderService";
+} from 'lucide-react'
+import { Button, Input } from '@/components/ui'
+import { getOrder, type Order } from '@/services/orderService'
 import {
   processPayment,
   getMidtransSnapToken,
   METHOD_LABELS,
   type PaymentMethod,
-} from "@/services/paymentService";
-import { cn } from "@/lib/utils";
+} from '@/services/paymentService'
+import { cn } from '@/lib/utils'
 
 // ─── Helpers ─────────────────────────────────────────────
 
 function formatIDR(n: number) {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
+  return new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
     minimumFractionDigits: 0,
-  }).format(n);
+  }).format(n)
 }
 
 function formatNumber(n: number) {
-  return new Intl.NumberFormat("id-ID").format(n);
+  return new Intl.NumberFormat('id-ID').format(n)
 }
 
 // ─── Method button ────────────────────────────────────────
 
 interface MethodOption {
-  method: PaymentMethod;
-  label: string;
-  icon: React.ReactNode;
-  desc: string;
+  method: PaymentMethod
+  label: string
+  icon: React.ReactNode
+  desc: string
 }
 
 const METHOD_OPTIONS: MethodOption[] = [
   {
-    method: "cash",
-    label: "Tunai",
+    method: 'cash',
+    label: 'Tunai',
     icon: <Banknote size={20} />,
-    desc: "Hitung kembalian otomatis",
+    desc: 'Hitung kembalian otomatis',
   },
   {
-    method: "qris",
-    label: "QRIS",
+    method: 'qris',
+    label: 'QRIS',
     icon: <Smartphone size={20} />,
-    desc: "GoPay, OVO, Dana, dll",
+    desc: 'GoPay, OVO, Dana, dll',
   },
   {
-    method: "debit_card",
-    label: "Kartu Debit",
+    method: 'debit_card',
+    label: 'Kartu Debit',
     icon: <CreditCard size={20} />,
-    desc: "Visa / Mastercard debit",
+    desc: 'Visa / Mastercard debit',
   },
   {
-    method: "credit_card",
-    label: "Kartu Kredit",
+    method: 'credit_card',
+    label: 'Kartu Kredit',
     icon: <CreditCard size={20} />,
-    desc: "Visa / Mastercard credit",
+    desc: 'Visa / Mastercard credit',
   },
   {
-    method: "transfer",
-    label: "Transfer Bank",
+    method: 'transfer',
+    label: 'Transfer Bank',
     icon: <Building2 size={20} />,
-    desc: "BCA, Mandiri, BRI, dll",
+    desc: 'BCA, Mandiri, BRI, dll',
   },
-];
+]
 
 // ─── Quick cash buttons ───────────────────────────────────
 
 function quickAmounts(total: number): number[] {
-  const ceil = Math.ceil(total / 1000) * 1000;
+  const ceil = Math.ceil(total / 1000) * 1000
   return [
     ceil,
     Math.ceil(total / 5000) * 5000,
@@ -90,7 +91,7 @@ function quickAmounts(total: number): number[] {
   ]
     .filter((v) => v >= total)
     .filter((v, i, a) => a.indexOf(v) === i)
-    .slice(0, 5);
+    .slice(0, 5)
 }
 
 // ─── Success overlay ──────────────────────────────────────
@@ -101,10 +102,10 @@ function SuccessOverlay({
   onPrint,
   onDone,
 }: {
-  order: Order;
-  changeAmount: number;
-  onPrint: () => void;
-  onDone: () => void;
+  order: Order
+  changeAmount: number
+  onPrint: () => void
+  onDone: () => void
 }) {
   return (
     <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
@@ -112,152 +113,139 @@ function SuccessOverlay({
         <div className="flex items-center justify-center w-16 h-16 rounded-full bg-green-100 mx-auto mb-4">
           <CheckCircle2 size={36} className="text-green-600" />
         </div>
-        <h2 className="text-xl font-bold text-gray-900 mb-1">
-          Pembayaran Berhasil!
-        </h2>
-        <p className="text-gray-500 text-sm mb-5">
-          {order.order_number} telah lunas
-        </p>
+        <h2 className="text-xl font-bold text-gray-900 mb-1">Pembayaran Berhasil!</h2>
+        <p className="text-gray-500 text-sm mb-5">{order.order_number} telah lunas</p>
 
         {changeAmount > 0 && (
           <div className="bg-green-50 rounded-xl p-4 mb-5 text-left">
             <div className="text-xs text-gray-500">Kembalian</div>
-            <div className="text-2xl font-bold text-green-600">
-              {formatIDR(changeAmount)}
-            </div>
+            <div className="text-2xl font-bold text-green-600">{formatIDR(changeAmount)}</div>
           </div>
         )}
 
         <div className="flex gap-3">
-          <button
+          <Button
+            variant="secondary"
             onClick={onPrint}
-            className="flex-1 flex items-center justify-center gap-2 border border-gray-200 text-gray-700 hover:bg-gray-50 rounded-xl py-2.5 text-sm font-medium transition"
+            className="flex-1 flex items-center justify-center gap-2"
           >
             <Printer size={15} /> Invoice
-          </button>
-          <button
-            onClick={onDone}
-            className="flex-1 bg-orange-500 hover:bg-orange-600 text-white rounded-xl py-2.5 text-sm font-medium transition"
-          >
+          </Button>
+          <Button variant="primary" onClick={onDone} className="flex-1">
             Selesai
-          </button>
+          </Button>
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 // ─── Main Page ────────────────────────────────────────────
 
 export default function PaymentPage() {
-  const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>()
+  const navigate = useNavigate()
 
-  const [order, setOrder] = useState<Order | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [order, setOrder] = useState<Order | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  const [method, setMethod] = useState<PaymentMethod>("cash");
-  const [cashInput, setCashInput] = useState("");
-  const [txRef, setTxRef] = useState("");
-  const [notes, setNotes] = useState("");
+  const [method, setMethod] = useState<PaymentMethod>('cash')
+  const [cashInput, setCashInput] = useState('')
+  const [txRef, setTxRef] = useState('')
+  const [notes, setNotes] = useState('')
 
-  const [processing, setProcessing] = useState(false);
-  const [processError, setProcessError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
-  const [paidOrder, setPaidOrder] = useState<Order | null>(null);
-  const [changeAmount, setChangeAmount] = useState(0);
+  const [processing, setProcessing] = useState(false)
+  const [processError, setProcessError] = useState<string | null>(null)
+  const [success, setSuccess] = useState(false)
+  const [paidOrder, setPaidOrder] = useState<Order | null>(null)
+  const [changeAmount, setChangeAmount] = useState(0)
 
-  const [snapLoading, setSnapLoading] = useState(false);
-  const snapScriptRef = useRef<HTMLScriptElement | null>(null);
+  const [snapLoading, setSnapLoading] = useState(false)
+  const snapScriptRef = useRef<HTMLScriptElement | null>(null)
 
   // Load order
   useEffect(() => {
-    if (!id) return;
-    setLoading(true);
+    if (!id) return
+    setLoading(true)
     getOrder(Number(id))
       .then((o) => {
-        if (o.payment_status === "paid") {
-          navigate(`/orders/${id}/invoice`, { replace: true });
-          return;
+        if (o.payment_status === 'paid') {
+          navigate(`/orders/${id}/invoice`, { replace: true })
+          return
         }
-        setOrder(o);
+        setOrder(o)
       })
-      .catch(() => setError("Pesanan tidak ditemukan."))
-      .finally(() => setLoading(false));
-  }, [id, navigate]);
+      .catch(() => setError('Pesanan tidak ditemukan.'))
+      .finally(() => setLoading(false))
+  }, [id, navigate])
 
   // Derive change amount live
   useEffect(() => {
-    if (!order) return;
-    const cash =
-      parseFloat(cashInput.replace(/\./g, "").replace(",", ".")) || 0;
-    setChangeAmount(Math.max(0, cash - Number(order.total)));
-  }, [cashInput, order]);
+    if (!order) return
+    const cash = parseFloat(cashInput.replace(/\./g, '').replace(',', '.')) || 0
+    setChangeAmount(Math.max(0, cash - Number(order.total)))
+  }, [cashInput, order])
 
   // ── Handle Midtrans Snap ──────────────────────────────
 
   async function handleQris() {
-    if (!order) return;
-    setSnapLoading(true);
-    setProcessError(null);
+    if (!order) return
+    setSnapLoading(true)
+    setProcessError(null)
     try {
-      const { snap_token, client_key, snap_url } = await getMidtransSnapToken(
-        order.id,
-      );
+      const { snap_token, client_key, snap_url } = await getMidtransSnapToken(order.id)
 
       // Dynamically load snap.js if not yet loaded
       if (!snapScriptRef.current) {
-        const script = document.createElement("script");
-        script.src = snap_url;
-        script.setAttribute("data-client-key", client_key);
-        document.body.appendChild(script);
-        snapScriptRef.current = script;
-        await new Promise((resolve) => (script.onload = resolve));
+        const script = document.createElement('script')
+        script.src = snap_url
+        script.setAttribute('data-client-key', client_key)
+        document.body.appendChild(script)
+        snapScriptRef.current = script
+        await new Promise((resolve) => (script.onload = resolve))
       }
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (window as any).snap.pay(snap_token, {
+      ;(window as any).snap.pay(snap_token, {
         onSuccess: async (_result: unknown) => {
           // Re-fetch order to confirm paid status
-          const updated = await getOrder(order.id);
-          setPaidOrder(updated);
-          setChangeAmount(0);
-          setSuccess(true);
+          const updated = await getOrder(order.id)
+          setPaidOrder(updated)
+          setChangeAmount(0)
+          setSuccess(true)
         },
         onPending: () => {
-          setProcessError(
-            "Pembayaran masih menunggu konfirmasi dari Midtrans.",
-          );
+          setProcessError('Pembayaran masih menunggu konfirmasi dari Midtrans.')
         },
         onError: () => {
-          setProcessError("Pembayaran gagal. Coba lagi.");
+          setProcessError('Pembayaran gagal. Coba lagi.')
         },
         onClose: () => {
           // User closed the popup — no action
         },
-      });
+      })
     } catch (e: unknown) {
       const msg =
-        (e as { response?: { data?: { message?: string } } })?.response?.data
-          ?.message ?? "Gagal membuka QRIS. Coba lagi.";
-      setProcessError(msg);
+        (e as { response?: { data?: { message?: string } } })?.response?.data?.message ??
+        'Gagal membuka QRIS. Coba lagi.'
+      setProcessError(msg)
     } finally {
-      setSnapLoading(false);
+      setSnapLoading(false)
     }
   }
 
   // ── Handle direct payment (cash / card / transfer) ────
 
   async function handlePay() {
-    if (!order) return;
-    setProcessing(true);
-    setProcessError(null);
+    if (!order) return
+    setProcessing(true)
+    setProcessError(null)
 
     const cashValue =
-      method === "cash"
-        ? parseFloat(cashInput.replace(/\./g, "").replace(",", ".")) || 0
-        : Number(order.total);
+      method === 'cash'
+        ? parseFloat(cashInput.replace(/\./g, '').replace(',', '.')) || 0
+        : Number(order.total)
 
     try {
       const updatedOrder = await processPayment({
@@ -266,19 +254,17 @@ export default function PaymentPage() {
         amount: cashValue,
         transaction_ref: txRef || undefined,
         notes: notes || undefined,
-      });
-      setPaidOrder(updatedOrder);
-      setChangeAmount(
-        method === "cash" ? Math.max(0, cashValue - Number(order.total)) : 0,
-      );
-      setSuccess(true);
+      })
+      setPaidOrder(updatedOrder)
+      setChangeAmount(method === 'cash' ? Math.max(0, cashValue - Number(order.total)) : 0)
+      setSuccess(true)
     } catch (e: unknown) {
       const msg =
-        (e as { response?: { data?: { message?: string } } })?.response?.data
-          ?.message ?? "Gagal memproses pembayaran.";
-      setProcessError(msg);
+        (e as { response?: { data?: { message?: string } } })?.response?.data?.message ??
+        'Gagal memproses pembayaran.'
+      setProcessError(msg)
     } finally {
-      setProcessing(false);
+      setProcessing(false)
     }
   }
 
@@ -287,15 +273,13 @@ export default function PaymentPage() {
       <div className="flex items-center justify-center py-20 text-gray-400">
         <Loader2 size={24} className="animate-spin mr-2" /> Memuat pesanan…
       </div>
-    );
+    )
   }
 
   if (error || !order) {
     return (
       <div className="max-w-lg mx-auto">
-        <p className="text-sm text-red-500 mb-3">
-          {error ?? "Tidak ditemukan."}
-        </p>
+        <p className="text-sm text-red-500 mb-3">{error ?? 'Tidak ditemukan.'}</p>
         <Link
           to="/orders"
           className="text-sm text-orange-600 hover:underline flex items-center gap-1"
@@ -303,16 +287,14 @@ export default function PaymentPage() {
           <ArrowLeft size={14} /> Kembali ke pesanan
         </Link>
       </div>
-    );
+    )
   }
 
-  const total = Number(order.total);
-  const isQris = method === "qris";
-  const isNonCash = ["debit_card", "credit_card", "transfer"].includes(method);
-  const cashValue =
-    parseFloat(cashInput.replace(/\./g, "").replace(",", ".")) || 0;
-  const cashInsufficient =
-    method === "cash" && cashValue < total && cashInput !== "";
+  const total = Number(order.total)
+  const isQris = method === 'qris'
+  const isNonCash = ['debit_card', 'credit_card', 'transfer'].includes(method)
+  const cashValue = parseFloat(cashInput.replace(/\./g, '').replace(',', '.')) || 0
+  const cashInsufficient = method === 'cash' && cashValue < total && cashInput !== ''
 
   return (
     <>
@@ -322,7 +304,7 @@ export default function PaymentPage() {
           order={paidOrder}
           changeAmount={changeAmount}
           onPrint={() => navigate(`/orders/${paidOrder.id}/invoice`)}
-          onDone={() => navigate("/orders")}
+          onDone={() => navigate('/orders')}
         />
       )}
 
@@ -335,9 +317,7 @@ export default function PaymentPage() {
           <ArrowLeft size={15} /> Detail Pesanan
         </Link>
 
-        <h1 className="text-xl font-bold text-gray-900 mb-6">
-          Proses Pembayaran
-        </h1>
+        <h1 className="text-xl font-bold text-gray-900 mb-6">Proses Pembayaran</h1>
 
         {/* Order summary */}
         <div className="bg-white rounded-xl border border-gray-200 mb-4 overflow-hidden">
@@ -350,8 +330,7 @@ export default function PaymentPage() {
             {order.items?.map((item) => (
               <div key={item.id} className="flex justify-between text-sm">
                 <span className="text-gray-700">
-                  {item.menu_item_name}{" "}
-                  <span className="text-gray-400">×{item.quantity}</span>
+                  {item.menu_item_name} <span className="text-gray-400">×{item.quantity}</span>
                 </span>
                 <span className="text-gray-900 font-medium">
                   {formatIDR(Number(item.subtotal))}
@@ -392,40 +371,48 @@ export default function PaymentPage() {
           </div>
           <div className="p-4 grid grid-cols-2 sm:grid-cols-3 gap-2">
             {METHOD_OPTIONS.map((opt) => (
-              <button
+              <Button
                 key={opt.method}
                 onClick={() => setMethod(opt.method)}
+                variant={method === opt.method ? 'primary' : 'ghost'}
                 className={cn(
-                  "flex flex-col items-start gap-0.5 p-3 rounded-xl border-2 transition text-left",
+                  'flex flex-col items-start gap-0.5 p-3 rounded-xl border-2 transition text-left',
                   method === opt.method
-                    ? "border-orange-400 bg-orange-50"
-                    : "border-gray-200 hover:border-gray-300 bg-white",
+                    ? 'border-orange-400 bg-orange-50'
+                    : 'border-gray-200 hover:border-gray-300 bg-white'
                 )}
               >
                 <span
                   className={cn(
-                    "text-lg mb-0.5",
-                    method === opt.method ? "text-orange-500" : "text-gray-500",
+                    'text-lg mb-0.5',
+                    method === opt.method ? 'text-white' : 'text-gray-500'
                   )}
                 >
                   {opt.icon}
                 </span>
                 <span
                   className={cn(
-                    "text-sm font-semibold",
-                    method === opt.method ? "text-orange-700" : "text-gray-800",
+                    'text-sm font-semibold',
+                    method === opt.method ? 'text-white' : 'text-gray-800'
                   )}
                 >
                   {opt.label}
                 </span>
-                <span className="text-[11px] text-gray-400">{opt.desc}</span>
-              </button>
+                <span
+                  className={cn(
+                    'text-[11px]',
+                    method === opt.method ? 'text-white/70' : 'text-gray-400'
+                  )}
+                >
+                  {opt.desc}
+                </span>
+              </Button>
             ))}
           </div>
         </div>
 
         {/* Cash input */}
-        {method === "cash" && (
+        {method === 'cash' && (
           <div className="bg-white rounded-xl border border-gray-200 mb-4 overflow-hidden">
             <div className="px-5 py-3 border-b border-gray-100 bg-gray-50">
               <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
@@ -437,20 +424,20 @@ export default function PaymentPage() {
                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">
                   Rp
                 </span>
-                <input
+                <Input
                   type="text"
                   inputMode="numeric"
                   placeholder={formatNumber(total)}
                   value={cashInput}
                   onChange={(e) => {
-                    const raw = e.target.value.replace(/[^0-9]/g, "");
-                    setCashInput(raw ? formatNumber(Number(raw)) : "");
+                    const raw = e.target.value.replace(/[^0-9]/g, '')
+                    setCashInput(raw ? formatNumber(Number(raw)) : '')
                   }}
                   className={cn(
-                    "w-full border rounded-xl pl-10 pr-4 py-3 text-base font-semibold focus:outline-none focus:ring-2 transition",
+                    'w-full rounded-xl pl-10 pr-4 py-3 text-base font-semibold transition',
                     cashInsufficient
-                      ? "border-red-300 focus:ring-red-200"
-                      : "border-gray-200 focus:ring-orange-200",
+                      ? 'border-red-300 focus:ring-red-200'
+                      : 'border-gray-200 focus:ring-orange-200'
                   )}
                 />
               </div>
@@ -458,13 +445,14 @@ export default function PaymentPage() {
               {/* Quick amounts */}
               <div className="flex flex-wrap gap-2 mb-3">
                 {quickAmounts(total).map((amt) => (
-                  <button
+                  <Button
                     key={amt}
+                    variant="ghost"
                     onClick={() => setCashInput(formatNumber(amt))}
-                    className="px-3 py-1.5 text-sm rounded-lg border border-orange-200 text-orange-700 bg-orange-50 hover:bg-orange-100 transition font-medium"
+                    className="px-3 py-1.5 text-sm rounded-lg border border-orange-200 text-orange-700 bg-orange-50 hover:bg-orange-100"
                   >
                     {formatIDR(amt)}
-                  </button>
+                  </Button>
                 ))}
               </div>
 
@@ -491,15 +479,15 @@ export default function PaymentPage() {
         {isNonCash && (
           <div className="bg-white rounded-xl border border-gray-200 mb-4 p-5">
             <label className="block text-sm font-medium text-gray-700 mb-1.5">
-              Nomor Referensi Transaksi{" "}
+              Nomor Referensi Transaksi{' '}
               <span className="text-gray-400 font-normal">(opsional)</span>
             </label>
-            <input
+            <Input
               type="text"
               value={txRef}
               onChange={(e) => setTxRef(e.target.value)}
               placeholder="Contoh: TRX20260221-001"
-              className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-200"
+              className="w-full rounded-xl px-4 py-2.5 text-sm"
             />
           </div>
         )}
@@ -507,8 +495,7 @@ export default function PaymentPage() {
         {/* Notes */}
         <div className="bg-white rounded-xl border border-gray-200 mb-5 p-5">
           <label className="block text-sm font-medium text-gray-700 mb-1.5">
-            Catatan{" "}
-            <span className="text-gray-400 font-normal">(opsional)</span>
+            Catatan <span className="text-gray-400 font-normal">(opsional)</span>
           </label>
           <textarea
             rows={2}
@@ -520,19 +507,12 @@ export default function PaymentPage() {
         </div>
 
         {/* Error */}
-        {processError && (
-          <div className="flex items-start gap-2 mb-4 p-3 rounded-xl bg-red-50 text-red-700 text-sm">
-            <AlertCircle size={16} className="mt-0.5 flex-shrink-0" />
-            {processError}
-          </div>
-        )}
-
-        {/* Action button */}
         {isQris ? (
-          <button
+          <Button
             onClick={handleQris}
             disabled={snapLoading}
-            className="w-full bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white py-3.5 rounded-xl font-semibold text-base transition flex items-center justify-center gap-2"
+            className="w-full flex items-center justify-center gap-2 py-3.5 text-base font-semibold"
+            variant="primary"
           >
             {snapLoading ? (
               <>
@@ -543,15 +523,13 @@ export default function PaymentPage() {
                 <Smartphone size={18} /> Bayar dengan QRIS — {formatIDR(total)}
               </>
             )}
-          </button>
+          </Button>
         ) : (
-          <button
+          <Button
             onClick={handlePay}
-            disabled={
-              processing ||
-              (method === "cash" && (cashInsufficient || !cashInput))
-            }
-            className="w-full bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white py-3.5 rounded-xl font-semibold text-base transition flex items-center justify-center gap-2"
+            disabled={processing || (method === 'cash' && (cashInsufficient || !cashInput))}
+            className="w-full flex items-center justify-center gap-2 py-3.5 text-base font-semibold"
+            variant="primary"
           >
             {processing ? (
               <>
@@ -559,13 +537,12 @@ export default function PaymentPage() {
               </>
             ) : (
               <>
-                Konfirmasi Pembayaran {METHOD_LABELS[method]} —{" "}
-                {formatIDR(total)}
+                Konfirmasi Pembayaran {METHOD_LABELS[method]} — {formatIDR(total)}
               </>
             )}
-          </button>
+          </Button>
         )}
       </div>
     </>
-  );
+  )
 }
