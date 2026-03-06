@@ -9,15 +9,15 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import {
-  Loader2,
-  TrendingUp,
+  CircleNotch,
+  TrendUp,
   ShoppingCart,
-  BarChart3,
+  ChartBar,
   Users,
-  ImageOff,
-  FileSpreadsheet,
+  ImageBroken,
+  FileXls,
   FileText,
-} from "lucide-react";
+} from "@phosphor-icons/react";
 import {
   getSalesReport,
   getTopProducts,
@@ -154,7 +154,7 @@ export default function ReportsPage() {
       value: loadingSales
         ? "—"
         : fmt(sales?.summary.total_revenue ?? 0, currency),
-      icon: <TrendingUp size={20} />,
+      icon: <TrendUp size={20} />,
       color: "bg-green-50 text-green-600",
       border: "border-green-100",
     },
@@ -172,7 +172,7 @@ export default function ReportsPage() {
       value: loadingSales
         ? "—"
         : fmt(sales?.summary.avg_per_day ?? 0, currency),
-      icon: <BarChart3 size={20} />,
+      icon: <ChartBar size={20} />,
       color: "bg-orange-50 text-orange-600",
       border: "border-orange-100",
     },
@@ -202,9 +202,9 @@ export default function ReportsPage() {
             className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 disabled:opacity-60 text-white text-sm font-medium px-4 py-2 rounded-lg transition"
           >
             {exporting === "excel" ? (
-              <Loader2 size={15} className="animate-spin" />
+              <CircleNotch size={15} className="animate-spin" />
             ) : (
-              <FileSpreadsheet size={15} />
+              <FileXls size={15} />
             )}
             Excel
           </button>
@@ -214,7 +214,7 @@ export default function ReportsPage() {
             className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 disabled:opacity-60 text-white text-sm font-medium px-4 py-2 rounded-lg transition"
           >
             {exporting === "pdf" ? (
-              <Loader2 size={15} className="animate-spin" />
+              <CircleNotch size={15} className="animate-spin" />
             ) : (
               <FileText size={15} />
             )}
@@ -315,7 +315,7 @@ export default function ReportsPage() {
         </h2>
         {loadingSales ? (
           <div className="flex items-center justify-center h-52 text-gray-300">
-            <Loader2 size={24} className="animate-spin" />
+            <CircleNotch size={24} className="animate-spin" />
           </div>
         ) : !sales?.chart?.length ? (
           <div className="flex items-center justify-center h-52 text-sm text-gray-400">
@@ -464,7 +464,7 @@ export default function ReportsPage() {
                     />
                   ) : (
                     <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center text-gray-300 flex-shrink-0">
-                      <ImageOff size={14} />
+                      <ImageBroken size={14} />
                     </div>
                   )}
                   <div className="flex-1 min-w-0">

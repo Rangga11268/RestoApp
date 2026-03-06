@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Plus, Pencil, Trash2, ImageOff, ToggleRight, ToggleLeft } from 'lucide-react'
+import { Plus, Pencil, Trash, ImageBroken, ToggleRight, ToggleLeft } from "@phosphor-icons/react"
 import { useForm, type Resolver } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -202,7 +202,7 @@ export default function MenuItemsPage() {
                 <img src={item.image_url} alt={item.name} className="w-full h-36 object-cover" />
               ) : (
                 <div className="w-full h-36 bg-gray-100 flex items-center justify-center text-gray-300">
-                  <ImageOff size={28} />
+                  <ImageBroken size={28} />
                 </div>
               )}
               <div className="p-3">
@@ -244,7 +244,7 @@ export default function MenuItemsPage() {
                       onClick={() => handleDelete(item)}
                       className="p-1.5 rounded-lg hover:bg-red-50 text-red-500"
                     >
-                      <Trash2 size={12} />
+                      <Trash size={12} />
                     </button>
                   </div>
                 </div>

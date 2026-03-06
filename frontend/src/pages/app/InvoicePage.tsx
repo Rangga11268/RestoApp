@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
-import { ArrowLeft, Printer, Loader2 } from 'lucide-react'
+import { ArrowLeft, Printer, CircleNotch } from "@phosphor-icons/react"
 import { Button } from '@/components/ui'
 import { getOrder, ORDER_TYPE_LABELS, type Order } from '@/services/orderService'
 import { METHOD_LABELS, PAYMENT_STATUS_LABELS } from '@/services/paymentService'
@@ -213,7 +213,7 @@ export default function InvoicePage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20 text-gray-400">
-        <Loader2 size={24} className="animate-spin mr-2" /> Memuat invoice…
+        <CircleNotch size={24} className="animate-spin mr-2" /> Memuat invoice…
       </div>
     )
   }

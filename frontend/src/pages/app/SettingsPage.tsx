@@ -7,7 +7,7 @@ import {
   updateRestaurant,
   type RestaurantSettings,
 } from '@/services/restaurantService'
-import { Building2, BadgeCheck } from 'lucide-react'
+import { Buildings, SealCheck } from "@phosphor-icons/react"
 import { Toast } from '@/lib/swal'
 
 const schema = z.object({
@@ -115,7 +115,7 @@ export default function SettingsPage() {
       {sub && (
         <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6">
           <div className="flex items-start gap-3">
-            <BadgeCheck className="text-orange-500 mt-0.5 flex-shrink-0" size={20} />
+            <SealCheck className="text-orange-500 mt-0.5 flex-shrink-0" size={20} />
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
                 <p className="font-semibold text-gray-800">{plan?.name ?? 'Free'}</p>
@@ -156,7 +156,7 @@ export default function SettingsPage() {
       {/* Main form card */}
       <div className="bg-white rounded-xl border border-gray-200 p-6">
         <div className="flex items-center gap-2 mb-5">
-          <Building2 className="text-orange-500" size={18} />
+          <Buildings className="text-orange-500" size={18} />
           <h2 className="font-semibold text-gray-700">Informasi Restoran</h2>
         </div>
 

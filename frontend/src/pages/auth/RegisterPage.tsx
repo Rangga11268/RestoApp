@@ -5,13 +5,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "react-router-dom";
 import {
   User,
-  Mail,
-  Building2,
-  Lock,
+  EnvelopeSimple,
+  Buildings,
+  LockKey,
   Eye,
-  EyeOff,
-  Loader2,
-} from "lucide-react";
+  EyeClosed,
+  CircleNotch,
+} from "@phosphor-icons/react";
 import { useAuthStore } from "@/stores/authStore";
 import AuthLayout from "@/components/auth/AuthLayout";
 
@@ -118,7 +118,7 @@ export default function RegisterPage() {
             Email
           </label>
           <div className="relative">
-            <Mail
+            <EnvelopeSimple
               size={15}
               className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
             />
@@ -140,7 +140,7 @@ export default function RegisterPage() {
             Nama restoran
           </label>
           <div className="relative">
-            <Building2
+            <Buildings
               size={15}
               className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
             />
@@ -163,7 +163,7 @@ export default function RegisterPage() {
             Password
           </label>
           <div className="relative">
-            <Lock
+            <LockKey
               size={15}
               className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
             />
@@ -179,7 +179,7 @@ export default function RegisterPage() {
               tabIndex={-1}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition"
             >
-              {showPwd ? <EyeOff size={15} /> : <Eye size={15} />}
+              {showPwd ? <EyeClosed size={15} /> : <Eye size={15} />}
             </button>
           </div>
           {errors.password && (
@@ -195,7 +195,7 @@ export default function RegisterPage() {
             Konfirmasi password
           </label>
           <div className="relative">
-            <Lock
+            <LockKey
               size={15}
               className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
             />
@@ -211,7 +211,7 @@ export default function RegisterPage() {
               tabIndex={-1}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition"
             >
-              {showConfirm ? <EyeOff size={15} /> : <Eye size={15} />}
+              {showConfirm ? <EyeClosed size={15} /> : <Eye size={15} />}
             </button>
           </div>
           {errors.password_confirmation && (
@@ -226,7 +226,7 @@ export default function RegisterPage() {
           disabled={isLoading}
           className="w-full flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 active:bg-orange-700 disabled:opacity-60 text-white font-semibold py-2.5 rounded-lg text-sm transition mt-1"
         >
-          {isLoading && <Loader2 size={15} className="animate-spin" />}
+          {isLoading && <CircleNotch size={15} className="animate-spin" />}
           {isLoading ? "Membuat akun..." : "Daftar Gratis"}
         </button>
       </form>

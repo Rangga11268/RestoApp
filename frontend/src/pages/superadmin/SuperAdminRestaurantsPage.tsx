@@ -1,13 +1,13 @@
 import { useEffect, useState, useCallback } from "react";
 import {
-  Search,
-  CheckCircle2,
+  MagnifyingGlass,
+  CheckCircle,
   XCircle,
-  Loader2,
-  ChevronLeft,
-  ChevronRight,
+  CircleNotch,
+  CaretLeft,
+  CaretRight,
   Power,
-} from "lucide-react";
+} from "@phosphor-icons/react";
 import {
   getAdminRestaurants,
   toggleAdminRestaurant,
@@ -105,7 +105,7 @@ export default function SuperAdminRestaurantsPage() {
       {/* Filters */}
       <div className="flex flex-wrap gap-3 items-end">
         <div className="relative flex-1 min-w-[200px]">
-          <Search
+          <MagnifyingGlass
             size={15}
             className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
           />
@@ -143,11 +143,11 @@ export default function SuperAdminRestaurantsPage() {
       <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
         {loading ? (
           <div className="flex items-center justify-center py-16">
-            <Loader2 className="animate-spin text-orange-500" size={28} />
+            <CircleNotch className="animate-spin text-orange-500" size={28} />
           </div>
         ) : items.length === 0 ? (
           <div className="text-center py-16 text-gray-400">
-            <Store size={40} className="mx-auto mb-3 opacity-40" />
+            <Storefront size={40} className="mx-auto mb-3 opacity-40" />
             <p className="text-sm">Tidak ada restoran ditemukan.</p>
           </div>
         ) : (
@@ -224,7 +224,7 @@ export default function SuperAdminRestaurantsPage() {
                         }`}
                       >
                         {r.is_active ? (
-                          <CheckCircle2 size={11} />
+                          <CheckCircle size={11} />
                         ) : (
                           <XCircle size={11} />
                         )}
@@ -243,7 +243,7 @@ export default function SuperAdminRestaurantsPage() {
                         }`}
                       >
                         {working === r.id ? (
-                          <Loader2 size={12} className="animate-spin" />
+                          <CircleNotch size={12} className="animate-spin" />
                         ) : (
                           <Power size={12} />
                         )}
@@ -271,14 +271,14 @@ export default function SuperAdminRestaurantsPage() {
               disabled={page === 1}
               className="p-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-40"
             >
-              <ChevronLeft size={16} />
+              <CaretLeft size={16} />
             </button>
             <button
               onClick={() => setPage((p) => Math.min(meta.last_page, p + 1))}
               disabled={page === meta.last_page}
               className="p-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-40"
             >
-              <ChevronRight size={16} />
+              <CaretRight size={16} />
             </button>
           </div>
         </div>
@@ -288,7 +288,7 @@ export default function SuperAdminRestaurantsPage() {
 }
 
 // Fix missing import
-function Store({ size, className }: { size: number; className?: string }) {
+function Storefront({ size, className }: { size: number; className?: string }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

@@ -1,6 +1,5 @@
-import React from 'react'
 import { Button, Input, Card, Badge } from '@/components/ui'
-import { Banknote } from 'lucide-react'
+import { Money } from '@phosphor-icons/react'
 
 export default function ComponentsPreviewPage() {
   return (
@@ -16,7 +15,7 @@ export default function ComponentsPreviewPage() {
             <Button variant="ghost">Ghost</Button>
             <Button variant="danger">Danger</Button>
             <Button className="flex items-center gap-2">
-              <Banknote size={14} />
+              <Money size={14} />
               Pay
             </Button>
           </div>

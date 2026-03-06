@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link } from "react-router-dom";
-import { Mail, Loader2 } from "lucide-react";
+import { EnvelopeSimple, CircleNotch } from "@phosphor-icons/react";
 import api from "@/lib/axios";
 import AuthLayout from "@/components/auth/AuthLayout";
 
@@ -87,7 +87,7 @@ export default function ForgotPasswordPage() {
             Email
           </label>
           <div className="relative">
-            <Mail
+            <EnvelopeSimple
               size={15}
               className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
             />
@@ -108,7 +108,7 @@ export default function ForgotPasswordPage() {
           disabled={isSubmitting}
           className="w-full flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 active:bg-orange-700 disabled:opacity-60 text-white font-semibold py-2.5 rounded-lg text-sm transition mt-1"
         >
-          {isSubmitting && <Loader2 size={15} className="animate-spin" />}
+          {isSubmitting && <CircleNotch size={15} className="animate-spin" />}
           {isSubmitting ? "Mengirim..." : "Kirim Link Reset"}
         </button>
       </form>

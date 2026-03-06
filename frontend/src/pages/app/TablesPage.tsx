@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Plus, Pencil, Trash2, RefreshCw, Download, QrCode, AlertTriangle } from 'lucide-react'
+import { Plus, Pencil, Trash, ArrowsClockwise, DownloadSimple, QrCode, Warning } from "@phosphor-icons/react"
 import { useForm, type Resolver } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -163,7 +163,7 @@ export default function TablesPage() {
       {/* Warning: akses via localhost — QR tidak bisa di-scan dari HP */}
       {isLocalhost() && !import.meta.env.VITE_APP_URL && (
         <div className="mb-5 flex items-start gap-3 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl px-4 py-3 text-sm">
-          <AlertTriangle size={16} className="mt-0.5 flex-shrink-0 text-amber-500" />
+          <Warning size={16} className="mt-0.5 flex-shrink-0 text-amber-500" />
           <div>
             <p className="font-semibold">QR Code tidak bisa di-scan dari HP</p>
             <p className="text-amber-700 mt-0.5">
@@ -236,7 +236,7 @@ export default function TablesPage() {
                     variant="secondary"
                     className="flex-1 flex items-center justify-center gap-1 text-xs py-1.5"
                   >
-                    <RefreshCw size={12} className={regenerating === t.id ? 'animate-spin' : ''} />{' '}
+                    <ArrowsClockwise size={12} className={regenerating === t.id ? 'animate-spin' : ''} />{' '}
                     QR Baru
                   </Button>
                   {t.qr_code && (
@@ -245,7 +245,7 @@ export default function TablesPage() {
                       variant="secondary"
                       className="flex-1 flex items-center justify-center gap-1 text-xs py-1.5"
                     >
-                      <Download size={12} /> Download
+                      <DownloadSimple size={12} /> DownloadSimple
                     </Button>
                   )}
                 </div>
@@ -260,7 +260,7 @@ export default function TablesPage() {
                   onClick={() => handleDelete(t)}
                   className="p-1.5 text-red-500"
                 >
-                  <Trash2 size={13} />
+                  <Trash size={13} />
                 </Button>
               </div>
             </div>
@@ -348,7 +348,7 @@ export default function TablesPage() {
               variant="primary"
               className="flex items-center gap-2 px-4 py-2 text-sm font-medium"
             >
-              <Download size={14} /> Download SVG
+              <DownloadSimple size={14} /> DownloadSimple SVG
             </Button>
           </div>
         )}

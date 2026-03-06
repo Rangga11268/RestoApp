@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Store, Users, TrendingUp, Activity, Loader2 } from "lucide-react";
+import { Storefront, Users, TrendUp, Pulse, CircleNotch } from "@phosphor-icons/react";
 import {
   getPlatformStats,
   type PlatformStats,
@@ -62,7 +62,7 @@ export default function SuperAdminDashboardPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[300px]">
-        <Loader2 className="animate-spin text-orange-500" size={32} />
+        <CircleNotch className="animate-spin text-orange-500" size={32} />
       </div>
     );
   }
@@ -87,7 +87,7 @@ export default function SuperAdminDashboardPage() {
           label="Total Restoran"
           value={stats.restaurants.total}
           sub={`${stats.restaurants.active} aktif · ${stats.restaurants.inactive} tidak aktif`}
-          icon={<Store size={20} />}
+          icon={<Storefront size={20} />}
           color="bg-blue-50 text-blue-600"
         />
         <StatCard
@@ -100,14 +100,14 @@ export default function SuperAdminDashboardPage() {
           label="Langganan Aktif"
           value={stats.subscriptions.active}
           sub={`${stats.subscriptions.trialing} trial · ${stats.subscriptions.inactive} tidak aktif`}
-          icon={<Activity size={20} />}
+          icon={<Pulse size={20} />}
           color="bg-green-50 text-green-600"
         />
         <StatCard
           label="Revenue Bulan Ini"
           value={fmt(stats.revenue.this_month)}
           sub={`Total: ${fmt(stats.revenue.total)}`}
-          icon={<TrendingUp size={20} />}
+          icon={<TrendUp size={20} />}
           color="bg-orange-50 text-orange-600"
         />
       </div>

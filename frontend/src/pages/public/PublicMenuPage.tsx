@@ -2,21 +2,21 @@ import { useEffect, useState, useMemo } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { getPublicMenu, type PublicCategory } from "@/services/menuService";
 import {
-  ImageOff,
+  ImageBroken,
   Clock,
   Plus,
   Minus,
   ShoppingCart,
   X,
-  ChevronRight,
-  CheckCircle2,
-  Loader2,
+  CaretRight,
+  CheckCircle,
+  CircleNotch,
   MapPin,
   User,
   FileText,
-  Utensils,
+  ForkKnife,
   Receipt,
-} from "lucide-react";
+} from "@phosphor-icons/react";
 import api from "@/lib/axios";
 import { cn } from "@/lib/utils";
 import { Button, Input } from '@/components/ui'
@@ -131,7 +131,7 @@ function CartPanel(props: OrderFormProps) {
           Pesanan Kamu
         </h2>
         <div className="flex items-center gap-1.5 mt-2 text-xs font-semibold text-orange-700 bg-orange-50 px-2.5 py-1 rounded-lg w-fit">
-          <Utensils size={11} />
+          <ForkKnife size={11} />
           {tableId ? "Dine-in" : "Take-away"}
         </div>
       </div>
@@ -161,7 +161,7 @@ function CartPanel(props: OrderFormProps) {
                 />
               ) : (
                 <div className="w-11 h-11 rounded-lg bg-gray-100 flex items-center justify-center text-gray-300 flex-shrink-0">
-                  <ImageOff size={13} />
+                  <ImageBroken size={13} />
                 </div>
               )}
               <div className="flex-1 min-w-0">
@@ -238,7 +238,7 @@ function CartPanel(props: OrderFormProps) {
           className="w-full flex items-center justify-center gap-2 py-2.5 text-xs font-bold"
           variant="primary"
         >
-          {loading ? <Loader2 size={14} className="animate-spin" /> : <Receipt size={14} />}
+          {loading ? <CircleNotch size={14} className="animate-spin" /> : <Receipt size={14} />}
           {loading ? "Mengirim…" : "Buat Pesanan"}
         </Button>
       </div>
@@ -295,7 +295,7 @@ function CartDrawer({
         </div>
         <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
           <div className="flex items-center gap-2 bg-orange-50 text-orange-700 px-3 py-2 rounded-lg text-sm font-semibold">
-            <Utensils size={14} />
+            <ForkKnife size={14} />
             {tableId ? "Makan di Tempat (Dine-in)" : "Bawa Pulang (Take-away)"}
           </div>
           {cartItems.map((item) => (
@@ -308,7 +308,7 @@ function CartDrawer({
                 />
               ) : (
                 <div className="w-14 h-14 rounded-lg bg-gray-50 flex items-center justify-center text-gray-300 border border-gray-100 flex-shrink-0">
-                  <ImageOff size={16} />
+                  <ImageBroken size={16} />
                 </div>
               )}
               <div className="flex-1 min-w-0">
@@ -378,7 +378,7 @@ function CartDrawer({
               variant="primary"
               className="px-6 py-3 font-bold text-sm flex items-center justify-center gap-2"
             >
-              {loading ? <Loader2 size={18} className="animate-spin" /> : <>Pesan <ChevronRight size={18} /></>}
+              {loading ? <CircleNotch size={18} className="animate-spin" /> : <>Pesan <CaretRight size={18} /></>}
             </Button>
           </div>
           {error && (
@@ -404,7 +404,7 @@ function SuccessScreen({
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
       <div className="w-full max-w-md bg-white min-h-screen shadow-2xl flex flex-col items-center justify-center px-6 text-center">
         <div className="w-24 h-24 bg-green-50 rounded-full flex items-center justify-center mb-6">
-          <CheckCircle2 size={48} className="text-green-500" />
+          <CheckCircle size={48} className="text-green-500" />
         </div>
         <h2 className="text-2xl font-bold text-gray-900 mb-2">
           Pesanan Berhasil!
@@ -459,7 +459,7 @@ function MenuCard({
           />
         ) : (
           <div className="w-full h-36 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center text-gray-300">
-            <ImageOff size={28} />
+            <ImageBroken size={28} />
           </div>
         )}
         {item.is_featured && (
@@ -692,7 +692,7 @@ export default function PublicMenuPage() {
             )}
             {table && (
               <div className="mt-3 inline-flex items-center gap-1 bg-orange-500 text-white text-xs py-1 px-2.5 rounded-full font-bold">
-                <Utensils size={11} />
+                <ForkKnife size={11} />
                 Meja {table.name}
               </div>
             )}
@@ -751,7 +751,7 @@ export default function PublicMenuPage() {
                   )}
                   {table && (
                     <div className="mt-2 inline-flex items-center gap-1 bg-orange-50 border border-orange-100 text-orange-700 text-xs py-1 px-2 rounded-lg font-bold">
-                      <Utensils size={11} /> Meja {table.name}
+                      <ForkKnife size={11} /> Meja {table.name}
                     </div>
                   )}
                 </div>
@@ -866,7 +866,7 @@ export default function PublicMenuPage() {
               </div>
             </div>
             <div className="bg-orange-500 text-white px-5 py-3 rounded-xl font-bold text-sm flex items-center gap-1">
-              Keranjang <ChevronRight size={16} />
+              Keranjang <CaretRight size={16} />
             </div>
           </Button>
         </div>

@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react'
 import { Link } from 'react-router-dom'
-import { ShoppingCart, Clock, ChevronRight, RefreshCw, ChevronLeft } from 'lucide-react'
+import { ShoppingCart, Clock, CaretRight, ArrowsClockwise, CaretLeft } from "@phosphor-icons/react"
 import { Button } from '@/components/ui'
 import {
   getOrders,
@@ -91,7 +91,7 @@ function OrderCard({ order }: { order: Order }) {
         </p>
       </div>
 
-      <ChevronRight size={16} className="text-gray-300 group-hover:text-gray-500 flex-shrink-0" />
+      <CaretRight size={16} className="text-gray-300 group-hover:text-gray-500 flex-shrink-0" />
     </Link>
   )
 }
@@ -147,7 +147,7 @@ export default function OrdersPage() {
           disabled={loading}
           className="inline-flex items-center gap-1.5 text-sm"
         >
-          <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
+          <ArrowsClockwise size={14} className={loading ? 'animate-spin' : ''} />
           Refresh
         </Button>
       </div>
@@ -180,7 +180,7 @@ export default function OrdersPage() {
 
         {loading && orders.length === 0 && (
           <div className="flex items-center justify-center py-16 text-gray-400">
-            <RefreshCw size={20} className="animate-spin mr-2" />
+            <ArrowsClockwise size={20} className="animate-spin mr-2" />
             Memuat…
           </div>
         )}
@@ -217,7 +217,7 @@ export default function OrdersPage() {
                 disabled={meta.current_page === 1 || loading}
                 className="p-1.5 rounded-md"
               >
-                <ChevronLeft size={14} />
+                <CaretLeft size={14} />
               </Button>
               <Button
                 variant="secondary"
@@ -225,7 +225,7 @@ export default function OrdersPage() {
                 disabled={meta.current_page === meta.last_page || loading}
                 className="p-1.5 rounded-md"
               >
-                <ChevronRight size={14} />
+                <CaretRight size={14} />
               </Button>
             </div>
           </div>

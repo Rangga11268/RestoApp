@@ -3,18 +3,18 @@ import { useParams, useNavigate, Link } from 'react-router-dom'
 import {
   ArrowLeft,
   ShoppingCart,
-  Table2,
+  Armchair,
   User,
   Clock,
-  CheckCircle2,
+  CheckCircle,
   XCircle,
   CookingPot,
-  BellRing,
+  BellRinging,
   CircleDashed,
-  Loader2,
-  Banknote,
+  CircleNotch,
+  Money,
   Receipt,
-} from 'lucide-react'
+} from "@phosphor-icons/react"
 import { Button } from '@/components/ui'
 import {
   getOrder,
@@ -55,7 +55,7 @@ const NEXT_STATUS_CONFIG: Partial<
 > = {
   confirmed: {
     label: 'Konfirmasi',
-    icon: <CheckCircle2 size={16} />,
+    icon: <CheckCircle size={16} />,
     color: 'bg-blue-500 hover:bg-blue-600 text-white',
   },
   cooking: {
@@ -65,12 +65,12 @@ const NEXT_STATUS_CONFIG: Partial<
   },
   ready: {
     label: 'Tandai Siap',
-    icon: <BellRing size={16} />,
+    icon: <BellRinging size={16} />,
     color: 'bg-green-500 hover:bg-green-600 text-white',
   },
   completed: {
     label: 'Selesaikan',
-    icon: <CheckCircle2 size={16} />,
+    icon: <CheckCircle size={16} />,
     color: 'bg-gray-700 hover:bg-gray-800 text-white',
   },
 }
@@ -109,7 +109,7 @@ function StatusStepper({ status }: { status: OrderStatus }) {
                       : 'bg-white border-gray-200 text-gray-300'
                 )}
               >
-                {done ? <CheckCircle2 size={14} /> : active ? <CircleDashed size={14} /> : i + 1}
+                {done ? <CheckCircle size={14} /> : active ? <CircleDashed size={14} /> : i + 1}
               </div>
               <span
                 className={cn(
@@ -189,7 +189,7 @@ export default function OrderDetailPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20 text-gray-400">
-        <Loader2 size={24} className="animate-spin mr-2" />
+        <CircleNotch size={24} className="animate-spin mr-2" />
         Memuat…
       </div>
     )
@@ -266,7 +266,7 @@ export default function OrderDetailPage() {
             value: ORDER_TYPE_LABELS[order.order_type],
           },
           {
-            icon: <Table2 size={14} />,
+            icon: <Armchair size={14} />,
             label: 'Meja',
             value: order.table?.name ?? '—',
           },
@@ -382,7 +382,7 @@ export default function OrderDetailPage() {
                     'inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition'
                   )}
                 >
-                  {actionLoading ? <Loader2 size={15} className="animate-spin" /> : cfg.icon}
+                  {actionLoading ? <CircleNotch size={15} className="animate-spin" /> : cfg.icon}
                   {cfg.label}
                 </Button>
               )
@@ -410,7 +410,7 @@ export default function OrderDetailPage() {
             onClick={() => navigate(`/orders/${order.id}/payment`)}
             className="inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold"
           >
-            <Banknote size={16} />
+            <Money size={16} />
             Proses Pembayaran
           </Button>
         </div>

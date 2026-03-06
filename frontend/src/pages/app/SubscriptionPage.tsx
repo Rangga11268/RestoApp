@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Clock, Loader2, RefreshCw, BadgeCheck, AlertTriangle } from 'lucide-react'
+import { Clock, CircleNotch, ArrowsClockwise, SealCheck, Warning } from "@phosphor-icons/react"
 import {
   getSubscriptionPlans,
   getCurrentSubscription,
@@ -100,7 +100,7 @@ export default function SubscriptionPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[300px]">
-        <Loader2 className="animate-spin text-orange-500" size={32} />
+        <CircleNotch className="animate-spin text-orange-500" size={32} />
       </div>
     )
   }
@@ -184,7 +184,7 @@ export default function SubscriptionPage() {
           {/* Expiring soon warning */}
           {sub.is_expiring && sub.is_active && (
             <div className="flex items-center gap-2 bg-yellow-50 border border-yellow-200 text-yellow-700 text-sm px-4 py-2.5 rounded-xl">
-              <AlertTriangle size={15} />
+              <Warning size={15} />
               Langganan Anda akan berakhir dalam <strong>{sub.days_remaining} hari</strong>. Segera
               perbarui!
             </div>
@@ -261,20 +261,20 @@ export default function SubscriptionPage() {
 
                 <ul className="space-y-1.5 text-sm text-gray-600 flex-1">
                   <li className="flex items-center gap-2">
-                    <BadgeCheck size={14} className="text-green-500 flex-shrink-0" />
+                    <SealCheck size={14} className="text-green-500 flex-shrink-0" />
                     Staff: {plan.max_staff === 0 ? 'Unlimited' : `maks. ${plan.max_staff}`}
                   </li>
                   <li className="flex items-center gap-2">
-                    <BadgeCheck size={14} className="text-green-500 flex-shrink-0" />
+                    <SealCheck size={14} className="text-green-500 flex-shrink-0" />
                     Menu: {plan.max_menu_items === 0 ? 'Unlimited' : `maks. ${plan.max_menu_items}`}
                   </li>
                   <li className="flex items-center gap-2">
-                    <BadgeCheck size={14} className="text-green-500 flex-shrink-0" />
+                    <SealCheck size={14} className="text-green-500 flex-shrink-0" />
                     Meja: {plan.max_tables === 0 ? 'Unlimited' : `maks. ${plan.max_tables}`}
                   </li>
                   {(plan.features ?? []).map((f, i) => (
                     <li key={i} className="flex items-center gap-2">
-                      <BadgeCheck size={14} className="text-green-500 flex-shrink-0" />
+                      <SealCheck size={14} className="text-green-500 flex-shrink-0" />
                       {f}
                     </li>
                   ))}
@@ -290,9 +290,9 @@ export default function SubscriptionPage() {
                   }`}
                 >
                   {working === plan.id ? (
-                    <Loader2 size={15} className="animate-spin" />
+                    <CircleNotch size={15} className="animate-spin" />
                   ) : (
-                    <RefreshCw size={15} />
+                    <ArrowsClockwise size={15} />
                   )}
                   {isCurrent
                     ? 'Paket Aktif'

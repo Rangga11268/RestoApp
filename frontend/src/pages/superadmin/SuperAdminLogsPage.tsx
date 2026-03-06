@@ -1,11 +1,11 @@
 import { useEffect, useState, useCallback } from "react";
 import {
-  Search,
-  Loader2,
-  ChevronLeft,
-  ChevronRight,
-  ClipboardList,
-} from "lucide-react";
+  MagnifyingGlass,
+  CircleNotch,
+  CaretLeft,
+  CaretRight,
+  ClipboardText,
+} from "@phosphor-icons/react";
 import {
   getActivityLogs,
   type ActivityLogItem,
@@ -84,9 +84,9 @@ export default function SuperAdminLogsPage() {
         </p>
       </div>
 
-      {/* Search */}
+      {/* MagnifyingGlass */}
       <div className="relative max-w-sm">
-        <Search
+        <MagnifyingGlass
           size={15}
           className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
         />
@@ -103,11 +103,11 @@ export default function SuperAdminLogsPage() {
       <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
         {loading ? (
           <div className="flex items-center justify-center py-16">
-            <Loader2 className="animate-spin text-orange-500" size={28} />
+            <CircleNotch className="animate-spin text-orange-500" size={28} />
           </div>
         ) : logs.length === 0 ? (
           <div className="text-center py-16 text-gray-400">
-            <ClipboardList size={40} className="mx-auto mb-3 opacity-40" />
+            <ClipboardText size={40} className="mx-auto mb-3 opacity-40" />
             <p className="text-sm">Tidak ada log ditemukan.</p>
           </div>
         ) : (
@@ -196,14 +196,14 @@ export default function SuperAdminLogsPage() {
               disabled={page === 1}
               className="p-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-40"
             >
-              <ChevronLeft size={16} />
+              <CaretLeft size={16} />
             </button>
             <button
               onClick={() => setPage((p) => Math.min(meta.last_page, p + 1))}
               disabled={page === meta.last_page}
               className="p-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-40"
             >
-              <ChevronRight size={16} />
+              <CaretRight size={16} />
             </button>
           </div>
         </div>

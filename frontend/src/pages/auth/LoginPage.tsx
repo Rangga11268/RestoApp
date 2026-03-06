@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { Mail, Lock, Eye, EyeOff, Loader2 } from "lucide-react";
+import { EnvelopeSimple, LockKey, Eye, EyeClosed, CircleNotch } from "@phosphor-icons/react";
 import { useAuthStore } from "@/stores/authStore";
 import AuthLayout from "@/components/auth/AuthLayout";
 
@@ -74,7 +74,7 @@ export default function LoginPage() {
             Email
           </label>
           <div className="relative">
-            <Mail
+            <EnvelopeSimple
               size={15}
               className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
             />
@@ -97,7 +97,7 @@ export default function LoginPage() {
             Password
           </label>
           <div className="relative">
-            <Lock
+            <LockKey
               size={15}
               className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
             />
@@ -114,7 +114,7 @@ export default function LoginPage() {
               className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition"
               tabIndex={-1}
             >
-              {showPwd ? <EyeOff size={15} /> : <Eye size={15} />}
+              {showPwd ? <EyeClosed size={15} /> : <Eye size={15} />}
             </button>
           </div>
           {errors.password && (
@@ -163,7 +163,7 @@ export default function LoginPage() {
           disabled={isLoading}
           className="w-full flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 active:bg-orange-700 disabled:opacity-60 text-white font-semibold py-2.5 rounded-lg text-sm transition"
         >
-          {isLoading && <Loader2 size={15} className="animate-spin" />}
+          {isLoading && <CircleNotch size={15} className="animate-spin" />}
           {isLoading ? "Memproses..." : "Masuk"}
         </button>
       </form>

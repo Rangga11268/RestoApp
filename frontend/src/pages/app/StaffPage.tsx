@@ -2,15 +2,15 @@ import { useEffect, useState } from 'react'
 import {
   UserPlus,
   Pencil,
-  Trash2,
+  Trash,
   ToggleLeft,
   ToggleRight,
-  Loader2,
+  CircleNotch,
   X,
   ChefHat,
-  UserCog,
+  UserGear,
   CreditCard,
-} from 'lucide-react'
+} from "@phosphor-icons/react"
 import { Button, Input } from '@/components/ui'
 import {
   getStaff,
@@ -28,7 +28,7 @@ import { Toast, confirmDelete } from '@/lib/swal'
 const ROLE_LABELS: Record<string, { label: string; icon: React.ReactNode; cls: string }> = {
   manager: {
     label: 'Manager',
-    icon: <UserCog size={13} />,
+    icon: <UserGear size={13} />,
     cls: 'bg-violet-100 text-violet-700',
   },
   cashier: {
@@ -231,7 +231,7 @@ function StaffModal({ initial, onSave, onClose }: ModalProps) {
               Batal
             </Button>
             <Button type="submit" variant="primary" className="flex-1" disabled={saving}>
-              {saving && <Loader2 size={14} className="animate-spin" />}
+              {saving && <CircleNotch size={14} className="animate-spin" />}
               Simpan
             </Button>
           </div>
@@ -321,7 +321,7 @@ export default function StaffPage() {
       <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
         {loading ? (
           <div className="flex items-center justify-center py-16">
-            <Loader2 className="animate-spin text-orange-500" size={28} />
+            <CircleNotch className="animate-spin text-orange-500" size={28} />
           </div>
         ) : staff.length === 0 ? (
           <div className="text-center py-16 text-gray-400">
@@ -381,7 +381,7 @@ export default function StaffPage() {
                           className="text-gray-400 hover:text-orange-500 transition disabled:opacity-50"
                         >
                           {working === s.id ? (
-                            <Loader2 size={16} className="animate-spin" />
+                            <CircleNotch size={16} className="animate-spin" />
                           ) : s.is_active ? (
                             <ToggleRight size={18} className="text-green-500" />
                           ) : (
@@ -401,7 +401,7 @@ export default function StaffPage() {
                           title="Hapus"
                           className="text-gray-400 hover:text-red-500 transition disabled:opacity-50"
                         >
-                          <Trash2 size={15} />
+                          <Trash size={15} />
                         </button>
                       </div>
                     </td>

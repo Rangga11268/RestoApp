@@ -2,15 +2,15 @@ import { useEffect, useRef, useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import {
   ArrowLeft,
-  CheckCircle2,
-  Loader2,
+  CheckCircle,
+  CircleNotch,
   Printer,
-  Banknote,
+  Money,
   CreditCard,
-  Smartphone,
-  Building2,
-  AlertCircle,
-} from 'lucide-react'
+  DeviceMobile,
+  Buildings,
+  WarningCircle,
+} from '@phosphor-icons/react'
 import { Button, Input } from '@/components/ui'
 import { getOrder, type Order } from '@/services/orderService'
 import {
@@ -48,13 +48,13 @@ const METHOD_OPTIONS: MethodOption[] = [
   {
     method: 'cash',
     label: 'Tunai',
-    icon: <Banknote size={20} />,
+    icon: <Money size={20} />,
     desc: 'Hitung kembalian otomatis',
   },
   {
     method: 'qris',
     label: 'QRIS',
-    icon: <Smartphone size={20} />,
+    icon: <DeviceMobile size={20} />,
     desc: 'GoPay, OVO, Dana, dll',
   },
   {
@@ -72,7 +72,7 @@ const METHOD_OPTIONS: MethodOption[] = [
   {
     method: 'transfer',
     label: 'Transfer Bank',
-    icon: <Building2 size={20} />,
+    icon: <Buildings size={20} />,
     desc: 'BCA, Mandiri, BRI, dll',
   },
 ]
@@ -111,7 +111,7 @@ function SuccessOverlay({
     <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm text-center p-8">
         <div className="flex items-center justify-center w-16 h-16 rounded-full bg-green-100 mx-auto mb-4">
-          <CheckCircle2 size={36} className="text-green-600" />
+          <CheckCircle size={36} className="text-green-600" />
         </div>
         <h2 className="text-xl font-bold text-gray-900 mb-1">Pembayaran Berhasil!</h2>
         <p className="text-gray-500 text-sm mb-5">{order.order_number} telah lunas</p>
@@ -156,7 +156,7 @@ export default function PaymentPage() {
   const [notes, setNotes] = useState('')
 
   const [processing, setProcessing] = useState(false)
-  const [processError, setProcessError] = useState<string | null>(null)
+  const [_processError, setProcessError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
   const [paidOrder, setPaidOrder] = useState<Order | null>(null)
   const [changeAmount, setChangeAmount] = useState(0)
@@ -271,7 +271,7 @@ export default function PaymentPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20 text-gray-400">
-        <Loader2 size={24} className="animate-spin mr-2" /> Memuat pesanan…
+        <CircleNotch size={24} className="animate-spin mr-2" /> Memuat pesanan…
       </div>
     )
   }
@@ -467,7 +467,7 @@ export default function PaymentPage() {
               )}
               {cashInsufficient && (
                 <div className="flex items-center gap-2 text-red-500 text-sm">
-                  <AlertCircle size={14} />
+                  <WarningCircle size={14} />
                   Uang kurang {formatIDR(total - cashValue)}
                 </div>
               )}
@@ -516,11 +516,11 @@ export default function PaymentPage() {
           >
             {snapLoading ? (
               <>
-                <Loader2 size={18} className="animate-spin" /> Memuat QRIS…
+                <CircleNotch size={18} className="animate-spin" /> Memuat QRIS…
               </>
             ) : (
               <>
-                <Smartphone size={18} /> Bayar dengan QRIS — {formatIDR(total)}
+                <DeviceMobile size={18} /> Bayar dengan QRIS — {formatIDR(total)}
               </>
             )}
           </Button>
@@ -533,7 +533,7 @@ export default function PaymentPage() {
           >
             {processing ? (
               <>
-                <Loader2 size={18} className="animate-spin" /> Memproses…
+                <CircleNotch size={18} className="animate-spin" /> Memproses…
               </>
             ) : (
               <>

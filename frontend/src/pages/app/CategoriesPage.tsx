@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Plus, Pencil, Trash2, GripVertical, ToggleRight, ToggleLeft } from 'lucide-react'
+import { Plus, Pencil, Trash, DotsSixVertical, ToggleRight, ToggleLeft } from "@phosphor-icons/react"
 import { useForm, type Resolver } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -136,7 +136,7 @@ export default function CategoriesPage() {
               {categories.map((cat) => (
                 <tr key={cat.id} className="hover:bg-gray-50 transition">
                   <td className="px-4 py-3 text-gray-300">
-                    <GripVertical size={16} />
+                    <DotsSixVertical size={16} />
                   </td>
                   <td className="px-4 py-3 font-medium text-gray-900">{cat.name}</td>
                   <td className="px-4 py-3 text-gray-400 hidden md:table-cell">
@@ -172,7 +172,7 @@ export default function CategoriesPage() {
                         onClick={() => handleDelete(cat)}
                         className="p-1.5 text-red-500"
                       >
-                        <Trash2 size={14} />
+                        <Trash size={14} />
                       </Button>
                     </div>
                   </td>

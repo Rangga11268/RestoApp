@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { Lock, Eye, EyeOff, Loader2 } from "lucide-react";
+import { LockKey, Eye, EyeClosed, CircleNotch } from "@phosphor-icons/react";
 import api from "@/lib/axios";
 import AuthLayout from "@/components/auth/AuthLayout";
 
@@ -101,7 +101,7 @@ export default function ResetPasswordPage() {
             Password Baru
           </label>
           <div className="relative">
-            <Lock
+            <LockKey
               size={15}
               className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
             />
@@ -117,7 +117,7 @@ export default function ResetPasswordPage() {
               tabIndex={-1}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition"
             >
-              {showPwd ? <EyeOff size={15} /> : <Eye size={15} />}
+              {showPwd ? <EyeClosed size={15} /> : <Eye size={15} />}
             </button>
           </div>
           {errors.password && (
@@ -132,7 +132,7 @@ export default function ResetPasswordPage() {
             Konfirmasi Password
           </label>
           <div className="relative">
-            <Lock
+            <LockKey
               size={15}
               className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
             />
@@ -148,7 +148,7 @@ export default function ResetPasswordPage() {
               tabIndex={-1}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition"
             >
-              {showConfirm ? <EyeOff size={15} /> : <Eye size={15} />}
+              {showConfirm ? <EyeClosed size={15} /> : <Eye size={15} />}
             </button>
           </div>
           {errors.password_confirmation && (
@@ -163,7 +163,7 @@ export default function ResetPasswordPage() {
           disabled={isSubmitting}
           className="w-full flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 active:bg-orange-700 disabled:opacity-60 text-white font-semibold py-2.5 rounded-lg text-sm transition mt-1"
         >
-          {isSubmitting && <Loader2 size={15} className="animate-spin" />}
+          {isSubmitting && <CircleNotch size={15} className="animate-spin" />}
           {isSubmitting ? "Menyimpan..." : "Simpan Password Baru"}
         </button>
       </form>

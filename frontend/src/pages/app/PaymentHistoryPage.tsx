@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Loader2, RefreshCw, BadgeCheck, Clock, XCircle } from "lucide-react";
+import { CircleNotch, ArrowsClockwise, SealCheck, Clock, XCircle } from "@phosphor-icons/react";
 import {
   getPaymentHistory,
   METHOD_LABELS,
@@ -31,7 +31,7 @@ function formatDateTime(str: string) {
 }
 
 const STATUS_ICON: Record<PaymentStatus, React.ReactNode> = {
-  paid: <BadgeCheck size={14} className="text-green-500" />,
+  paid: <SealCheck size={14} className="text-green-500" />,
   pending: <Clock size={14} className="text-yellow-500" />,
   failed: <XCircle size={14} className="text-red-500" />,
   refunded: <XCircle size={14} className="text-gray-400" />,
@@ -98,7 +98,7 @@ export default function PaymentHistoryPage() {
           disabled={loading}
           className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 border border-gray-200 hover:border-gray-300 rounded-lg px-3 py-1.5 bg-white transition"
         >
-          <RefreshCw size={14} className={cn(loading && "animate-spin")} />
+          <ArrowsClockwise size={14} className={cn(loading && "animate-spin")} />
           Refresh
         </button>
       </div>
@@ -157,7 +157,7 @@ export default function PaymentHistoryPage() {
       {/* Table */}
       {loading ? (
         <div className="flex items-center justify-center py-20 text-gray-400">
-          <Loader2 size={22} className="animate-spin mr-2" /> Memuat…
+          <CircleNotch size={22} className="animate-spin mr-2" /> Memuat…
         </div>
       ) : payments.length === 0 ? (
         <div className="text-center py-20 text-gray-400 text-sm">
