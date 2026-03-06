@@ -158,10 +158,11 @@ class ReportController extends Controller
                 ->whereBetween('paid_at', [$from, $to])
                 ->select(
                     DB::raw("DATE_FORMAT(paid_at, '{$dateFormat}') as period"),
+                    DB::raw($groupBy === 'month' ? "DATE_FORMAT(paid_at, '%b %Y') as label" : "DATE_FORMAT(paid_at, '%d %b') as label"),
                     DB::raw('SUM(amount) as revenue'),
                     DB::raw('COUNT(*) as transactions'),
                 )
-                ->groupBy('period')
+                ->groupBy('period', 'label')
                 ->orderBy('period')
                 ->get();
 
@@ -176,6 +177,7 @@ class ReportController extends Controller
                 'summary' => $summary,
                 'chart'   => $rows->map(fn($r) => [
                     'period'       => $r->period,
+                    'label'        => $r->label,
                     'revenue'      => (float) $r->revenue,
                     'transactions' => (int) $r->transactions,
                 ]),

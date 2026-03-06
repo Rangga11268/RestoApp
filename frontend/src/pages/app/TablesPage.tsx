@@ -1,5 +1,14 @@
 import { useEffect, useRef, useState } from 'react'
-import { Plus, Pencil, Trash, ArrowsClockwise, DownloadSimple, QrCode, Warning } from "@phosphor-icons/react"
+import {
+  Plus,
+  Pencil,
+  Trash,
+  ArrowsClockwise,
+  DownloadSimple,
+  QrCode,
+  Warning,
+  Chair,
+} from '@phosphor-icons/react'
 import { useForm, type Resolver } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -30,17 +39,11 @@ const STATUS_LABEL: Record<string, string> = {
   reserved: 'Dipesan',
 }
 const STATUS_COLOR: Record<string, string> = {
-  available: 'bg-green-100 text-green-700',
-  occupied: 'bg-red-100 text-red-700',
-  reserved: 'bg-amber-100 text-amber-700',
+  available: 'bg-emerald-100 text-emerald-700 ring-1 ring-emerald-500/20',
+  occupied: 'bg-rose-100 text-rose-700 ring-1 ring-rose-500/20',
+  reserved: 'bg-amber-100 text-amber-700 ring-1 ring-amber-500/20',
 }
 
-/**
- * Ubah path (/menu/slug?table=1) jadi URL lengkap.
- * Pakai VITE_APP_URL dari .env jika di-set, fallback ke window.location.origin.
- * Jika admin buka dari localhost, QR akan berisi localhost (tidak bisa di-scan HP).
- * Solusi: akses halaman ini via Network IP (http://192.168.x.x:5173) atau set VITE_APP_URL.
- */
 function buildQrUrl(path: string): string {
   const base = import.meta.env.VITE_APP_URL?.replace(/\/$/, '') || window.location.origin
   return base + path
@@ -149,206 +152,274 @@ export default function TablesPage() {
   }
 
   return (
-    <div className="w-full">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+    <div className="w-full max-w-7xl mx-auto animate-in fade-in zoom-in-95 duration-500">
+      {/* Header Premium */}
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Meja</h1>
-          <p className="text-sm text-gray-500 mt-0.5">{tables.length} meja terdaftar</p>
+          <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Manajemen Meja</h1>
+          <p className="text-sm font-medium text-gray-400 mt-1">
+            Kelola tata letak kapasitas & cetak QR Code meja otomatis
+          </p>
         </div>
-        <Button onClick={openCreate} className="flex items-center gap-2">
-          <Plus size={16} /> Tambah Meja
-        </Button>
+        <div className="flex items-center gap-3">
+          <div className="px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold text-gray-600 shadow-sm hidden md:block">
+            <span className="text-orange-500 mr-1">{tables.length}</span> Total Meja
+          </div>
+          <Button
+            onClick={openCreate}
+            className="flex items-center gap-2 bg-gradient-to-r from-orange-500 to-amber-500 shadow-md shadow-orange-500/20 hover:scale-[1.02] rounded-xl px-5 transition-all text-sm font-bold border-0"
+          >
+            <Plus size={16} weight="bold" /> Tambah Meja Baru
+          </Button>
+        </div>
       </div>
 
-      {/* Warning: akses via localhost — QR tidak bisa di-scan dari HP */}
+      {/* Warning: akses via localhost */}
       {isLocalhost() && !import.meta.env.VITE_APP_URL && (
-        <div className="mb-5 flex items-start gap-3 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl px-4 py-3 text-sm">
-          <Warning size={16} className="mt-0.5 flex-shrink-0 text-amber-500" />
+        <div className="mb-6 flex items-start gap-3 bg-amber-50/80 backdrop-blur border border-amber-200/60 shadow-sm text-amber-800 rounded-2xl px-5 py-4 text-sm animate-pulse">
+          <Warning size={20} weight="duotone" className="mt-0.5 flex-shrink-0 text-amber-500" />
           <div>
-            <p className="font-semibold">QR Code tidak bisa di-scan dari HP</p>
-            <p className="text-amber-700 mt-0.5">
-              Kamu sedang mengakses via <code className="bg-amber-100 px-1 rounded">localhost</code>
-              . Akses halaman ini melalui <strong>Network IP</strong> (lihat output Vite:{' '}
-              <code className="bg-amber-100 px-1 rounded">http://192.168.x.x:5173</code>) agar QR
-              berisi URL yang bisa dijangkau HP.
+            <p className="font-extrabold tracking-tight text-amber-900">
+              QR Code mungkin tidak bisa di-scan dari HP
+            </p>
+            <p className="text-amber-700 mt-1 font-medium">
+              Kamu sedang mengakses via{' '}
+              <code className="bg-white px-2 py-0.5 rounded-md font-mono text-amber-900 border border-amber-200 shadow-sm mx-1">
+                localhost
+              </code>
+              . Gunakan Network IP (
+              <code className="bg-white px-2 py-0.5 rounded-md font-mono text-amber-900 border border-amber-200 shadow-sm mx-1">
+                http://192.168.x.x:5173
+              </code>
+              ) agar pelanggan restoran bisa melakukan akses ke link menu digital.
             </p>
           </div>
         </div>
       )}
 
+      {/* Main Content Area */}
       {loading ? (
-        <div className="flex justify-center py-12">
-          <div className="w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" />
+        <div className="flex justify-center py-20 bg-white/40 backdrop-blur rounded-3xl border border-gray-100 border-dashed">
+          <div className="w-10 h-10 border-4 border-orange-200 border-t-orange-500 rounded-full animate-spin" />
         </div>
       ) : tables.length === 0 ? (
-        <div className="text-center py-16 bg-white rounded-xl border border-gray-200">
-          <div className="text-4xl mb-3">🪑</div>
-          <p className="text-gray-500 text-sm">
-            Belum ada meja. Tambahkan meja agar pelanggan bisa scan QR.
+        <div className="text-center py-24 bg-white/50 backdrop-blur rounded-3xl border border-gray-100 border-dashed shadow-sm flex flex-col items-center">
+          <div className="w-20 h-20 bg-gradient-to-tr from-gray-50 to-gray-100 rounded-full flex items-center justify-center mb-4 shadow-inner">
+            <Chair size={36} weight="duotone" className="text-gray-300" />
+          </div>
+          <p className="font-extrabold text-gray-900 text-lg tracking-tight">
+            Simulasi Ruang Makan Kosong
+          </p>
+          <p className="text-gray-400 text-sm font-medium mt-1 mb-5">
+            Belum ada meja. Tambahkan spot agar pelanggan bisa scan QR.
           </p>
           <Button
             onClick={openCreate}
             variant="ghost"
-            className="mt-4 text-orange-500 hover:text-orange-600 text-sm font-medium"
+            className="text-orange-500 hover:text-orange-600 hover:bg-orange-50 text-sm font-bold rounded-xl px-5 py-2.5"
           >
-            + Tambah meja pertama
+            <Plus size={16} weight="bold" className="mr-2" /> Mulai Tambah Meja
           </Button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5">
           {tables.map((t) => (
             <div
               key={t.id}
-              className={`bg-white rounded-xl border overflow-hidden transition hover:shadow-sm ${!t.is_active ? 'opacity-60' : 'border-gray-200'}`}
+              className={`bg-white rounded-3xl border shadow-sm hover:shadow-premium-hover flex flex-col transition-all duration-300 transform hover:-translate-y-1 ${!t.is_active ? 'opacity-50 grayscale hover:grayscale-0' : 'border-gray-100'}`}
             >
-              <div className="bg-gray-50 px-4 py-3 flex items-center justify-between">
+              {/* Header Box */}
+              <div className="px-5 py-4 flex items-start justify-between border-b border-gray-50">
                 <div>
-                  <p className="font-semibold text-gray-900">{t.name}</p>
-                  <p className="text-xs text-gray-400">{t.capacity} kursi</p>
+                  <h3 className="text-lg font-black text-gray-900 tracking-tight">{t.name}</h3>
+                  <p className="text-xs font-semibold text-gray-400 mt-0.5">{t.capacity} Kursi</p>
                 </div>
                 <span
-                  className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_COLOR[t.status] ?? 'bg-gray-100 text-gray-500'}`}
+                  className={`text-[10px] uppercase tracking-wider px-2.5 py-1 rounded-full font-extrabold ${STATUS_COLOR[t.status] ?? 'bg-gray-100 text-gray-500'}`}
                 >
                   {STATUS_LABEL[t.status] ?? t.status}
                 </span>
               </div>
 
-              {/* QR preview */}
-              <div className="flex flex-col items-center py-4 px-3">
+              {/* QR Centerpiece */}
+              <div className="flex-1 flex flex-col items-center py-6 px-4 relative overflow-hidden">
+                {/* Background Decor */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 bg-orange-50/50 rounded-full blur-3xl -z-10 object-cover" />
+
                 {t.qr_code ? (
                   <div
-                    className="w-28 h-28 cursor-pointer flex items-center justify-center p-1 bg-white"
+                    className="w-32 h-32 cursor-pointer flex items-center justify-center p-2 bg-white rounded-2xl shadow-premium border border-gray-100 hover:scale-105 transition-transform"
                     onClick={() => setQrTarget(t)}
                     title="Klik untuk perbesar"
                   >
-                    <QRCode value={buildQrUrl(t.qr_code)} size={104} level="M" />
+                    <QRCode value={buildQrUrl(t.qr_code)} size={112} level="M" />
                   </div>
                 ) : (
-                  <div className="w-28 h-28 bg-gray-100 rounded flex items-center justify-center text-gray-300">
-                    <QrCode size={36} />
+                  <div className="w-32 h-32 bg-gray-50 rounded-2xl flex border border-gray-100 border-dashed items-center justify-center text-gray-300">
+                    <QrCode size={48} weight="duotone" />
                   </div>
                 )}
-
-                <div className="flex gap-2 mt-3 w-full">
+                <div className="mt-5 w-full flex align-center gap-2">
                   <Button
                     onClick={() => doRegenerate(t)}
                     disabled={regenerating === t.id}
                     variant="secondary"
-                    className="flex-1 flex items-center justify-center gap-1 text-xs py-1.5"
+                    className="flex-1 flex items-center justify-center gap-1.5 text-xs font-bold py-2 bg-white border-gray-200 rounded-xl hover:bg-gray-50"
+                    title="Update QR Code link"
                   >
-                    <ArrowsClockwise size={12} className={regenerating === t.id ? 'animate-spin' : ''} />{' '}
-                    QR Baru
+                    <ArrowsClockwise
+                      size={14}
+                      weight="bold"
+                      className={regenerating === t.id ? 'animate-spin text-orange-500' : ''}
+                    />
                   </Button>
                   {t.qr_code && (
                     <Button
                       onClick={() => setQrTarget(t)}
                       variant="secondary"
-                      className="flex-1 flex items-center justify-center gap-1 text-xs py-1.5"
+                      className="flex-1 flex items-center justify-center gap-1.5 text-xs font-bold py-2 bg-white border-gray-200 rounded-xl hover:bg-gray-50 text-blue-600 hover:text-blue-700"
                     >
-                      <DownloadSimple size={12} /> DownloadSimple
+                      <DownloadSimple size={14} weight="bold" /> Download
                     </Button>
                   )}
                 </div>
               </div>
 
-              <div className="border-t border-gray-100 px-3 py-2 flex justify-end gap-1">
-                <Button variant="ghost" onClick={() => openEdit(t)} className="p-1.5 text-blue-500">
-                  <Pencil size={13} />
-                </Button>
-                <Button
-                  variant="ghost"
-                  onClick={() => handleDelete(t)}
-                  className="p-1.5 text-red-500"
-                >
-                  <Trash size={13} />
-                </Button>
+              {/* Action Footer */}
+              <div className="flex justify-between items-center px-4 py-3 bg-gray-50/50 rounded-b-3xl border-t border-gray-50">
+                <span className="text-xs font-medium text-gray-400">
+                  {t.is_active ? 'Aktif' : 'Non-aktif'}
+                </span>
+                <div className="flex gap-1">
+                  <Button
+                    variant="ghost"
+                    onClick={() => openEdit(t)}
+                    className="w-8 h-8 p-0 rounded-lg flex items-center justify-center text-blue-500 hover:bg-blue-50"
+                  >
+                    <Pencil size={15} weight="bold" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    onClick={() => handleDelete(t)}
+                    className="w-8 h-8 p-0 rounded-lg flex items-center justify-center text-red-500 hover:bg-red-50"
+                  >
+                    <Trash size={15} weight="bold" />
+                  </Button>
+                </div>
               </div>
             </div>
           ))}
         </div>
       )}
 
-      {/* Create / Edit modal */}
+      {/* Create / Edit modal (Premium Inputs) */}
       <Modal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
-        title={editing ? 'Edit Meja' : 'Tambah Meja'}
+        title={editing ? 'Ubah Atribut Meja' : 'Registrasi Meja Baru'}
         size="sm"
       >
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Nama Meja</label>
-            <Input {...register('name')} placeholder="cth: Meja 1 / VIP-A" className="" />
-            {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name.message}</p>}
+            <label className="block text-sm font-bold text-gray-700 mb-1.5">Nama/Nomor Meja</label>
+            <Input
+              {...register('name')}
+              placeholder="cth: Meja 1 / VIP-A / Lt 2 Bar"
+              className="rounded-xl border-gray-200 shadow-sm focus:border-orange-500"
+            />
+            {errors.name && (
+              <p className="text-xs font-medium text-red-500 mt-1.5">{errors.name.message}</p>
+            )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Kapasitas (orang)
+            <label className="block text-sm font-bold text-gray-700 mb-1.5">
+              Kapasitas Maksimal (orang)
             </label>
-            <Input {...register('capacity')} type="number" min={1} className="" />
+            <Input
+              {...register('capacity')}
+              type="number"
+              min={1}
+              className="rounded-xl border-gray-200 shadow-sm focus:border-orange-500"
+            />
             {errors.capacity && (
-              <p className="text-xs text-red-500 mt-1">{errors.capacity.message}</p>
+              <p className="text-xs font-medium text-red-500 mt-1.5">{errors.capacity.message}</p>
             )}
           </div>
 
           {editing && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+              <label className="block text-sm font-bold text-gray-700 mb-1.5">
+                Status Penggunaan
+              </label>
               <select
                 {...register('status')}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:border-orange-500"
+                className="w-full rounded-xl border border-gray-200 shadow-sm px-4 py-2.5 text-sm font-medium text-gray-700 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-colors bg-white hover:bg-gray-50 cursor-pointer"
               >
-                <option value="available">Tersedia</option>
+                <option value="available">Tersedia (Kosong)</option>
                 <option value="occupied">Terisi</option>
-                <option value="reserved">Dipesan</option>
+                <option value="reserved">Dipesan (Reservasi)</option>
               </select>
             </div>
           )}
 
-          <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
-            <input {...register('is_active')} type="checkbox" className="rounded" />
-            Aktif
+          <label className="flex items-center gap-3 p-3 bg-gray-50 border border-gray-100 rounded-xl cursor-pointer hover:bg-gray-100 transition-colors">
+            <input
+              {...register('is_active')}
+              type="checkbox"
+              className="w-5 h-5 rounded border-gray-300 text-orange-500 focus:ring-orange-500 bg-white"
+            />
+            <span className="text-sm font-bold text-gray-800">Meja Dapat Digunakan (Aktif)</span>
           </label>
 
-          <div className="flex gap-3 pt-2">
+          <div className="flex gap-3 pt-3">
             <Button
               type="button"
               variant="secondary"
               onClick={() => setModalOpen(false)}
-              className="flex-1"
+              className="flex-1 rounded-xl font-bold py-2.5 bg-white border-2 border-gray-100 hover:border-gray-200"
             >
               Batal
             </Button>
-            <Button type="submit" variant="primary" className="flex-1" disabled={isSubmitting}>
-              {isSubmitting ? 'Menyimpan...' : editing ? 'Simpan Perubahan' : 'Tambah Meja'}
+            <Button
+              type="submit"
+              variant="primary"
+              className="flex-1 rounded-xl font-bold py-2.5 bg-gradient-to-r from-orange-500 to-amber-500 border-0 shadow-md shadow-orange-500/30"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? 'Memproses...' : editing ? 'Terapkan' : 'Simpan Meja'}
             </Button>
           </div>
         </form>
       </Modal>
 
-      {/* QR zoom modal */}
+      {/* QR zoom modal (Premium Focus Box) */}
       <Modal
         open={!!qrTarget}
         onClose={() => setQrTarget(null)}
-        title={`QR Code — ${qrTarget?.name}`}
+        title={`Kode QR : ${qrTarget?.name}`}
         size="sm"
       >
         {qrTarget?.qr_code && (
-          <div className="flex flex-col items-center gap-4">
-            {/* URL yang tertanam di QR — berguna untuk copy/share */}
-            <p className="text-xs text-gray-400 break-all text-center">
-              {buildQrUrl(qrTarget.qr_code)}
-            </p>
-            <div ref={qrModalRef} className="p-3 bg-white rounded-lg border border-gray-200">
-              <QRCode value={buildQrUrl(qrTarget.qr_code)} size={200} level="M" />
+          <div className="flex flex-col items-center gap-5 pt-2 pb-4">
+            <div
+              ref={qrModalRef}
+              className="p-4 bg-white rounded-3xl border border-gray-100 shadow-premium"
+            >
+              <QRCode value={buildQrUrl(qrTarget.qr_code)} size={240} level="M" />
+            </div>
+            {/* URL Display */}
+            <div className="bg-gray-50 rounded-xl px-4 py-2.5 border border-gray-100 w-full text-center overflow-auto max-w-[280px]">
+              <p className="text-[11px] font-mono font-medium text-gray-500 whitespace-nowrap scrollbar-hide">
+                {buildQrUrl(qrTarget.qr_code)}
+              </p>
             </div>
             <Button
               onClick={() => downloadQrSvg(qrModalRef, qrTarget.name)}
               variant="primary"
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium"
+              className="w-full flex items-center justify-center gap-2 rounded-xl py-2.5 font-bold shadow-md shadow-orange-500/20"
             >
-              <DownloadSimple size={14} /> DownloadSimple SVG
+              <DownloadSimple size={16} weight="bold" /> Simpan Vector (SVG)
             </Button>
           </div>
         )}
