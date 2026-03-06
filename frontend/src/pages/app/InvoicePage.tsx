@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
-import { ArrowLeft, Printer, CircleNotch } from "@phosphor-icons/react"
+import { ArrowLeft, Printer, CircleNotch } from '@phosphor-icons/react'
 import { Button } from '@/components/ui'
 import { getOrder, ORDER_TYPE_LABELS, type Order } from '@/services/orderService'
 import { METHOD_LABELS, PAYMENT_STATUS_LABELS } from '@/services/paymentService'
 import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/stores/authStore'
+import { confirmAct, Toast } from '@/lib/swal'
 
 // ─── Helpers ─────────────────────────────────────────────
 
@@ -311,14 +312,20 @@ export default function InvoicePage() {
             <Button
               variant="ghost"
               onClick={async () => {
-                if (!confirm('Yakin ingin melakukan refund untuk pesanan ini?')) return
+                const result = await confirmAct(
+                  'Yakin ingin melakukan refund untuk pesanan ini?<br>Aksi ini tidak dapat dibatalkan.',
+                  'Ya, Refund'
+                )
+                if (!result.isConfirmed) return
+
                 try {
                   const { refundPayment } = await import('@/services/paymentService')
                   await refundPayment(order.payment!.id)
+                  Toast.fire({ icon: 'success', title: 'Refund Berhasil' })
                   const updated = await getOrder(order.id)
                   setOrder(updated)
                 } catch {
-                  alert('Gagal melakukan refund.')
+                  Toast.fire({ icon: 'error', title: 'Gagal melakukan refund.' })
                 }
               }}
               className="text-sm text-red-600 hover:underline"

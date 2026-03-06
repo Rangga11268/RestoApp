@@ -14,7 +14,7 @@ import {
   CircleNotch,
   Money,
   Receipt,
-} from "@phosphor-icons/react"
+} from '@phosphor-icons/react'
 import { Button } from '@/components/ui'
 import {
   getOrder,
@@ -27,6 +27,7 @@ import {
   type OrderStatus,
 } from '@/services/orderService'
 import { cn } from '@/lib/utils'
+import { confirmAct, Toast } from '@/lib/swal'
 
 // ─── Utils ───────────────────────────────────────────────
 
@@ -171,11 +172,17 @@ export default function OrderDetailPage() {
   }
 
   async function handleCancel() {
-    if (!order || !confirm('Batalkan pesanan ini?')) return
+    const result = await confirmAct(
+      'Batalkan pesanan ini? Aksi ini tidak dapat dibatalkan.',
+      'Ya, Batalkan'
+    )
+    if (!result.isConfirmed) return
+
     setActionLoading(true)
     setActionError(null)
     try {
-      await cancelOrder(order.id)
+      await cancelOrder(order!.id)
+      Toast.fire({ icon: 'success', title: 'Pesanan Dibatalkan' })
       navigate('/orders')
     } catch (e: unknown) {
       const msg =
