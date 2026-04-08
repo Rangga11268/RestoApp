@@ -54,8 +54,8 @@ export default function MenuCard({
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
         {item.is_featured && (
-          <span className="absolute top-4 left-4 bg-white/90 backdrop-blur-md text-primary text-[10px] font-black px-3.5 py-2 rounded-full uppercase tracking-widest shadow-lg flex items-center gap-1.5 border border-white">
-            <span className="animate-pulse text-amber-500">★</span> Chef's Choice
+          <span className="absolute top-4 left-4 bg-white/95 backdrop-blur-md text-amber-950 text-[9px] font-black px-3 py-1.5 rounded-full uppercase tracking-[0.15em] shadow-lg flex items-center gap-1.5 border border-white">
+            <span className="animate-pulse text-amber-600">★</span> Chef's Choice
           </span>
         )}
       </div>

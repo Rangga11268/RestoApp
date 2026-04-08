@@ -1,11 +1,9 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { 
   ShoppingCart, 
   ForkKnife, 
   Minus, 
   Plus, 
-  User, 
-  FileText, 
   Receipt, 
   CircleNotch, 
   X, 
@@ -14,14 +12,8 @@ import {
 } from "@phosphor-icons/react";
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
-import Card from '@/components/ui/Card';
 import api from "@/lib/axios";
-import { clsx, type ClassValue } from 'clsx';
-import { twMerge } from 'tailwind-merge';
 
-function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
 
 export interface CartItem {
   id: number;
@@ -202,7 +194,7 @@ export function CartDrawer({
   onClose,
   ...rest
 }: OrderFormProps & { open: boolean; onClose: () => void }) {
-  const { cartItems, currency, tableId, onUpdateQty } = rest;
+  const { cartItems, currency, onUpdateQty } = rest;
   const {
     notes,
     setNotes,
@@ -261,20 +253,20 @@ export function CartDrawer({
             <Input value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Notes..." />
           </div>
 
-          <div className="flex justify-between items-center bg-slate-900 rounded-[32px] p-2.5 pl-8 shadow-2xl overflow-hidden relative border border-white/5">
+          <div className="flex justify-between items-center bg-slate-900 rounded-2xl p-1.5 pl-6 shadow-xl overflow-hidden relative border border-white/5">
             <div className="absolute top-0 right-0 w-32 h-32 bg-primary/20 blur-3xl rounded-full -mr-16 -mt-16" />
             
             <div className="relative z-10 flex flex-col">
-              <span className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] mb-1">Payable</span>
-              <span className="font-extrabold text-2xl text-white tracking-tighter leading-none">{fmt(subtotal, currency)}</span>
+              <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-0.5">Payable</span>
+              <span className="font-extrabold text-xl text-white tracking-tighter leading-none">{fmt(subtotal, currency)}</span>
             </div>
             
             <Button
               onClick={handleOrder}
               disabled={loading || cartItems.length === 0}
-              className="px-10 h-14 font-black text-sm relative z-10 shadow-xl shadow-primary/20 rounded-[24px]"
+              className="px-4 h-8 font-black text-[9px] relative z-10 shadow-lg shadow-primary/20 rounded-lg"
             >
-              {loading ? <CircleNotch size={20} className="animate-spin" /> : <div className="flex items-center gap-2"><span>PLACE ORDER</span> <CaretRight size={18} weight="bold" /></div>}
+              {loading ? <CircleNotch size={12} className="animate-spin" /> : <div className="flex items-center gap-1.5"><span>CHECKOUT</span> <CaretRight size={12} weight="bold" /></div>}
             </Button>
           </div>
           {error && <p className="text-xs font-bold text-danger text-center animate-shake">{error}</p>}

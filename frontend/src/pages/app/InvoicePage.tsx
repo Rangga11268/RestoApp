@@ -1,22 +1,18 @@
 import { useEffect, useState } from 'react'
-import { useParams, useNavigate, Link } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { 
-    ArrowLeft, Printer, CircleNotch, 
-    ShareNetwork, DownloadSimple, CheckCircle, 
-    WarningCircle, ShieldCheck, Receipt,
+    ArrowLeft, Printer, 
+    CheckCircle, 
+    WarningCircle, 
     ArrowsClockwise,
     IdentificationBadge,
-    CalendarBlank,
-    MapPin,
-    PhoneCall,
-    CaretRight,
     Clock,
     Money,
-    QrCode
+    QrCode,
+    ShareNetwork
 } from '@phosphor-icons/react'
 import { getOrder, ORDER_TYPE_LABELS, type Order } from '@/services/orderService'
-import { METHOD_LABELS, PAYMENT_STATUS_LABELS } from '@/services/paymentService'
-import { cn } from '@/lib/utils'
+import { METHOD_LABELS } from '@/services/paymentService'
 import { useAuthStore } from '@/stores/authStore'
 import { confirmAct, Toast } from '@/lib/swal'
 import Button from '@/components/ui/Button'

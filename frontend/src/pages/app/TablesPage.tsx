@@ -9,6 +9,7 @@ import {
   Warning,
   Chair,
   Users,
+  Printer,
 } from '@phosphor-icons/react'
 import { useForm, type Resolver } from 'react-hook-form'
 import { z } from 'zod'
@@ -172,6 +173,13 @@ export default function TablesPage() {
             <span className="text-primary font-black">{tables.length}</span> Active Tables
           </div>
           <Button
+            variant="secondary"
+            onClick={() => window.print()}
+            className="rounded-2xl px-6 bg-white border-slate-100 hidden md:flex"
+          >
+            <Printer size={20} weight="bold" className="mr-2" /> Print All QR
+          </Button>
+          <Button
             onClick={openCreate}
             className="shadow-xl shadow-primary/20 rounded-2xl px-6"
           >
@@ -183,12 +191,12 @@ export default function TablesPage() {
       {/* Warning: akses via localhost */}
       {isLocalhost() && !import.meta.env.VITE_APP_URL && (
         <div className="flex items-start gap-4 p-5 bg-amber-50 border border-amber-200/50 rounded-3xl animate-in fade-in">
-          <div className="w-12 h-12 rounded-2xl bg-amber-100 flex items-center justify-center text-amber-600 flex-shrink-0">
+          <div className="w-12 h-12 rounded-2xl bg-amber-100 flex items-center justify-center text-amber-900 flex-shrink-0">
               <Warning size={24} weight="duotone" />
           </div>
           <div>
             <p className="font-ex-black tracking-tight text-amber-900 uppercase text-[10px] tracking-[0.2em] mb-1 leading-none">Developer Notice</p>
-            <p className="text-sm text-amber-800 font-bold leading-relaxed">
+            <p className="text-sm text-amber-900 font-bold leading-relaxed">
               QR Codes might not work on mobile devices while using <code className="bg-white px-1.5 rounded-md border border-amber-200">localhost</code>. 
               Please access via your network IP for mobile testing.
             </p>
@@ -434,6 +442,51 @@ export default function TablesPage() {
           </div>
         )}
       </Modal>
+
+      {/* ── Print Template (Hidden from screen) ── */}
+      <div id="qr-print-gallery" className="hidden print:block fixed inset-0 bg-white z-[999]">
+         <style>{`
+            @media print {
+              header, nav, aside, .no-print, button, .modal-backdrop, [role="dialog"] { 
+                display: none !important; 
+              }
+              body { background: white !important; margin: 0; padding: 0; }
+              #qr-print-gallery { 
+                display: block !important; 
+                position: absolute; left: 0; top: 0; width: 100%;
+              }
+              .qr-card-print {
+                page-break-inside: avoid;
+                break-inside: avoid;
+                border: 2px solid #f1f5f9;
+                padding: 40px;
+                text-align: center;
+                border-radius: 40px;
+                margin-bottom: 20px;
+              }
+            }
+         `}</style>
+
+         <div className="p-10">
+            <div className="grid grid-cols-2 gap-8">
+               {tables.filter(t => t.is_active && t.qr_code).map((t) => (
+                  <div key={t.id} className="qr-card-print flex flex-col items-center">
+                      <div className="mb-6">
+                        <h2 className="text-3xl font-black text-slate-900 tracking-tighter">{t.name}</h2>
+                        <p className="text-xs font-black text-primary uppercase tracking-[0.2em] mt-1">Scan to Order</p>
+                      </div>
+                      <div className="p-6 border-4 border-slate-900 rounded-[40px] mb-6">
+                        <QRCode value={buildQrUrl(t.qr_code!)} size={180} level="M" />
+                      </div>
+                      <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-tight">
+                         Proudly Powered by RestoApp SaaS<br/>
+                         Premium Digital Dining Experience
+                      </div>
+                  </div>
+               ))}
+            </div>
+         </div>
+      </div>
     </div>
   )
 }

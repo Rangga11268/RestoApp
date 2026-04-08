@@ -353,7 +353,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             {user.subscription.status !== 'expired' &&
               (user.subscription.days_remaining ?? 0) <= 7 &&
               (user.subscription.days_remaining ?? 0) > 0 && (
-                <div className="bg-amber-500/5 border border-amber-500/10 rounded-[20px] px-6 py-4 text-sm text-amber-700 flex items-center justify-between gap-4 shadow-sm">
+                <div className="bg-amber-500/5 border border-amber-500/10 rounded-[20px] px-6 py-4 text-sm text-amber-900 flex items-center justify-between gap-4 shadow-sm">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-amber-500/10 flex items-center justify-center">
                       <Warning size={22} weight="duotone" />

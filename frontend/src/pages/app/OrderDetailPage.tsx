@@ -63,7 +63,7 @@ function formatDateTime(str: string) {
 // ─── Status Config ────────────────────────────
 
 const STATUS_CONFIG: Record<string, { label: string; icon: any; color: string; desc: string }> = {
-    pending: { label: 'PENDING', icon: CircleDashed, color: 'text-amber-500 bg-amber-50 border-amber-100', desc: 'Waiting for kitchen approval' },
+    pending: { label: 'PENDING', icon: CircleDashed, color: 'text-amber-800 bg-amber-50 border-amber-100', desc: 'Waiting for kitchen approval' },
     confirmed: { label: 'CONFIRMED', icon: CheckCircle, color: 'text-blue-500 bg-blue-50 border-blue-100', desc: 'Order accepted' },
     cooking: { label: 'COOKING', icon: CookingPot, color: 'text-orange-500 bg-orange-50 border-orange-100', desc: 'Preparing the meal' },
     ready: { label: 'READY', icon: BellRinging, color: 'text-green-500 bg-green-50 border-green-100', desc: 'Dish is on the counter' },

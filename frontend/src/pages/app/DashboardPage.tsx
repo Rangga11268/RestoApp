@@ -192,7 +192,7 @@ export default function DashboardPage() {
           >
             <div className={cn(
                 'w-10 h-10 rounded-full flex items-center justify-center',
-                isTrialing ? 'bg-amber-100 text-amber-600' : 'bg-success/10 text-success'
+                isTrialing ? 'bg-amber-100 text-amber-900' : 'bg-success/10 text-success'
             )}>
                 <Lightning size={20} weight="fill" />
             </div>

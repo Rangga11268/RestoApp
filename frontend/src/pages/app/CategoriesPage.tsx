@@ -305,6 +305,4 @@ export default function CategoriesPage() {
   )
 }
 
-function ArrowsClockwise({ size, className, weight }: { size: number, className?: string, weight?: string }) {
-    return <List size={size} className={className} />
-}
+

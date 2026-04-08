@@ -187,8 +187,8 @@ export default function ReportsPage() {
       label: 'Daily Average',
       value: loadingSales ? '—' : fmt(sales?.summary.avg_per_day ?? 0, currency),
       icon: <ChartBar size={20} weight="duotone" />,
-      color: 'bg-amber-100 text-amber-600',
-      border: 'border-amber-200',
+      color: 'bg-amber-100 text-amber-900',
+      border: 'border-amber-200/50',
     },
     {
       label: 'Active Staff',

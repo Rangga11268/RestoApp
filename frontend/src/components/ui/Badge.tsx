@@ -24,7 +24,7 @@ export default function Badge({
     primary: 'bg-primary/10 text-primary',
     success: 'bg-success/10 text-success',
     danger: 'bg-danger/10 text-danger',
-    warning: 'bg-amber-100 text-amber-700 font-medium',
+    warning: 'bg-amber-100 text-amber-950 font-medium',
     info: 'bg-blue-100 text-blue-700 font-medium',
     glass: 'glass border border-white/20 text-slate-900 shadow-sm',
   }
