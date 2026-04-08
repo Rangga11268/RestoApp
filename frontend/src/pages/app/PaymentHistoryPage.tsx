@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { CircleNotch, ArrowsClockwise, SealCheck, Clock, XCircle } from "@phosphor-icons/react";
+import { 
+    CircleNotch, ArrowsClockwise, SealCheck, Clock, XCircle, 
+    CreditCard, Money, QrCode, Bank, Wallet,
+    Funnel, MagnifyingGlass, CalendarBlank,
+    CaretLeft, CaretRight, FileText, Fingerprint
+} from "@phosphor-icons/react";
 import {
   getPaymentHistory,
   METHOD_LABELS,
@@ -11,6 +16,9 @@ import {
   type PaymentStatus,
 } from "@/services/paymentService";
 import { cn } from "@/lib/utils";
+import Badge from "@/components/ui/Badge";
+import Card from "@/components/ui/Card";
+import Button from "@/components/ui/Button";
 
 function formatIDR(n: number) {
   return new Intl.NumberFormat("id-ID", {
@@ -21,7 +29,7 @@ function formatIDR(n: number) {
 }
 
 function formatDateTime(str: string) {
-  return new Date(str).toLocaleString("id-ID", {
+  return new Date(str).toLocaleString("en-US", {
     day: "2-digit",
     month: "short",
     year: "numeric",
@@ -30,19 +38,30 @@ function formatDateTime(str: string) {
   });
 }
 
-const STATUS_ICON: Record<PaymentStatus, React.ReactNode> = {
-  paid: <SealCheck size={14} className="text-green-500" />,
-  pending: <Clock size={14} className="text-yellow-500" />,
-  failed: <XCircle size={14} className="text-red-500" />,
-  refunded: <XCircle size={14} className="text-gray-400" />,
+const METHOD_CONFIG: Record<string, { label: string; icon: any; color: string }> = {
+    cash: { label: 'Cash', icon: Money, color: 'text-green-600 bg-green-50' },
+    qris: { label: 'QRIS', icon: QrCode, color: 'text-blue-600 bg-blue-50' },
+    debit_card: { label: 'Debit', icon: CreditCard, color: 'text-violet-600 bg-violet-50' },
+    credit_card: { label: 'Credit', icon: CreditCard, color: 'text-indigo-600 bg-indigo-50' },
+    transfer: { label: 'Bank', icon: Bank, color: 'text-amber-600 bg-amber-50' },
 };
 
-const METHODS: { value: PaymentMethod | ""; label: string }[] = [
-  { value: "", label: "Semua Metode" },
-  { value: "cash", label: "Tunai" },
+const STATUS_CONFIG: Record<PaymentStatus, { icon: any; variant: any }> = {
+  paid: { icon: SealCheck, variant: 'success' },
+  pending: { icon: Clock, variant: 'warning' },
+  failed: { icon: XCircle, variant: 'danger' },
+  refunded: { icon: Wheelchair, variant: 'glass' },
+};
+
+// Fallback for missing icon
+function Wheelchair(props: any) { return <XCircle {...props} /> }
+
+const METHODS_LIST: { value: PaymentMethod | ""; label: string }[] = [
+  { value: "", label: "Method" },
+  { value: "cash", label: "Cash" },
   { value: "qris", label: "QRIS" },
-  { value: "debit_card", label: "Kartu Debit" },
-  { value: "credit_card", label: "Kartu Kredit" },
+  { value: "debit_card", label: "Debit" },
+  { value: "credit_card", label: "Credit" },
   { value: "transfer", label: "Transfer" },
 ];
 
@@ -78,181 +97,211 @@ export default function PaymentHistoryPage() {
 
   useEffect(() => {
     load(1);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterMethod, filterStatus, filterDate]);
 
   return (
-    <div className="w-full">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+    <div className="w-full max-w-7xl mx-auto space-y-10 animate-in">
+      {/* Header Premium */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">
-            Riwayat Pembayaran
-          </h1>
-          <p className="text-sm text-gray-500 mt-0.5">
-            {total} transaksi total
-          </p>
+           <Badge variant="primary" className="mb-2">Financial Records</Badge>
+           <h1 className="text-4xl font-black text-slate-900 tracking-tighter">Transaction Vault</h1>
+           <p className="text-sm font-medium text-slate-400 mt-1">
+             Track every payment and verify settlement status.
+           </p>
         </div>
-        <button
-          onClick={() => load(page)}
-          disabled={loading}
-          className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 border border-gray-200 hover:border-gray-300 rounded-lg px-3 py-1.5 bg-white transition"
-        >
-          <ArrowsClockwise size={14} className={cn(loading && "animate-spin")} />
-          Refresh
-        </button>
+        <div className="flex items-center gap-4">
+          <div className="px-5 py-3 bg-white border border-slate-100 rounded-2xl text-sm font-bold text-slate-600 shadow-sm hidden md:flex items-center gap-2">
+            <span className="text-primary font-black">{total}</span> Payments Managed
+          </div>
+           <button
+                onClick={() => load(page)}
+                disabled={loading}
+                className="w-12 h-12 bg-white border border-slate-100 rounded-2xl flex items-center justify-center text-slate-400 hover:text-primary transition-all shadow-sm"
+            >
+                <ArrowsClockwise size={20} weight="bold" className={cn(loading && "animate-spin")} />
+            </button>
+        </div>
       </div>
 
-      {/* Filters */}
-      <div className="flex flex-wrap gap-2 mb-5">
-        <select
-          value={filterMethod}
-          onChange={(e) =>
-            setFilterMethod(e.target.value as PaymentMethod | "")
-          }
-          className="text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-200"
-        >
-          {METHODS.map((m) => (
-            <option key={m.value} value={m.value}>
-              {m.label}
-            </option>
-          ))}
-        </select>
+      {/* Filters Area */}
+      <div className="flex flex-wrap items-center gap-4">
+           {/* Method Filter */}
+           <div className="relative min-w-[160px]">
+                <Wallet size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                <select
+                    value={filterMethod}
+                    onChange={(e) => setFilterMethod(e.target.value as PaymentMethod | "")}
+                    className="w-full h-12 pl-12 pr-10 bg-white border border-slate-100 rounded-2xl text-sm font-black text-slate-600 appearance-none focus:ring-4 focus:ring-primary/10 transition-all shadow-sm uppercase tracking-widest cursor-pointer"
+                >
+                    {METHODS_LIST.map((m) => (
+                    <option key={m.value} value={m.value}>{m.label}</option>
+                    ))}
+                </select>
+           </div>
 
-        <select
-          value={filterStatus}
-          onChange={(e) =>
-            setFilterStatus(e.target.value as PaymentStatus | "")
-          }
-          className="text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-200"
-        >
-          <option value="">Semua Status</option>
-          <option value="paid">Lunas</option>
-          <option value="pending">Menunggu</option>
-          <option value="refunded">Direfund</option>
-          <option value="failed">Gagal</option>
-        </select>
+           {/* Status Filter */}
+           <div className="relative min-w-[160px]">
+                <Funnel size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                <select
+                    value={filterStatus}
+                    onChange={(e) => setFilterStatus(e.target.value as PaymentStatus | "")}
+                    className="w-full h-12 pl-12 pr-10 bg-white border border-slate-100 rounded-2xl text-sm font-black text-slate-600 appearance-none focus:ring-4 focus:ring-primary/10 transition-all shadow-sm uppercase tracking-widest cursor-pointer"
+                >
+                    <option value="">Status</option>
+                    <option value="paid">Settled</option>
+                    <option value="pending">Pending</option>
+                    <option value="refunded">Refunded</option>
+                    <option value="failed">Failed</option>
+                </select>
+           </div>
 
-        <input
-          type="date"
-          value={filterDate}
-          onChange={(e) => setFilterDate(e.target.value)}
-          className="text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-200"
-        />
+           {/* Date Filter */}
+           <div className="relative min-w-[160px]">
+                <CalendarBlank size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input
+                    type="date"
+                    value={filterDate}
+                    onChange={(e) => setFilterDate(e.target.value)}
+                    className="w-full h-12 pl-12 pr-4 bg-white border border-slate-100 rounded-2xl text-sm font-black text-slate-400 focus:ring-4 focus:ring-primary/10 transition-all shadow-sm cursor-pointer outline-none"
+                />
+           </div>
 
-        {(filterMethod || filterStatus || filterDate) && (
-          <button
-            onClick={() => {
-              setFilterMethod("");
-              setFilterStatus("");
-              setFilterDate("");
-            }}
-            className="text-sm text-orange-600 hover:underline px-2"
-          >
-            Reset
-          </button>
-        )}
+           {(filterMethod || filterStatus || filterDate) && (
+             <Button 
+                onClick={() => {
+                   setFilterMethod("");
+                   setFilterStatus("");
+                   setFilterDate("");
+                }}
+                variant="secondary" 
+                className="h-12 rounded-2xl px-6 text-[10px] font-black uppercase tracking-widest"
+             >
+                Reset Filters
+             </Button>
+           )}
       </div>
 
-      {/* Table */}
-      {loading ? (
-        <div className="flex items-center justify-center py-20 text-gray-400">
-          <CircleNotch size={22} className="animate-spin mr-2" /> Memuat…
-        </div>
-      ) : payments.length === 0 ? (
-        <div className="text-center py-20 text-gray-400 text-sm">
-          Belum ada riwayat pembayaran.
-        </div>
-      ) : (
-        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+      {/* Main Table Content */}
+      <Card className="p-0 border-slate-100 overflow-hidden shadow-xl shadow-slate-900/5">
+        {loading ? (
+             <div className="flex flex-col items-center justify-center py-32 text-slate-300">
+                <ArrowsClockwise size={48} className="animate-spin mb-4 text-primary opacity-20" />
+                <span className="font-black text-xs uppercase tracking-[0.2em] animate-pulse">Syncing Ledger...</span>
+            </div>
+        ) : payments.length === 0 ? (
+             <div className="text-center py-40 flex flex-col items-center">
+                <div className="w-20 h-20 bg-slate-50 rounded-[24px] flex items-center justify-center text-slate-200 mb-4">
+                    <FileText size={40} weight="duotone" />
+                </div>
+                <p className="font-black text-lg text-slate-900 tracking-tighter">No Transactions Found</p>
+                <p className="text-xs font-medium text-slate-400 mt-1 max-w-[240px]">We couldn't find any financial records matching your filters.</p>
+            </div>
+        ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-gray-50 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                  <th className="px-4 py-3">No. Order</th>
-                  <th className="px-4 py-3">Metode</th>
-                  <th className="px-4 py-3">Total</th>
-                  <th className="px-4 py-3">Kembalian</th>
-                  <th className="px-4 py-3">Status</th>
-                  <th className="px-4 py-3">Kasir</th>
-                  <th className="px-4 py-3">Waktu</th>
-                  <th className="px-4 py-3" />
+                 <tr className="bg-slate-50/50 text-left border-b border-slate-100">
+                  <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Transaction / Order</th>
+                  <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Settlement</th>
+                  <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Amount (IDR)</th>
+                  <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Reference</th>
+                  <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Time Period</th>
+                  <th className="px-8 py-5" />
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
-                {payments.map((pmt) => (
-                  <tr key={pmt.id} className="hover:bg-gray-50/50 transition">
-                    <td className="px-4 py-3 font-medium text-gray-900">
-                      {pmt.order?.order_number ?? `#${pmt.order_id}`}
-                    </td>
-                    <td className="px-4 py-3 text-gray-600">
-                      {METHOD_LABELS[pmt.method]}
-                    </td>
-                    <td className="px-4 py-3 font-semibold text-gray-900">
-                      {formatIDR(Number(pmt.amount))}
-                    </td>
-                    <td className="px-4 py-3 text-gray-600">
-                      {Number(pmt.change_amount) > 0
-                        ? formatIDR(Number(pmt.change_amount))
-                        : "—"}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={cn(
-                          "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold",
-                          PAYMENT_STATUS_COLORS[pmt.status],
-                        )}
-                      >
-                        {STATUS_ICON[pmt.status]}
-                        {PAYMENT_STATUS_LABELS[pmt.status]}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-gray-500">
-                      {pmt.cashier?.name ?? "—"}
-                    </td>
-                    <td className="px-4 py-3 text-gray-500 whitespace-nowrap">
-                      {pmt.paid_at ? formatDateTime(pmt.paid_at) : "—"}
-                    </td>
-                    <td className="px-4 py-3">
-                      <Link
-                        to={`/orders/${pmt.order_id}/invoice`}
-                        className="text-orange-600 hover:underline text-xs font-medium"
-                      >
-                        Invoice
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
+              <tbody className="divide-y divide-slate-50">
+                {payments.map((pmt) => {
+                  const Method = METHOD_CONFIG[pmt.method] || { label: pmt.method, icon: Money, color: 'bg-slate-50' };
+                  const Status = STATUS_CONFIG[pmt.status] || { icon: Clock, variant: 'glass' };
+                  const MIcon = Method.icon;
+                  const SIcon = Status.icon;
+
+                  return (
+                    <tr key={pmt.id} className="group hover:bg-slate-50/50 transition-all duration-300">
+                      <td className="px-8 py-5">
+                         <div className="flex items-center gap-4">
+                             <div className="w-12 h-12 rounded-2xl bg-white border border-slate-100 shadow-sm flex flex-col items-center justify-center text-slate-400 group-hover:bg-slate-900 group-hover:text-white transition-all">
+                                 <Fingerprint size={20} weight="duotone" />
+                             </div>
+                             <div className="flex flex-col min-w-0">
+                                <span className="text-sm font-black text-slate-900 tracking-tighter truncate group-hover:text-primary transition-colors">
+                                    {pmt.order?.order_number ?? `#${pmt.order_id}`}
+                                </span>
+                                <Badge variant="glass" className={cn("mt-1 py-0 px-2 text-[8px] font-black w-fit uppercase", Method.color)}>
+                                    <MIcon size={10} weight="bold" className="mr-1" /> {Method.label}
+                                </Badge>
+                             </div>
+                         </div>
+                      </td>
+                      <td className="px-8 py-5">
+                          <Badge variant={Status.variant} className="py-1 px-3 font-black text-[9px] uppercase tracking-widest border-none">
+                              <SIcon size={12} weight="bold" className="mr-1.5" />
+                              {pmt.status}
+                          </Badge>
+                      </td>
+                      <td className="px-8 py-5">
+                          <div className="flex flex-col">
+                            <span className="text-sm font-black text-slate-900 tracking-tighter">{formatIDR(Number(pmt.amount))}</span>
+                            {Number(pmt.change_amount) > 0 && (
+                                <span className="text-[10px] font-bold text-slate-400 italic">Change: {formatIDR(Number(pmt.change_amount))}</span>
+                            )}
+                          </div>
+                      </td>
+                      <td className="px-8 py-5 text-xs font-bold text-slate-400">
+                          {pmt.cashier?.name ? (
+                              <div className="flex items-center gap-2">
+                                  <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-black text-slate-900">
+                                      {pmt.cashier.name[0]}
+                                  </div>
+                                  <span>{pmt.cashier.name}</span>
+                              </div>
+                          ) : "—"}
+                      </td>
+                      <td className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-tight">
+                        {pmt.paid_at ? formatDateTime(pmt.paid_at) : "—"}
+                      </td>
+                      <td className="px-8 py-5 text-right">
+                        <Link
+                          to={`/orders/${pmt.order_id}/invoice`}
+                          className="w-10 h-10 rounded-2xl bg-white border border-slate-100 flex items-center justify-center text-slate-300 hover:text-primary hover:border-primary/20 transition-all shadow-sm"
+                        >
+                          <FileText size={18} weight="bold" />
+                        </Link>
+                      </td>
+                    </tr>
+                  )
+                })}
               </tbody>
             </table>
           </div>
+        )}
 
-          {/* Pagination */}
-          {lastPage > 1 && (
-            <div className="flex items-center justify-between px-4 py-3 border-t border-gray-100 text-sm text-gray-500">
-              <span>
-                Halaman {page} dari {lastPage}
-              </span>
-              <div className="flex gap-2">
-                <button
+        {/* Pagination Section */}
+        {lastPage > 1 && (
+          <div className="px-8 py-6 bg-slate-50/50 border-t border-slate-100 flex items-center justify-between">
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+              Page <span className="text-slate-900 font-black">{page}</span> of <span className="text-slate-900 font-black">{lastPage}</span>
+            </span>
+            <div className="flex gap-3">
+               <button
                   onClick={() => load(page - 1)}
                   disabled={page <= 1}
-                  className="px-3 py-1.5 rounded-lg border border-gray-200 disabled:opacity-40 hover:bg-gray-50 transition"
+                  className="w-12 h-12 rounded-2xl bg-white border border-slate-100 flex items-center justify-center text-slate-400 hover:text-primary transition-all disabled:opacity-30 shadow-sm"
                 >
-                  ‹ Prev
+                  <CaretLeft size={20} weight="bold" />
                 </button>
                 <button
                   onClick={() => load(page + 1)}
                   disabled={page >= lastPage}
-                  className="px-3 py-1.5 rounded-lg border border-gray-200 disabled:opacity-40 hover:bg-gray-50 transition"
+                   className="w-12 h-12 rounded-2xl bg-white border border-slate-100 flex items-center justify-center text-slate-400 hover:text-primary transition-all disabled:opacity-30 shadow-sm"
                 >
-                  Next ›
+                  <CaretRight size={20} weight="bold" />
                 </button>
-              </div>
             </div>
-          )}
-        </div>
-      )}
+          </div>
+        )}
+      </Card>
     </div>
   );
 }

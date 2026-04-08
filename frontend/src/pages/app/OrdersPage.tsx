@@ -7,10 +7,13 @@ import {
   ArrowsClockwise,
   CaretLeft,
   MagnifyingGlass,
-  ArrowRight,
   Warning,
+  Receipt,
+  MapPin,
 } from '@phosphor-icons/react'
-import { Button } from '@/components/ui'
+import Button from '@/components/ui/Button'
+import Card from '@/components/ui/Card'
+import Badge from '@/components/ui/Badge'
 import {
   getOrders,
   STATUS_LABELS,
@@ -19,18 +22,23 @@ import {
   type OrderStatus,
   type PaginatedOrders,
 } from '@/services/orderService'
-import { cn } from '@/lib/utils'
+import { clsx, type ClassValue } from 'clsx'
+import { twMerge } from 'tailwind-merge'
+
+function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
 
 // ─── Tab definitions ─────────────────────────────────────
 
 const TABS: { label: string; value: OrderStatus | 'all' }[] = [
   { label: 'Semua', value: 'all' },
   { label: 'Menunggu', value: 'pending' },
-  { label: 'Dikonfirmasi', value: 'confirmed' },
-  { label: 'Dimasak', value: 'cooking' },
+  { label: 'Proses', value: 'confirmed' },
+  { label: 'Dapur', value: 'cooking' },
   { label: 'Siap', value: 'ready' },
   { label: 'Selesai', value: 'completed' },
-  { label: 'Dibatalkan', value: 'cancelled' },
+  { label: 'Batal', value: 'cancelled' },
 ]
 
 // ─── Utils ───────────────────────────────────────────────
@@ -45,9 +53,9 @@ function formatCurrency(n: number) {
 
 function timeAgo(dateStr: string) {
   const diff = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000)
-  if (diff < 60) return `${diff}d lalu`
-  if (diff < 3600) return `${Math.floor(diff / 60)} mnt lalu`
-  if (diff < 86400) return `${Math.floor(diff / 3600)} jam lalu`
+  if (diff < 60) return `${diff}s ago`
+  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`
+  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`
   return new Date(dateStr).toLocaleDateString('id-ID', {
     day: 'numeric',
     month: 'short',
@@ -59,84 +67,81 @@ function timeAgo(dateStr: string) {
 // ─── Order card ───────────────────────────────────────────
 
 function OrderCard({ order }: { order: Order }) {
-  // Vibrant custom color pill for each status to replace default gray
-  let statusGradient = ''
+  let badgeVariant: 'primary' | 'success' | 'danger' | 'warning' | 'info' | 'glass' = 'glass'
+  
   switch (order.status) {
-    case 'pending':
-      statusGradient = 'bg-amber-100 text-amber-700 bg-opacity-70'
-      break
-    case 'confirmed':
-      statusGradient = 'bg-blue-100 text-blue-700 bg-opacity-70'
-      break
-    case 'cooking':
-      statusGradient = 'bg-indigo-100 text-indigo-700 bg-opacity-70'
-      break
-    case 'ready':
-      statusGradient = 'bg-teal-100 text-teal-700 bg-opacity-70'
-      break
-    case 'completed':
-      statusGradient = 'bg-emerald-100 text-emerald-700 bg-opacity-70 text-bold'
-      break
-    case 'cancelled':
-      statusGradient = 'bg-red-100 text-red-700 bg-opacity-70'
-      break
-    default:
-      statusGradient = 'bg-gray-100 text-gray-700'
+    case 'pending': badgeVariant = 'warning'; break
+    case 'confirmed': badgeVariant = 'info'; break
+    case 'cooking': badgeVariant = 'primary'; break
+    case 'ready': badgeVariant = 'success'; break
+    case 'completed': badgeVariant = 'success'; break
+    case 'cancelled': badgeVariant = 'danger'; break
   }
 
   return (
-    <Link
-      to={`/orders/${order.id}`}
-      className="flex items-center gap-4 px-5 py-4 rounded-2xl bg-white border border-gray-100 hover:border-orange-200 shadow-sm hover:shadow-premium-hover transition-all duration-300 group hover:-translate-y-0.5"
+    <Card
+      animated
+      className="p-0 overflow-hidden group hover:ring-2 hover:ring-primary/20 transition-all border-slate-100"
     >
-      {/* Icon with Soft Glow */}
-      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-50 to-orange-100/50 text-orange-500 flex items-center justify-center flex-shrink-0 shadow-inner group-hover:scale-110 transition-transform">
-        <ShoppingCart size={22} weight="duotone" />
-      </div>
+      <Link
+        to={`/orders/${order.id}`}
+        className="flex flex-col sm:flex-row sm:items-center gap-4 p-5"
+      >
+        {/* Visual Identity */}
+        <div className="flex items-center gap-4 flex-1">
+            <div className="w-14 h-14 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-primary group-hover:text-white transition-all duration-300 shadow-inner group-hover:shadow-lg group-hover:shadow-primary/30">
+                <Receipt size={28} weight="duotone" />
+            </div>
 
-      {/* Main info */}
-      <div className="flex-1 min-w-0 flex flex-col justify-center">
-        <div className="flex items-center gap-2 flex-wrap mb-1">
-          <span className="font-extrabold text-gray-900 text-base tracking-tight">
-            {order.order_number}
-          </span>
-          <span
-            className={cn(
-              'inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider',
-              statusGradient
-            )}
-          >
-            {STATUS_LABELS[order.status]}
-          </span>
+            <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-3 mb-1">
+                    <span className="font-extrabold text-slate-900 text-lg tracking-tighter">
+                        #{order.order_number}
+                    </span>
+                    <Badge variant={badgeVariant} className="text-[10px] uppercase font-black">
+                        {STATUS_LABELS[order.status]}
+                    </Badge>
+                </div>
+                
+                <div className="flex items-center gap-3 text-xs font-bold text-slate-400">
+                    <div className="flex items-center gap-1.5 bg-slate-100 px-2 py-0.5 rounded-md text-slate-600">
+                        {order.table ? (
+                            <>
+                                <MapPin size={12} weight="fill" className="text-primary" />
+                                <span>Table {order.table.name}</span>
+                            </>
+                        ) : (
+                            <>
+                                <ShoppingCart size={12} weight="fill" className="text-primary" />
+                                <span>{ORDER_TYPE_LABELS[order.order_type]}</span>
+                            </>
+                        )}
+                    </div>
+                    {order.customer_name && (
+                        <span className="truncate max-w-[120px]">{order.customer_name}</span>
+                    )}
+                    <span>·</span>
+                    <span className="flex items-center gap-1">
+                        <Clock size={12} /> {timeAgo(order.created_at)}
+                    </span>
+                </div>
+            </div>
         </div>
-        <p className="text-xs font-medium text-gray-400">
-          <span className="text-gray-600 font-semibold">
-            {order.table ? `Meja ${order.table.name}` : ORDER_TYPE_LABELS[order.order_type]}
-          </span>
-          {order.customer_name ? ` · ${order.customer_name}` : ''}
-          {order.items?.length ? ` · ${order.items.length} item` : ''}
-        </p>
-      </div>
 
-      {/* Right side */}
-      <div className="text-right flex-shrink-0">
-        <p className="text-sm font-black text-gray-900 tracking-tight">
-          {formatCurrency(order.total)}
-        </p>
-        <p className="text-[11px] font-bold text-gray-400 flex items-center justify-end gap-1 mt-1">
-          <Clock size={12} weight="bold" />
-          {timeAgo(order.created_at)}
-        </p>
-      </div>
-
-      <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-orange-50 group-hover:text-orange-500 transition-colors">
-        <ArrowRight
-          size={14}
-          weight="bold"
-          className="text-gray-400 group-hover:text-orange-500 transition-colors"
-        />
-      </div>
-    </Link>
+        {/* Pricing & Action */}
+        <div className="flex items-center justify-between sm:justify-end gap-6 pl-0 sm:pl-4 border-t sm:border-t-0 border-slate-50 pt-4 sm:pt-0">
+            <div className="text-right">
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Bill Amount</p>
+                <p className="text-xl font-black text-slate-900 tracking-tighter">
+                {formatCurrency(order.total)}
+                </p>
+            </div>
+            <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
+                <CaretRight size={20} weight="bold" />
+            </div>
+        </div>
+      </Link>
+    </Card>
   )
 }
 
@@ -178,32 +183,32 @@ export default function OrdersPage() {
   const meta = result?.meta
 
   return (
-    <div className="w-full max-w-6xl mx-auto animate-in fade-in zoom-in-95 duration-500">
+    <div className="w-full max-w-6xl mx-auto space-y-8 animate-in selection:bg-primary/20">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Pesanan</h1>
-          <p className="text-sm font-medium text-gray-400 mt-1">
-            Pantau dan kelola seluruh transaksi masuk secara realtime
-          </p>
+           <Badge variant="primary" className="mb-2">Real-time Orders</Badge>
+           <h1 className="text-4xl font-black text-slate-900 tracking-tighter">Manage Orders</h1>
+           <p className="text-sm font-medium text-slate-400 mt-1">
+             Track and manage all transactions across your restaurant.
+           </p>
         </div>
         <Button
           variant="secondary"
           onClick={fetch}
           disabled={loading}
-          className="inline-flex items-center gap-2 text-sm font-bold bg-white border-gray-200 shadow-sm hover:bg-gray-50 rounded-xl px-4 py-2.5"
+          className="bg-white border-slate-100 shadow-sm"
         >
           <ArrowsClockwise
-            size={16}
-            weight="bold"
-            className={loading ? 'animate-spin text-orange-500' : 'text-gray-500'}
+            size={18}
+            className={loading ? 'animate-spin text-primary' : ''}
           />
-          Segarkan Data
+          Sync Now
         </Button>
       </div>
 
-      {/* Modern Tabs */}
-      <div className="flex gap-2 overflow-x-auto pb-2 mb-6 scrollbar-hide">
+      {/* Boutique Tabs */}
+      <div className="flex gap-3 overflow-x-auto pb-4 no-scrollbar">
         {TABS.map((tab) => {
           const isActive = activeTab === tab.value
           return (
@@ -211,10 +216,10 @@ export default function OrdersPage() {
               key={tab.value}
               onClick={() => setActiveTab(tab.value)}
               className={cn(
-                'flex-shrink-0 px-4 py-2 rounded-xl text-sm font-bold transition-all duration-300 border',
+                'flex-shrink-0 px-6 py-3 rounded-2xl text-xs font-black transition-all duration-300 uppercase tracking-widest ring-1',
                 isActive
-                  ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white border-transparent shadow-md shadow-orange-500/20 translate-y-[-1px]'
-                  : 'bg-white border-gray-200 text-gray-500 hover:border-orange-300 hover:text-orange-600'
+                  ? 'bg-primary text-white border-transparent shadow-xl shadow-primary/20 ring-primary'
+                  : 'bg-white border-transparent ring-slate-100 text-slate-400 hover:text-slate-900 hover:ring-slate-300'
               )}
             >
               {tab.label}
@@ -224,72 +229,64 @@ export default function OrdersPage() {
       </div>
 
       {/* Content Area */}
-      <div className="w-full relative">
+      <div className="w-full relative space-y-4">
         {error && (
-          <div className="flex items-center gap-3 px-5 py-4 text-sm text-red-600 bg-red-50/80 backdrop-blur border border-red-200 rounded-2xl mb-4 shadow-sm">
-            <Warning size={20} weight="duotone" className="text-red-500" />
-            <span className="font-semibold">{error}</span>
+          <div className="flex items-center gap-3 p-4 rounded-3xl bg-danger/5 border border-danger/10 text-danger text-sm font-bold">
+            <Warning size={20} weight="fill" />
+            <span>{error}</span>
           </div>
         )}
 
         {loading && orders.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-20 text-gray-400 bg-white/40 backdrop-blur rounded-3xl border border-gray-100 border-dashed">
-            <ArrowsClockwise size={32} className="animate-spin mb-3 text-orange-500" />
-            <span className="font-bold tracking-wide">Sinkronisasi Data Pesanan...</span>
+          <div className="flex flex-col items-center justify-center py-24 text-slate-300">
+            <ArrowsClockwise size={48} className="animate-spin mb-4 text-primary opacity-20" />
+            <span className="font-black text-xs uppercase tracking-[0.2em] animate-pulse">Synchronizing...</span>
           </div>
         )}
 
         {!loading && orders.length === 0 && !error && (
-          <div className="flex flex-col items-center justify-center py-24 text-center px-6 bg-white/50 backdrop-blur rounded-3xl border border-gray-100 border-dashed shadow-sm">
-            <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-4">
-              <MagnifyingGlass size={36} weight="duotone" className="text-gray-300" />
+          <div className="flex flex-col items-center justify-center py-32 text-center px-6 bg-white/50 backdrop-blur rounded-[40px] border border-slate-100 border-dashed">
+            <div className="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center mb-6">
+              <MagnifyingGlass size={48} weight="duotone" className="text-slate-200" />
             </div>
-            <p className="text-base font-bold text-gray-900 tracking-tight">
-              Belum ada pesanan masuk
+            <p className="text-xl font-black text-slate-900 tracking-tight">
+              No orders found
             </p>
-            <p className="text-sm font-medium text-gray-400 mt-1 max-w-sm">
-              Daftar transaksi untuk status ini masih kosong. Silahkan periksa tab lain atau tunggu
-              pesanan pelanggan.
+            <p className="text-sm font-medium text-slate-400 mt-2 max-w-sm">
+              We couldn't find any orders matching this status. Stay tuned for new customer activity!
             </p>
           </div>
         )}
 
         {orders.length > 0 && (
-          <div className="space-y-3">
+          <div className="grid grid-cols-1 gap-4">
             {orders.map((order) => (
               <OrderCard key={order.id} order={order} />
             ))}
           </div>
         )}
 
-        {/* Pagination Modernized */}
+        {/* Pagination */}
         {meta && meta.last_page > 1 && (
-          <div className="flex items-center justify-between px-6 py-4 mt-6 bg-white rounded-2xl border border-gray-100 shadow-sm">
-            <p className="text-sm font-bold text-gray-500">
-              Menampilkan{' '}
-              <span className="text-gray-900">
-                {(meta.current_page - 1) * meta.per_page + 1}–
-                {Math.min(meta.current_page * meta.per_page, meta.total)}
-              </span>{' '}
-              dari <span className="text-gray-900">{meta.total}</span>
+          <div className="flex items-center justify-between p-6 bg-white rounded-[32px] border border-slate-100 shadow-sm mt-10">
+            <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest">
+              Showing <span className="text-slate-900">{(meta.current_page - 1) * meta.per_page + 1}–{Math.min(meta.current_page * meta.per_page, meta.total)}</span> of <span className="text-slate-900">{meta.total}</span>
             </p>
-            <div className="flex gap-2">
-              <Button
-                variant="secondary"
+            <div className="flex gap-3">
+              <button
                 onClick={() => setPage((p) => p - 1)}
                 disabled={meta.current_page === 1 || loading}
-                className="w-10 h-10 p-0 rounded-xl flex items-center justify-center bg-gray-50 border-gray-100 hover:bg-white hover:border-gray-200"
+                className="w-12 h-12 rounded-2xl flex items-center justify-center bg-slate-50 text-slate-400 hover:bg-slate-900 hover:text-white transition-all disabled:opacity-30 disabled:pointer-events-none"
               >
-                <CaretLeft size={16} weight="bold" />
-              </Button>
-              <Button
-                variant="secondary"
+                <CaretLeft size={20} weight="bold" />
+              </button>
+              <button
                 onClick={() => setPage((p) => p + 1)}
                 disabled={meta.current_page === meta.last_page || loading}
-                className="w-10 h-10 p-0 rounded-xl flex items-center justify-center bg-gray-50 border-gray-100 hover:bg-white hover:border-gray-200 text-orange-500"
+                className="w-12 h-12 rounded-2xl flex items-center justify-center bg-slate-50 text-slate-400 hover:bg-slate-900 hover:text-white transition-all disabled:opacity-30 disabled:pointer-events-none"
               >
-                <CaretRight size={16} weight="bold" />
-              </Button>
+                <CaretRight size={20} weight="bold" />
+              </button>
             </div>
           </div>
         )}

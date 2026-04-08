@@ -7,31 +7,39 @@ import {
   CaretLeft,
   CaretRight,
   Power,
+  Storefront,
+  IdentificationBadge,
+  ShieldCheck,
+  Funnel,
+  ArrowsClockwise,
+  UserCircle,
+  CalendarBlank,
+  Crown,
+  HandPointing,
+  WarningCircle
 } from "@phosphor-icons/react";
 import {
   getAdminRestaurants,
   toggleAdminRestaurant,
   type RestaurantListItem,
 } from "@/services/superAdminService";
+import { cn } from "@/lib/utils";
+import Card from "@/components/ui/Card";
+import Badge from "@/components/ui/Badge";
+import Button from "@/components/ui/Button";
 
 // ─── Helpers ─────────────────────────────────────────────
 
-function subBadge(status: string | undefined) {
-  if (!status) return <span className="text-xs text-gray-400">—</span>;
-  const map: Record<string, string> = {
-    active: "bg-green-100 text-green-700",
-    trialing: "bg-blue-100 text-blue-700",
-    expired: "bg-red-100 text-red-700",
-    cancelled: "bg-gray-100 text-gray-500",
-    past_due: "bg-yellow-100 text-yellow-700",
-  };
-  return (
-    <span
-      className={`text-xs font-semibold px-2 py-0.5 rounded-full ${map[status] ?? "bg-gray-100 text-gray-500"}`}
-    >
-      {status}
-    </span>
-  );
+function subVariant(status: string | undefined): any {
+    if (!status) return "glass";
+    const map: Record<string, any> = {
+        active: "success",
+        trialing: "blue",
+        expired: "danger",
+        cancelled: "glass",
+        past_due: "warning",
+    };
+    return map[status] || "glass";
 }
 
 export default function SuperAdminRestaurantsPage() {
@@ -93,161 +101,177 @@ export default function SuperAdminRestaurantsPage() {
   };
 
   return (
-    <div className="w-full space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Daftar Restoran</h1>
-        <p className="text-sm text-gray-500 mt-0.5">
-          {meta.total} restoran terdaftar di platform
-        </p>
-      </div>
-
-      {/* Filters */}
-      <div className="flex flex-wrap gap-3 items-end">
-        <div className="relative flex-1 min-w-[200px]">
-          <MagnifyingGlass
-            size={15}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-          />
-          <input
-            type="text"
-            placeholder="Cari nama, email, slug..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-400"
-          />
+    <div className="w-full max-w-7xl mx-auto space-y-10 animate-in">
+      {/* Header Premium */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+        <div>
+           <Badge variant="primary" className="mb-2">Admin Control</Badge>
+           <h1 className="text-4xl font-black text-slate-900 tracking-tighter">Realm Directory</h1>
+           <p className="text-sm font-medium text-slate-400 mt-1">
+             Manage all active restaurant entities and their lease status.
+           </p>
         </div>
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          className="text-sm border border-gray-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-200"
-        >
-          <option value="">Semua Status</option>
-          <option value="active">Aktif</option>
-          <option value="inactive">Tidak Aktif</option>
-        </select>
-        <select
-          value={subFilter}
-          onChange={(e) => setSubFilter(e.target.value)}
-          className="text-sm border border-gray-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-200"
-        >
-          <option value="">Semua Langganan</option>
-          <option value="active">Aktif</option>
-          <option value="trialing">Trial</option>
-          <option value="expired">Kadaluarsa</option>
-          <option value="cancelled">Dibatalkan</option>
-        </select>
+        <div className="flex items-center gap-4">
+          <div className="px-5 py-3 bg-white border border-slate-100 rounded-2xl text-sm font-bold text-slate-600 shadow-sm hidden md:flex items-center gap-2">
+            <span className="text-primary font-black">{meta.total}</span> Registered Realms
+          </div>
+           <button
+                onClick={() => load()}
+                disabled={loading}
+                className="w-12 h-12 bg-white border border-slate-100 rounded-2xl flex items-center justify-center text-slate-400 hover:text-primary transition-all shadow-sm"
+            >
+                <ArrowsClockwise size={20} weight="bold" className={cn(loading && "animate-spin")} />
+            </button>
+        </div>
       </div>
 
-      {/* Table */}
-      <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
+      {/* Filters Area */}
+      <div className="flex flex-wrap items-center gap-4">
+           {/* Search Input */}
+           <div className="relative flex-1 min-w-[300px]">
+                <MagnifyingGlass size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input
+                    type="text"
+                    placeholder="Search name, email, or domain slug..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="w-full h-12 pl-12 pr-4 bg-white border border-slate-100 rounded-2xl text-sm font-bold text-slate-600 focus:ring-4 focus:ring-primary/10 transition-all shadow-sm"
+                />
+           </div>
+
+           {/* Status Filter */}
+           <div className="relative min-w-[160px]">
+                <ShieldCheck size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                <select
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                    className="w-full h-12 pl-12 pr-10 bg-white border border-slate-100 rounded-2xl text-sm font-black text-slate-600 appearance-none focus:ring-4 focus:ring-primary/10 transition-all shadow-sm uppercase tracking-widest cursor-pointer"
+                >
+                    <option value="">Status</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Suspended</option>
+                </select>
+           </div>
+
+           {/* Sub Filter */}
+           <div className="relative min-w-[200px]">
+                <Crown size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                <select
+                    value={subFilter}
+                    onChange={(e) => setSubFilter(e.target.value)}
+                    className="w-full h-12 pl-12 pr-10 bg-white border border-slate-100 rounded-2xl text-sm font-black text-slate-600 appearance-none focus:ring-4 focus:ring-primary/10 transition-all shadow-sm uppercase tracking-widest cursor-pointer"
+                >
+                    <option value="">License Tier</option>
+                    <option value="active">Active Plan</option>
+                    <option value="trialing">Free Trial</option>
+                    <option value="expired">Lease Expired</option>
+                    <option value="cancelled">Cancelled</option>
+                </select>
+           </div>
+      </div>
+
+      {/* Main Table Content */}
+      <Card className="p-0 border-slate-100 overflow-hidden shadow-xl shadow-slate-900/5">
         {loading ? (
-          <div className="flex items-center justify-center py-16">
-            <CircleNotch className="animate-spin text-orange-500" size={28} />
-          </div>
+             <div className="flex flex-col items-center justify-center py-32 text-slate-300">
+                <ArrowsClockwise size={48} className="animate-spin mb-4 text-primary opacity-20" />
+                <span className="font-black text-xs uppercase tracking-[0.2em] animate-pulse">Scanning HQ Database...</span>
+            </div>
         ) : items.length === 0 ? (
-          <div className="text-center py-16 text-gray-400">
-            <Storefront size={40} className="mx-auto mb-3 opacity-40" />
-            <p className="text-sm">Tidak ada restoran ditemukan.</p>
-          </div>
+             <div className="text-center py-40 flex flex-col items-center">
+                <div className="w-20 h-20 bg-slate-50 rounded-[24px] flex items-center justify-center text-slate-200 mb-4">
+                    <Storefront size={40} weight="duotone" />
+                </div>
+                <p className="font-black text-lg text-slate-900 tracking-tighter">No Realms Found</p>
+                <p className="text-xs font-medium text-slate-400 mt-1">Check your search terms or filter criteria.</p>
+            </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-gray-50 border-b border-gray-100">
-                  <th className="text-left px-5 py-3 font-semibold text-gray-600">
-                    Restoran
-                  </th>
-                  <th className="text-left px-5 py-3 font-semibold text-gray-600">
-                    Owner
-                  </th>
-                  <th className="text-left px-5 py-3 font-semibold text-gray-600">
-                    Langganan
-                  </th>
-                  <th className="text-left px-5 py-3 font-semibold text-gray-600">
-                    Terdaftar
-                  </th>
-                  <th className="text-left px-5 py-3 font-semibold text-gray-600">
-                    Status
-                  </th>
-                  <th className="px-5 py-3" />
+                <tr className="bg-slate-50/50 text-left border-b border-slate-100">
+                  <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Restaurant Entity</th>
+                  <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Owner Context</th>
+                  <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">License Status</th>
+                  <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Onboarded</th>
+                  <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">SaaS Status</th>
+                  <th className="px-8 py-5" />
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-slate-50">
                 {items.map((r) => (
-                  <tr key={r.id} className="hover:bg-gray-50">
-                    <td className="px-5 py-3.5">
-                      <p className="font-semibold text-gray-900">{r.name}</p>
-                      <p className="text-xs text-gray-400">{r.slug}</p>
+                  <tr key={r.id} className="group hover:bg-slate-50/50 transition-all duration-300">
+                    <td className="px-8 py-5">
+                       <div className="flex items-center gap-4">
+                           <div className="w-12 h-12 rounded-2xl bg-white border border-slate-100 shadow-sm flex flex-col items-center justify-center text-slate-400 group-hover:bg-slate-900 group-hover:text-white transition-all">
+                               <Storefront size={20} weight="duotone" />
+                           </div>
+                           <div className="flex flex-col min-w-0">
+                                <span className="text-sm font-black text-slate-900 tracking-tighter truncate group-hover:text-primary transition-colors">{r.name}</span>
+                                <span className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">{r.slug}</span>
+                           </div>
+                       </div>
                     </td>
-                    <td className="px-5 py-3.5">
+                    <td className="px-8 py-5">
                       {r.owner ? (
-                        <>
-                          <p className="font-medium text-gray-800">
-                            {r.owner.name}
-                          </p>
-                          <p className="text-xs text-gray-400">
-                            {r.owner.email}
-                          </p>
-                        </>
+                         <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-black text-slate-900">
+                                  {r.owner.name[0]}
+                              </div>
+                              <div className="flex flex-col">
+                                  <span className="text-xs font-black text-slate-800 tracking-tight leading-none mb-1">{r.owner.name}</span>
+                                  <span className="text-[10px] font-bold text-slate-400 truncate max-w-[140px]">{r.owner.email}</span>
+                              </div>
+                         </div>
                       ) : (
-                        <span className="text-gray-400">—</span>
+                        <span className="text-slate-300">—</span>
                       )}
                     </td>
-                    <td className="px-5 py-3.5">
-                      <div className="space-y-0.5">
-                        {subBadge(r.subscription?.status)}
+                    <td className="px-8 py-5">
+                      <div className="flex flex-col gap-1.5 items-start">
+                        <Badge variant={subVariant(r.subscription?.status)} className="py-0.5 px-3 font-black text-[8px] uppercase tracking-widest border-none">
+                            {r.subscription?.status || "NO PLAN"}
+                        </Badge>
                         {r.subscription?.plan && (
-                          <p className="text-xs text-gray-400 capitalize">
+                          <div className="flex items-center gap-1.5 text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                            <Crown size={12} weight="bold" />
                             {r.subscription.plan}
-                          </p>
-                        )}
-                        {r.subscription?.ends_at && (
-                          <p className="text-xs text-gray-400">
-                            s/d{" "}
-                            {new Date(
-                              r.subscription.ends_at,
-                            ).toLocaleDateString("id-ID")}
-                          </p>
+                          </div>
                         )}
                       </div>
                     </td>
-                    <td className="px-5 py-3.5 text-gray-500">
-                      {new Date(r.created_at).toLocaleDateString("id-ID")}
+                    <td className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-tight">
+                        <CalendarBlank size={12} className="inline mr-1 opacity-50" />
+                        {new Date(r.created_at).toLocaleDateString("en-US", { month: 'short', day: 'numeric', year: 'numeric' })}
                     </td>
-                    <td className="px-5 py-3.5">
-                      <span
-                        className={`inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-full ${
-                          r.is_active
-                            ? "bg-green-100 text-green-700"
-                            : "bg-gray-100 text-gray-500"
-                        }`}
-                      >
-                        {r.is_active ? (
-                          <CheckCircle size={11} />
-                        ) : (
-                          <XCircle size={11} />
+                    <td className="px-8 py-5">
+                      <Badge 
+                        variant={r.is_active ? "success" : "glass"}
+                        className={cn(
+                            "py-1.5 px-3 font-black text-[9px] uppercase tracking-widest border-none",
+                            !r.is_active && "bg-slate-100 text-slate-400"
                         )}
-                        {r.is_active ? "Aktif" : "Suspended"}
-                      </span>
+                      >
+                        {r.is_active ? <CheckCircle size={12} weight="bold" className="mr-1.5" /> : <WarningCircle size={12} weight="bold" className="mr-1.5" />}
+                        {r.is_active ? "Active" : "Suspended"}
+                      </Badge>
                     </td>
-                    <td className="px-5 py-3.5">
+                    <td className="px-8 py-5 text-right">
                       <button
                         onClick={() => handleToggle(r.id)}
                         disabled={working === r.id}
-                        title={r.is_active ? "Suspend" : "Aktifkan"}
-                        className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg transition disabled:opacity-50 ${
-                          r.is_active
-                            ? "bg-red-50 text-red-600 hover:bg-red-100"
-                            : "bg-green-50 text-green-600 hover:bg-green-100"
-                        }`}
+                        className={cn(
+                            "w-10 h-10 rounded-2xl flex items-center justify-center transition-all shadow-sm border",
+                            r.is_active 
+                                ? "bg-white border-slate-100 text-slate-300 hover:text-danger hover:border-danger/20" 
+                                : "bg-success text-white border-transparent hover:scale-110"
+                        )}
                       >
                         {working === r.id ? (
-                          <CircleNotch size={12} className="animate-spin" />
+                          <CircleNotch size={18} className="animate-spin text-primary" />
                         ) : (
-                          <Power size={12} />
+                          <Power size={18} weight="bold" />
                         )}
-                        {r.is_active ? "Suspend" : "Aktifkan"}
                       </button>
                     </td>
                   </tr>
@@ -256,57 +280,32 @@ export default function SuperAdminRestaurantsPage() {
             </table>
           </div>
         )}
-      </div>
 
-      {/* Pagination */}
-      {meta.last_page > 1 && (
-        <div className="flex items-center justify-between text-sm text-gray-500">
-          <span>
-            Halaman {meta.current_page} dari {meta.last_page} ({meta.total}{" "}
-            total)
-          </span>
-          <div className="flex gap-2">
-            <button
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              disabled={page === 1}
-              className="p-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-40"
-            >
-              <CaretLeft size={16} />
-            </button>
-            <button
-              onClick={() => setPage((p) => Math.min(meta.last_page, p + 1))}
-              disabled={page === meta.last_page}
-              className="p-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-40"
-            >
-              <CaretRight size={16} />
-            </button>
+        {/* Pagination Section */}
+        {meta.last_page > 1 && (
+          <div className="px-8 py-6 bg-slate-50/50 border-t border-slate-100 flex items-center justify-between">
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+              Page <span className="text-slate-900 font-black">{meta.current_page}</span> of <span className="text-slate-900 font-black">{meta.last_page}</span>
+            </span>
+            <div className="flex gap-3">
+               <button
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  disabled={page === 1}
+                  className="w-12 h-12 rounded-2xl bg-white border border-slate-100 flex items-center justify-center text-slate-400 hover:text-primary transition-all disabled:opacity-30 shadow-sm"
+                >
+                  <CaretLeft size={20} weight="bold" />
+                </button>
+                <button
+                  onClick={() => setPage((p) => Math.min(meta.last_page, p + 1))}
+                  disabled={page === meta.last_page}
+                   className="w-12 h-12 rounded-2xl bg-white border border-slate-100 flex items-center justify-center text-slate-400 hover:text-primary transition-all disabled:opacity-30 shadow-sm"
+                >
+                  <CaretRight size={20} weight="bold" />
+                </button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </Card>
     </div>
-  );
-}
-
-// Fix missing import
-function Storefront({ size, className }: { size: number; className?: string }) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={2}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-    >
-      <path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7" />
-      <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
-      <path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4" />
-      <path d="M2 7h20" />
-      <path d="M22 7v3a2 2 0 0 1-2 2v0a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12v0a2 2 0 0 1-2-2V7" />
-    </svg>
   );
 }
