@@ -67,19 +67,6 @@ class StaffTest extends TestCase
         ])->assertStatus(422);
     }
 
-    public function test_owner_cannot_create_staff_with_superadmin_role(): void
-    {
-        $this->authenticatedOwner();
-
-        $this->postJson('/api/v1/staff', [
-            'name'                  => 'Fake SA',
-            'email'                 => 'fakesa@test.com',
-            'password'              => 'Password1!',
-            'password_confirmation' => 'Password1!',
-            'role'                  => 'superadmin',
-        ])->assertStatus(422);
-    }
-
     public function test_create_staff_fails_with_duplicate_email(): void
     {
         ['restaurant' => $restaurant] = $this->authenticatedOwner();

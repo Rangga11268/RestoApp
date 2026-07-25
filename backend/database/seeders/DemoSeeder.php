@@ -8,8 +8,6 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Restaurant;
 use App\Models\RestaurantTable;
-use App\Models\Subscription;
-use App\Models\SubscriptionPlan;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -21,11 +19,8 @@ class DemoSeeder extends Seeder
 
     public function run(): void
     {
-        $proPlan   = SubscriptionPlan::where('name', 'Pro')->first();
-        $basicPlan = SubscriptionPlan::where('name', 'Basic')->first();
-
         /* ══════════════════════════════════════════════════════
-         * RESTORAN 1 — Warung Makan Bu Sari  (Pro · Active)
+         * RESTORAN 1 — Warung Makan Bu Sari
          * ══════════════════════════════════════════════════════ */
         $resto1 = Restaurant::updateOrCreate(
             ['slug' => 'warung-bu-sari'],
@@ -38,17 +33,6 @@ class DemoSeeder extends Seeder
                 'currency'  => 'IDR',
                 'is_active' => true,
                 'settings'  => ['tax_rate' => 10],
-            ]
-        );
-
-        // Subscription
-        Subscription::updateOrCreate(
-            ['restaurant_id' => $resto1->id],
-            [
-                'plan_id'   => $proPlan->id,
-                'status'    => 'active',
-                'starts_at' => now()->subMonth(),
-                'ends_at'   => now()->addMonth(),
             ]
         );
 
@@ -239,7 +223,7 @@ class DemoSeeder extends Seeder
         $this->command->info("✓ Restoran 1: {$resto1->name} (Pro, Active)");
 
         /* ══════════════════════════════════════════════════════
-         * RESTORAN 2 — Kafe Santai  (Basic · Trialing)
+         * RESTORAN 2 — Kafe Santai
          * ══════════════════════════════════════════════════════ */
         $resto2 = Restaurant::updateOrCreate(
             ['slug' => 'kafe-santai'],
@@ -252,17 +236,6 @@ class DemoSeeder extends Seeder
                 'currency'  => 'IDR',
                 'is_active' => true,
                 'settings'  => ['tax_rate' => 0],
-            ]
-        );
-
-        Subscription::updateOrCreate(
-            ['restaurant_id' => $resto2->id],
-            [
-                'plan_id'       => $basicPlan->id,
-                'status'        => 'trialing',
-                'trial_ends_at' => now()->addDays(5),
-                'starts_at'     => null,
-                'ends_at'       => null,
             ]
         );
 
@@ -389,7 +362,7 @@ class DemoSeeder extends Seeder
             ]);
         }
 
-        $this->command->info("✓ Restoran 2: {$resto2->name} (Basic, Trial 5 hari)");
+        $this->command->info("✓ Restoran 2: {$resto2->name}");
 
         // Summary
         $this->command->newLine();
@@ -398,7 +371,6 @@ class DemoSeeder extends Seeder
         $this->command->line('├─────────────────┬───────────────────────────────────┤');
         $this->command->line('│ Role            │ Email                             │');
         $this->command->line('├─────────────────┼───────────────────────────────────┤');
-        $this->command->line('│ Super Admin     │ superadmin@restosaas.id           │');
         $this->command->line('│ Owner (Resto 1) │ owner@demo.com                    │');
         $this->command->line('│ Manager         │ manager@demo.com                  │');
         $this->command->line('│ Kasir           │ kasir@demo.com                    │');
@@ -406,8 +378,7 @@ class DemoSeeder extends Seeder
         $this->command->line('│ Owner (Resto 2) │ owner2@demo.com                   │');
         $this->command->line('│ Kasir 2         │ kasir2@demo.com                   │');
         $this->command->line('├─────────────────┴───────────────────────────────────┤');
-        $this->command->line('│ Password semua (kecuali superadmin): Demo1234!      │');
-        $this->command->line('│ Password superadmin: SuperAdmin@2025!               │');
+        $this->command->line('│ Password semua: Demo1234!                          │');
         $this->command->line('└─────────────────────────────────────────────────────┘');
     }
 

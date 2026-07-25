@@ -6,14 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Menu\StoreTableRequest;
 use App\Http\Requests\Menu\UpdateTableRequest;
 use App\Http\Traits\ApiResponse;
-use App\Http\Traits\ChecksPlanLimits;
 use App\Models\RestaurantTable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class RestaurantTableController extends Controller
 {
-    use ApiResponse, ChecksPlanLimits;
+    use ApiResponse;
 
     /** GET /v1/tables */
     public function index(): JsonResponse
@@ -26,15 +25,7 @@ class RestaurantTableController extends Controller
     /** POST /v1/tables */
     public function store(StoreTableRequest $request): JsonResponse
     {
-        $user = $request->user();
-
-        // Enforce plan limit
-        $currentCount = RestaurantTable::count();
-        if ($error = $this->enforcePlanLimit($user, 'max_tables', $currentCount)) {
-            return $error;
-        }
-
-        $restaurant = $user->restaurant;
+        $restaurant = $request->user()->restaurant;
 
         $table = RestaurantTable::create([
             'name'      => $request->name,

@@ -1,5 +1,4 @@
 export type UserRole =
-  | "superadmin"
   | "owner"
   | "manager"
   | "cashier"
@@ -16,13 +15,6 @@ export interface RestaurantData {
   settings: Record<string, unknown> | null;
 }
 
-export interface SubscriptionData {
-  status: "trialing" | "active" | "expired" | "cancelled";
-  ends_at: string;
-  days_remaining: number;
-  plan: string;
-}
-
 export interface AuthUser {
   id: number;
   name: string;
@@ -32,5 +24,4 @@ export interface AuthUser {
   avatar_url: string | null;
   is_active: boolean;
   restaurant: RestaurantData | null;
-  subscription: SubscriptionData | null;
 }

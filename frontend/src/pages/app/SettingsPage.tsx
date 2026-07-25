@@ -9,8 +9,7 @@ import {
 } from '@/services/restaurantService'
 import { 
     Buildings, SealCheck, Globe, CurrencyDollar, 
-    Clock, Camera, ShieldCheck, RocketLaunch,
-    Crown, UsersThree, ListChecks, ArrowsClockwise,
+    Clock, Camera, ShieldCheck, ArrowsClockwise,
     ArrowCircleRight,
     MapPin,
     Phone,
@@ -40,18 +39,6 @@ type FormData = z.infer<typeof schema>
 
 const TIMEZONES = ['Asia/Jakarta', 'Asia/Makassar', 'Asia/Jayapura', 'UTC']
 const CURRENCIES = ['IDR', 'USD', 'MYR', 'SGD']
-
-const PLAN_STATUS: Record<string, string> = {
-  active: 'PRO ACTIVE',
-  trial: 'TRIAL PERIOD',
-  expired: 'EXPIRED',
-  cancelled: 'CANCELLED',
-}
-
-function limitLabel(val: number | null | undefined) {
-  if (!val || val === 0) return '∞'
-  return val
-}
 
 export default function SettingsPage() {
   const [restaurant, setRestaurant] = useState<RestaurantSettings | null>(null)
@@ -117,9 +104,6 @@ export default function SettingsPage() {
         </div>
     )
 
-  const sub = restaurant?.subscription
-  const plan = sub?.plan
-
   return (
     <div className="w-full max-w-5xl mx-auto space-y-10 animate-in">
       {/* Header Premium */}
@@ -127,9 +111,9 @@ export default function SettingsPage() {
         <div>
            <Badge variant="primary" className="mb-2">Admin Preferences</Badge>
            <h1 className="text-4xl font-black text-slate-900 tracking-tighter">System Settings</h1>
-           <p className="text-sm font-medium text-slate-400 mt-1">
-             Configure your brand, subscription and localized defaults.
-           </p>
+            <p className="text-sm font-medium text-slate-400 mt-1">
+              Configure your brand and localized defaults.
+            </p>
         </div>
         <div className="flex items-center gap-3">
              <Button 
@@ -143,7 +127,6 @@ export default function SettingsPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-        {/* Left Column: Profile & Branding */}
         <div className="lg:col-span-8 space-y-10">
              <Card className="p-8 border-slate-100">
                 <div className="flex items-center gap-3 mb-8">
@@ -266,66 +249,6 @@ export default function SettingsPage() {
              </Card>
         </div>
 
-        {/* Right Column: Subscription & Limits */}
-        <div className="lg:col-span-4 space-y-8">
-            {/* Account Status Card */}
-            <Card className="p-8 bg-slate-900 text-white border-transparent relative overflow-hidden">
-                <div className="absolute -top-10 -right-10 w-40 h-40 bg-primary/20 rounded-full blur-[60px]" />
-                <div className="relative z-10">
-                    <div className="flex items-center justify-between mb-8">
-                        <div className="w-12 h-12 rounded-3xl bg-white/10 backdrop-blur-md flex items-center justify-center text-primary">
-                            <Crown size={28} weight="duotone" />
-                        </div>
-                         <Badge variant="glass" className="text-white border-white/20">
-                            {sub ? PLAN_STATUS[sub.status] : 'FREE PLAN'}
-                         </Badge>
-                    </div>
-
-                    <h2 className="text-2xl font-black tracking-tighter mb-1">{plan?.name || "Standard Tier"}</h2>
-                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6 border-b border-white/5 pb-6">
-                        {sub?.ends_at ? `Expires ${new Date(sub.ends_at).toLocaleDateString()}` : 'Lifetime Access'}
-                    </p>
-
-                    <div className="space-y-5 mb-8">
-                        {[
-                            { label: 'Cloud Menu Items', val: plan?.max_menu_items, icon: RocketLaunch },
-                            { label: 'Active Floor Tables', val: plan?.max_tables, icon: ListChecks },
-                            { label: 'Team Accounts', val: plan?.max_staff, icon: UsersThree },
-                        ].map((item, idx) => (
-                            <div key={idx} className="flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-xl bg-white/5 flex items-center justify-center text-slate-400">
-                                        <item.icon size={16} weight="duotone" />
-                                    </div>
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">{item.label}</span>
-                                </div>
-                                <span className="text-sm font-black">{limitLabel(item.val)}</span>
-                            </div>
-                        ))}
-                    </div>
-
-                    <Button variant="primary" className="w-full h-12 rounded-2xl group">
-                        UPGRADE POWER <ArrowCircleRight size={20} className="ml-2 transition-transform group-hover:translate-x-1" />
-                    </Button>
-                </div>
-            </Card>
-
-            {/* Security Quick Actions */}
-            <Card className="p-8 border-slate-100 bg-slate-50/30">
-                <div className="flex items-center gap-3 mb-6">
-                    <ShieldCheck size={20} weight="duotone" className="text-success" />
-                    <h3 className="text-sm font-black text-slate-900 tracking-tighter uppercase tracking-widest">Trust & Security</h3>
-                </div>
-                <div className="space-y-3">
-                    <button className="w-full px-5 py-3 rounded-2xl bg-white border border-slate-100 text-[10px] font-black uppercase tracking-widest text-slate-600 hover:bg-slate-900 hover:text-white transition-all text-left flex items-center justify-between group">
-                        Change Root Password <ArrowCircleRight size={14} className="opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </button>
-                    <button className="w-full px-5 py-3 rounded-2xl bg-white border border-slate-100 text-[10px] font-black uppercase tracking-widest text-slate-600 hover:bg-slate-900 hover:text-white transition-all text-left flex items-center justify-between group">
-                        Session History <ArrowCircleRight size={14} className="opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </button>
-                </div>
-            </Card>
-        </div>
       </div>
     </div>
   )

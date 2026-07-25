@@ -12,8 +12,6 @@ use App\Http\Controllers\API\ReportController;
 use App\Http\Controllers\API\RestaurantController;
 use App\Http\Controllers\API\RestaurantTableController;
 use App\Http\Controllers\API\StaffController;
-use App\Http\Controllers\API\SubscriptionController;
-use App\Http\Controllers\API\SuperAdminController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -49,29 +47,12 @@ Route::prefix('v1')->group(function () {
         Route::put('auth/profile', [ProfileController::class, 'update']);
         Route::put('auth/password', [ProfileController::class, 'changePassword']);
 
-        // ── Subscription (outside subscription-check middleware so expired users can still view/renew) ──
-        Route::get('subscription/plans',   [SubscriptionController::class, 'plans']);
-        Route::middleware('tenant')->group(function () {
-            Route::get('subscription/current',    [SubscriptionController::class, 'current']);
-            Route::post('subscription/subscribe', [SubscriptionController::class, 'subscribe']);
-            Route::post('subscription/cancel',    [SubscriptionController::class, 'cancel']);
-        });
-
-        // ── Super Admin (role-gated) ──────────────────────
-        Route::middleware('role:superadmin')->prefix('superadmin')->group(function () {
-            Route::get('stats',                          [SuperAdminController::class, 'stats']);
-            Route::get('restaurants',                    [SuperAdminController::class, 'restaurants']);
-            Route::get('restaurants/{id}',               [SuperAdminController::class, 'showRestaurant']);
-            Route::patch('restaurants/{id}/toggle',      [SuperAdminController::class, 'toggleRestaurant']);
-            Route::get('logs',                           [SuperAdminController::class, 'logs']);
-        });
-
         /*
         |----------------------------------------------
         | Tenant Routes (scoped to restaurant_id)
         |----------------------------------------------
         */
-        Route::middleware(['tenant', 'subscription'])->group(function () {
+        Route::middleware(['tenant'])->group(function () {
 
             // ── Restaurant Settings ─────────────────────────
             Route::get('restaurant', [RestaurantController::class, 'show']);

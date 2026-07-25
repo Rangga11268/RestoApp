@@ -3,8 +3,6 @@
 namespace Tests;
 
 use App\Models\Restaurant;
-use App\Models\Subscription;
-use App\Models\SubscriptionPlan;
 use App\Models\User;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Support\Facades\Hash;
@@ -13,32 +11,13 @@ use Laravel\Sanctum\Sanctum;
 abstract class TestCase extends BaseTestCase
 {
     /**
-     * Create a SubscriptionPlan (or get existing one).
-     */
-    protected function createPlan(string $name = 'Pro', array $overrides = []): SubscriptionPlan
-    {
-        return SubscriptionPlan::firstOrCreate(
-            ['name' => $name],
-            array_merge([
-                'price_monthly'  => 99000,
-                'max_staff'      => 10,
-                'max_menu_items' => 100,
-                'max_tables'     => 20,
-                'is_active'      => true,
-                'features'       => [],
-            ], $overrides)
-        );
-    }
-
-    /**
-     * Create a Restaurant with an active subscription.
+     * Create a Restaurant.
      */
     protected function createRestaurant(array $overrides = []): Restaurant
     {
-        $plan = $this->createPlan();
         $slug = $overrides['slug'] ?? 'resto-' . uniqid();
 
-        $restaurant = Restaurant::create(array_merge([
+        return Restaurant::create(array_merge([
             'name'      => 'Test Restaurant',
             'slug'      => $slug,
             'email'     => $slug . '@test.com',
@@ -46,16 +25,6 @@ abstract class TestCase extends BaseTestCase
             'currency'  => 'IDR',
             'is_active' => true,
         ], $overrides));
-
-        Subscription::create([
-            'restaurant_id' => $restaurant->id,
-            'plan_id'       => $plan->id,
-            'status'        => 'active',
-            'starts_at'     => now()->subDay()->toDateString(),
-            'ends_at'       => now()->addMonth()->toDateString(),
-        ]);
-
-        return $restaurant;
     }
 
     /**

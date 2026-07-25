@@ -18,7 +18,7 @@ class RestaurantScope implements Scope
     {
         /** @var User|null $user */
         $user = Auth::user();
-        if ($user && $user->role !== 'superadmin') {
+        if ($user && $user->restaurant_id) {
             $builder->where($model->getTable() . '.restaurant_id', $user->restaurant_id);
         }
     }

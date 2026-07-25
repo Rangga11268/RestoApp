@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Menu\StoreMenuItemRequest;
 use App\Http\Requests\Menu\UpdateMenuItemRequest;
 use App\Http\Traits\ApiResponse;
-use App\Http\Traits\ChecksPlanLimits;
 use App\Models\MenuItem;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -14,7 +13,7 @@ use Illuminate\Support\Facades\Storage;
 
 class MenuItemController extends Controller
 {
-    use ApiResponse, ChecksPlanLimits;
+    use ApiResponse;
 
     /** GET /v1/menu/items */
     public function index(Request $request): JsonResponse
@@ -36,14 +35,6 @@ class MenuItemController extends Controller
     /** POST /v1/menu/items */
     public function store(StoreMenuItemRequest $request): JsonResponse
     {
-        $user = $request->user();
-
-        // Enforce plan limit
-        $currentCount = MenuItem::count();
-        if ($error = $this->enforcePlanLimit($user, 'max_menu_items', $currentCount)) {
-            return $error;
-        }
-
         $imageUrl = null;
         if ($request->hasFile('image')) {
             $imageUrl = $request->file('image')->store('menu-items', 'public');

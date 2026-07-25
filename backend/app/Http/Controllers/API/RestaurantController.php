@@ -18,7 +18,6 @@ class RestaurantController extends Controller
     {
         $restaurant = $request->user()
             ->restaurant()
-            ->with(['subscription.plan'])
             ->firstOrFail();
 
         return $this->success($restaurant);
@@ -44,7 +43,7 @@ class RestaurantController extends Controller
         $restaurant->update($data);
 
         return $this->success(
-            $restaurant->fresh()->load('subscription.plan'),
+            $restaurant->fresh(),
             'Informasi restoran berhasil diperbarui.'
         );
     }

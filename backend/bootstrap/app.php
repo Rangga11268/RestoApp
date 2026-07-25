@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Middleware\CheckSubscriptionActive;
 use App\Http\Middleware\EnsureRole;
 use App\Http\Middleware\EnsureTenantContext;
 use App\Http\Middleware\SecurityHeaders;
@@ -30,7 +29,6 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role'         => EnsureRole::class,
             'tenant'       => EnsureTenantContext::class,
-            'subscription' => CheckSubscriptionActive::class,
         ]);
 
         // Attach security headers to every API response

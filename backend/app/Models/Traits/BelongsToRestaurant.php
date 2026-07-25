@@ -21,7 +21,6 @@ trait BelongsToRestaurant
             $user = Auth::user();
             if (
                 $user
-                && $user->role !== 'superadmin'
                 && empty($model->restaurant_id)
             ) {
                 $model->restaurant_id = $user->restaurant_id;

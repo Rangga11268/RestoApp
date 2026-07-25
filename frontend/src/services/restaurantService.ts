@@ -12,18 +12,6 @@ export interface RestaurantSettings {
   currency: string;
   is_active: boolean;
   settings: Record<string, unknown> | null;
-  subscription?: {
-    status: string;
-    ends_at: string;
-    days_remaining: number;
-    plan: {
-      name: string;
-      price_monthly: number;
-      max_staff: number;
-      max_menu_items: number;
-      max_tables: number;
-    };
-  };
 }
 
 export const getRestaurant = () =>

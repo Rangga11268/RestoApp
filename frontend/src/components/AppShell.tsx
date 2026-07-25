@@ -13,10 +13,6 @@ import {
   Wallet,
   ChartBar,
   Users,
-  CreditCard,
-  Storefront,
-  ClipboardText,
-  Warning,
   Bell,
 } from "@phosphor-icons/react"
 import { useAuthStore } from '@/stores/authStore'
@@ -88,36 +84,10 @@ const navItems: NavItem[] = [
     roles: ['owner', 'manager'],
   },
   {
-    label: 'Langganan',
-    href: '/subscription',
-    icon: <CreditCard size={22} weight="duotone" />,
-    roles: ['owner'],
-    dividerBefore: true,
-  },
-  {
     label: 'Pengaturan',
     href: '/settings',
     icon: <Gear size={22} weight="duotone" />,
     roles: ['owner'],
-  },
-  // ── Super Admin only ──────────────────────────
-  {
-    label: 'Dashboard',
-    href: '/superadmin',
-    icon: <SquaresFour size={22} weight="duotone" />,
-    roles: ['superadmin'],
-  },
-  {
-    label: 'Restoran',
-    href: '/superadmin/restaurants',
-    icon: <Storefront size={22} weight="duotone" />,
-    roles: ['superadmin'],
-  },
-  {
-    label: 'Activity Logs',
-    href: '/superadmin/logs',
-    icon: <ClipboardText size={22} weight="duotone" />,
-    roles: ['superadmin'],
   },
 ]
 
@@ -327,52 +297,6 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         >
           {sidebarContent}
         </aside>
-
-        {/* Subscription warning */}
-        {user?.subscription && (
-          <div className="mb-6 animate-in">
-            {user.subscription.status === 'expired' && (
-              <div className="bg-danger/5 border border-danger/10 rounded-[20px] px-6 py-4 text-sm text-danger flex items-center justify-between gap-4 shadow-sm">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-danger/10 flex items-center justify-center">
-                    <Warning size={22} weight="duotone" />
-                  </div>
-                  <div>
-                    <p className="font-bold">Langganan Kedaluwarsa</p>
-                    <p className="opacity-80">Akses fitur terbatas. Segera perbarui langganan Anda.</p>
-                  </div>
-                </div>
-                <Link
-                  to="/subscription"
-                  className="bg-danger text-white px-6 py-2.5 rounded-xl font-bold text-xs hover:bg-red-600 transition shadow-lg shadow-danger/20 active:scale-95"
-                >
-                  PERBARUI SEKARANG
-                </Link>
-              </div>
-            )}
-            {user.subscription.status !== 'expired' &&
-              (user.subscription.days_remaining ?? 0) <= 7 &&
-              (user.subscription.days_remaining ?? 0) > 0 && (
-                <div className="bg-amber-500/5 border border-amber-500/10 rounded-[20px] px-6 py-4 text-sm text-amber-900 flex items-center justify-between gap-4 shadow-sm">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-amber-500/10 flex items-center justify-center">
-                      <Warning size={22} weight="duotone" />
-                    </div>
-                    <div>
-                      <p className="font-bold">Langganan Segera Berakhir</p>
-                      <p className="opacity-80">Tersisa {user.subscription.days_remaining} hari lagi.</p>
-                    </div>
-                  </div>
-                  <Link
-                    to="/subscription"
-                    className="bg-amber-500 text-white px-6 py-2.5 rounded-xl font-bold text-xs hover:bg-amber-600 transition shadow-lg shadow-amber-500/20 active:scale-95"
-                  >
-                    PERPANJANG
-                  </Link>
-                </div>
-              )}
-          </div>
-        )}
 
         {/* Scrollable Content Area */}
         <main

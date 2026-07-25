@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Restaurant extends Model
 {
@@ -30,11 +29,6 @@ class Restaurant extends Model
     ];
 
     /* ─────────────── Relationships ─────────────── */
-
-    public function subscription(): HasOne
-    {
-        return $this->hasOne(Subscription::class);
-    }
 
     public function users(): HasMany
     {

@@ -195,7 +195,7 @@ export default function TablesPage() {
               <Warning size={24} weight="duotone" />
           </div>
           <div>
-            <p className="font-ex-black tracking-tight text-amber-900 uppercase text-[10px] tracking-[0.2em] mb-1 leading-none">Developer Notice</p>
+            <p className="font-black tracking-tight text-amber-900 uppercase text-[10px] tracking-[0.2em] mb-1 leading-none">Developer Notice</p>
             <p className="text-sm text-amber-900 font-bold leading-relaxed">
               QR Codes might not work on mobile devices while using <code className="bg-white px-1.5 rounded-md border border-amber-200">localhost</code>. 
               Please access via your network IP for mobile testing.

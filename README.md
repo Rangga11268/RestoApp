@@ -1,6 +1,6 @@
-# 🍽 RestoApp — SaaS Manajemen Restoran
+# 🍽 RestoApp — Manajemen Restoran
 
-Platform manajemen restoran berbasis SaaS (Software as a Service) multi-tenant yang memungkinkan pemilik restoran mengelola menu, pesanan, meja, staf, dan laporan keuangan dalam satu platform terintegrasi.
+Platform manajemen restoran multi-tenant yang memungkinkan pemilik restoran mengelola menu, pesanan, meja, staf, dan laporan keuangan dalam satu platform terintegrasi.
 
 ---
 
@@ -23,8 +23,7 @@ Platform manajemen restoran berbasis SaaS (Software as a Service) multi-tenant y
 ## Fitur Utama
 
 - 🏢 **Multi-tenant** — satu platform, banyak restoran (isolasi penuh via `restaurant_id`)
-- 👥 **Multi-role** — Superadmin, Owner, Manager, Cashier, Kitchen, Customer
-- 📦 **Subscription Plan** — Trial (14 hari), Basic, Pro, Enterprise
+- 👥 **Multi-role** — Owner, Manager, Cashier, Kitchen, Customer
 - 🛒 **POS & Order Management** — dine-in, takeaway, delivery
 - 📱 **QR Code Ordering** — pelanggan scan meja → pesan langsung
 - 🧾 **Laporan Keuangan** — omzet harian/bulanan, export PDF/Excel
@@ -48,7 +47,7 @@ RestoApp/
 │   │   │   └── Traits/       # BelongsToRestaurant
 │   │   └── Providers/
 │   ├── database/
-│   │   ├── migrations/       # 13 tabel
+│   │   ├── migrations/       # 11 tabel
 │   │   └── seeders/
 │   └── routes/
 │       └── api.php           # /api/v1/*
@@ -70,17 +69,16 @@ RestoApp/
 
 ## Fase Pengembangan
 
-| Fase        | Status  | Deskripsi                                              |
-| ----------- | ------- | ------------------------------------------------------ |
-| **Phase 1** | ✅ Done | Foundation — Auth, Multi-tenant, Subscription          |
-| **Phase 2** | ✅ Done | Menu & Kategori CRUD                                   |
-| **Phase 3** | ✅ Done | Manajemen Meja & QR Code                               |
-| **Phase 4** | ✅ Done | POS & Order Management                                 |
-| **Phase 5** | ✅ Done | Pembayaran & Laporan Keuangan                          |
-| **Phase 6** | ✅ Done | Superadmin Panel                                       |
-| **Phase 7** | ✅ Done | Security Hardening, Feature Tests, DevOps & Deployment |
+| Fase         | Status  | Deskripsi                                              |
+| ------------ | ------- | ------------------------------------------------------ |
+| **Phase 1**  | ✅ Done | Foundation — Auth, Multi-tenant, Menu                  |
+| **Phase 2**  | ✅ Done | Manajemen Meja & QR Code                               |
+| **Phase 3**  | ✅ Done | POS & Order Management                                 |
+| **Phase 4**  | ✅ Done | Pembayaran & Laporan Keuangan                          |
+| **Phase 5**  | ✅ Done | Security Hardening, Feature Tests, DevOps & Deployment |
+| **Phase 0**  | ✅ Done | De-SaaS — Hapus Subscription & Superadmin              |
 
-> **Status:** Backend API 100% selesai, 63 feature tests passing. Frontend sedang dalam tahap finishing UI — poles tampilan, penggantian ikon, dan penambahan fitur kecil sebelum launch.
+> **Status:** Backend API 100% selesai. Transformasi dari SaaS ke platform multi-restoran tanpa billing sudah rampung.
 
 ---
 
@@ -108,12 +106,9 @@ Konfigurasi `.env`:
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=restosaas
+DB_DATABASE=restoapp
 DB_USERNAME=root
 DB_PASSWORD=
-
-SUPERADMIN_EMAIL=superadmin@restosaas.id
-SUPERADMIN_PASSWORD=GantiPasswordIni!
 ```
 
 ```bash
@@ -142,10 +137,10 @@ Base URL: `http://localhost:8000/api/v1`
 
 | Method | Endpoint                | Auth | Deskripsi                            |
 | ------ | ----------------------- | ---- | ------------------------------------ |
-| `POST` | `/auth/register`        | ❌   | Daftar restoran baru + trial 14 hari |
+| `POST` | `/auth/register`        | ❌   | Daftar restoran baru                 |
 | `POST` | `/auth/login`           | ❌   | Login, dapat Bearer token            |
 | `POST` | `/auth/logout`          | ✅   | Logout, revoke token                 |
-| `GET`  | `/auth/me`              | ✅   | Data user + restoran + subscription  |
+| `GET`  | `/auth/me`              | ✅   | Data user + restoran                 |
 | `PUT`  | `/auth/profile`         | ✅   | Update nama/telepon/avatar           |
 | `PUT`  | `/auth/password`        | ✅   | Ganti password                       |
 | `POST` | `/auth/forgot-password` | ❌   | Kirim link reset                     |
@@ -204,26 +199,6 @@ Base URL: `http://localhost:8000/api/v1`
 | `PATCH`  | `/staff/{id}/toggle` | Owner | Aktifkan/nonaktifkan |
 | `DELETE` | `/staff/{id}`        | Owner | Hapus staf (soft)    |
 
-### Subscription
-
-| Method | Endpoint                  | Auth  | Deskripsi              |
-| ------ | ------------------------- | ----- | ---------------------- |
-| `GET`  | `/subscription/plans`     | ✅    | List plan tersedia     |
-| `GET`  | `/subscription/current`   | ✅    | Status langganan aktif |
-| `POST` | `/subscription/subscribe` | Owner | Berlangganan plan      |
-| `POST` | `/subscription/cancel`    | Owner | Batalkan langganan     |
-
-### Superadmin
-
-| Method  | Endpoint                                  | Superadmin | Deskripsi             |
-| ------- | ----------------------------------------- | ---------- | --------------------- |
-| `GET`   | `/superadmin/stats`                       | ✅         | Statistik platform    |
-| `GET`   | `/superadmin/restaurants`                 | ✅         | List semua restoran   |
-| `GET`   | `/superadmin/restaurants/{id}`            | ✅         | Detail restoran       |
-| `PATCH` | `/superadmin/restaurants/{id}/suspend`    | ✅         | Suspend restoran      |
-| `PATCH` | `/superadmin/restaurants/{id}/reactivate` | ✅         | Reaktivasi restoran   |
-| `GET`   | `/superadmin/logs`                        | ✅         | Activity log platform |
-
 ### Contoh Response
 
 ```json
@@ -239,12 +214,6 @@ Base URL: `http://localhost:8000/api/v1`
       "id": 1,
       "name": "Warung Sate Pak Budi",
       "slug": "warung-sate-pak-budi"
-    },
-    "subscription": {
-      "status": "trialing",
-      "ends_at": "2026-03-07",
-      "days_remaining": 14,
-      "plan": "Basic"
     }
   }
 }
@@ -254,10 +223,9 @@ Base URL: `http://localhost:8000/api/v1`
 
 ## Role & Akses
 
-| Role         | Akses                                   |
-| ------------ | --------------------------------------- |
-| `superadmin` | Semua restoran, kelola plan & langganan |
-| `owner`      | Full akses restoran sendiri             |
+| Role      | Akses                                   |
+| --------- | --------------------------------------- |
+| `owner`   | Full akses restoran sendiri             |
 | `manager`    | Menu, pesanan, laporan, staf            |
 | `cashier`    | POS, pesanan, pembayaran                |
 | `kitchen`    | Lihat & update status pesanan dapur     |
@@ -272,27 +240,24 @@ cd backend
 vendor/bin/phpunit
 ```
 
-63 tests, 143 assertions — semua passing ✅
+44 tests, 100+ assertions — semua passing ✅
 
-| Test File          | Tests | Coverage                                       |
-| ------------------ | ----- | ---------------------------------------------- |
-| `AuthTest`         | 10    | Register, login, logout, me, profile, password |
-| `MenuTest`         | 9     | Kategori & item CRUD, tenant isolation         |
-| `OrderTest`        | 4     | Create, list, status update, isolation         |
-| `SubscriptionTest` | 8     | Plans, subscribe, cancel, expired guard        |
-| `StaffTest`        | 10    | CRUD, role restriction, isolation              |
-| `SuperAdminTest`   | 7     | Stats, restaurants, logs, suspend              |
-| `TableTest`        | 6     | CRUD, QR generate, isolation                   |
+| Test File   | Tests | Coverage                                       |
+| ----------- | ----- | ---------------------------------------------- |
+| `AuthTest`  | 10    | Register, login, logout, me, profile, password |
+| `MenuTest`  | 9     | Kategori & item CRUD, tenant isolation         |
+| `OrderTest` | 4     | Create, list, status update, isolation         |
+| `StaffTest` | 10    | CRUD, role restriction, isolation              |
+| `TableTest` | 6     | CRUD, QR generate, isolation                   |
 
 ---
 
 ## Roadmap ke Depan
 
-> Project belum dilaunching — ada beberapa penyesuaian sebelum produksi:
+> Project sudah bertransformasi dari SaaS ke platform multi-restoran murni.
 
-- [ ] Poles UI/UX frontend (layout, responsiveness, loading state)
-- [ ] Ganti ikon Lucide yang terlalu generic dengan ikon lebih tepat konteks
-- [ ] Penambahan fitur kecil sesuai feedback
+- [ ] Phase 1: Performa — optimasi query, caching, lazy loading
+- [ ] Phase 2: Finishing UI — poles layout, responsif, loading state
 - [ ] Setup domain & hosting production
 - [ ] Onboarding restoran pertama
 

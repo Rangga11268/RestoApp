@@ -17,9 +17,6 @@ class AuthTest extends TestCase
 
     public function test_owner_can_register(): void
     {
-        // Register requires 'basic' plan for trial subscription creation
-        $this->createPlan('basic', ['price_monthly' => 49000, 'is_active' => true]);
-
         $response = $this->postJson('/api/v1/auth/register', [
             'name'                  => 'Budi Santoso',
             'email'                 => 'budi@example.com',
@@ -38,9 +35,6 @@ class AuthTest extends TestCase
 
     public function test_register_fails_with_duplicate_email(): void
     {
-        // Need a plan so register can proceed to the duplicate email check
-        $this->createPlan('basic', ['price_monthly' => 49000, 'is_active' => true]);
-
         $restaurant = $this->createRestaurant();
         $this->createUser($restaurant, 'owner', ['email' => 'taken@example.com']);
 

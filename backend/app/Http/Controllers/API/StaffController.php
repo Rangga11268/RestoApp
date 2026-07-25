@@ -16,7 +16,7 @@ class StaffController extends Controller
 {
     use ApiResponse;
 
-    // Roles that can be managed as staff (not owner/superadmin)
+    // Roles that can be managed as staff (not owner)
     private const STAFF_ROLES = ['manager', 'cashier', 'kitchen'];
 
     /* ────────────────────────────────────────────────────
@@ -128,7 +128,7 @@ class StaffController extends Controller
     private function authorizeOwner(Request $request): void
     {
         abort_if(
-            ! in_array($request->user()->role, ['owner', 'superadmin']),
+            $request->user()->role !== 'owner',
             403,
             'Hanya owner yang dapat mengelola staff.'
         );

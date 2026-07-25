@@ -8,8 +8,6 @@ use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Traits\ApiResponse;
 use App\Models\ActivityLog;
 use App\Models\Restaurant;
-use App\Models\Subscription;
-use App\Models\SubscriptionPlan;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -22,14 +20,13 @@ class AuthController extends Controller
     use ApiResponse;
 
     /**
-     * Register a new restaurant owner + restaurant + trial subscription.
+     * Register a new restaurant owner + restaurant.
      */
     public function register(RegisterRequest $request): JsonResponse
     {
         $data = $request->validated();
 
         $result = DB::transaction(function () use ($data) {
-            // 1. Create restaurant
             $restaurant = Restaurant::create([
                 'name'     => $data['restaurant_name'],
                 'slug'     => Str::slug($data['restaurant_name']) . '-' . Str::random(4),
@@ -38,24 +35,12 @@ class AuthController extends Controller
                 'currency' => 'IDR',
             ]);
 
-            // 2. Create owner user
             $user = User::create([
                 'restaurant_id' => $restaurant->id,
                 'name'          => $data['name'],
                 'email'         => $data['email'],
                 'password'      => Hash::make($data['password']),
                 'role'          => 'owner',
-            ]);
-
-            // 3. Create trial subscription
-            $plan = SubscriptionPlan::where('name', 'basic')->where('is_active', true)->first();
-            Subscription::create([
-                'restaurant_id' => $restaurant->id,
-                'plan_id'       => $plan?->id ?? 1,
-                'status'        => 'trialing',
-                'trial_ends_at' => now()->addDays(14),
-                'starts_at'     => now()->toDateString(),
-                'ends_at'       => now()->addDays(14)->toDateString(),
             ]);
 
             return $user;
@@ -118,7 +103,7 @@ class AuthController extends Controller
      */
     public function me(Request $request): JsonResponse
     {
-        $user = $request->user()->load(['restaurant.subscription.plan']);
+        $user = $request->user()->load(['restaurant']);
         return $this->success($this->userResponse($user, true));
     }
 
@@ -146,16 +131,6 @@ class AuthController extends Controller
                 'logo_url' => $user->restaurant->logo_url,
                 'settings' => $user->restaurant->settings,
             ];
-
-            $sub = $user->restaurant->subscription;
-            if ($sub) {
-                $data['subscription'] = [
-                    'status'         => $sub->status,
-                    'ends_at'        => $sub->ends_at?->toDateString(),
-                    'days_remaining' => $sub->daysRemaining(),
-                    'plan'           => $sub->plan?->name,
-                ];
-            }
         }
 
         return $data;

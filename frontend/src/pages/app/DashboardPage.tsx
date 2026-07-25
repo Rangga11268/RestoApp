@@ -14,7 +14,6 @@ import {
   ChartBar,
   CircleNotch,
   ImageBroken,
-  Lightning,
   Sparkle,
 } from '@phosphor-icons/react'
 import {
@@ -126,9 +125,6 @@ export default function DashboardPage() {
       .finally(() => setLoading(false))
   }, [])
 
-  const isTrialing = user?.subscription?.status === 'trialing'
-  const daysLeft = user?.subscription?.days_remaining ?? 0
-
   const stats = [
     {
       label: 'Pendapatan Hari Ini',
@@ -181,29 +177,6 @@ export default function DashboardPage() {
           </p>
         </div>
 
-        {user?.subscription && (
-          <div
-            className={cn(
-              'flex items-center gap-4 py-3 px-5 rounded-2xl border transition-all animate-in shadow-sm',
-              isTrialing && daysLeft <= 3
-                ? 'bg-danger/5 border-danger/10 text-danger'
-                : 'bg-white border-slate-100 text-slate-600'
-            )}
-          >
-            <div className={cn(
-                'w-10 h-10 rounded-full flex items-center justify-center',
-                isTrialing ? 'bg-amber-100 text-amber-900' : 'bg-success/10 text-success'
-            )}>
-                <Lightning size={20} weight="fill" />
-            </div>
-            <div>
-                <p className="text-[10px] font-bold uppercase tracking-widest opacity-60 leading-none mb-1">Status Langganan</p>
-                <p className="text-sm font-extrabold text-slate-900 tracking-tight">
-                    {isTrialing ? `Trial — ${daysLeft} hari lagi` : `Paket ${user.subscription.plan.toUpperCase()} Aktif`}
-                </p>
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Modern Stat Cards Grid */}
