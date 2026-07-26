@@ -11,6 +11,7 @@ use App\Models\Restaurant;
 use App\Models\RestaurantTable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -25,48 +26,56 @@ class PublicMenuController extends Controller
      */
     public function menu(Request $request, string $slug): JsonResponse
     {
-        $restaurant = Restaurant::where('slug', $slug)
-            ->where('is_active', true)
-            ->first();
+        $cacheKey = "public:menu:{$slug}" . ($request->filled('table') ? ":table:{$request->table}" : '');
 
-        if (! $restaurant) {
+        $data = Cache::remember($cacheKey, 300, function () use ($request, $slug) {
+            $restaurant = Restaurant::where('slug', $slug)
+                ->where('is_active', true)
+                ->first();
+
+            if (! $restaurant) {
+                return false;
+            }
+
+            $categories = MenuCategory::where('restaurant_id', $restaurant->id)
+                ->where('is_active', true)
+                ->with([
+                    'activeMenuItems' => function ($q) {
+                        $q->orderBy('sort_order')->orderBy('name');
+                    },
+                ])
+                ->orderBy('sort_order')
+                ->orderBy('name')
+                ->get()
+                ->filter(fn($c) => $c->activeMenuItems->isNotEmpty())
+                ->values();
+
+            $tableInfo = null;
+            if ($request->filled('table')) {
+                $tableInfo = RestaurantTable::where('id', $request->table)
+                    ->where('restaurant_id', $restaurant->id)
+                    ->where('is_active', true)
+                    ->first(['id', 'name', 'capacity', 'status']);
+            }
+
+            return [
+                'restaurant' => [
+                    'name'     => $restaurant->name,
+                    'slug'     => $restaurant->slug,
+                    'logo_url' => $restaurant->logo_url,
+                    'timezone' => $restaurant->timezone,
+                    'currency' => $restaurant->currency,
+                ],
+                'table'      => $tableInfo,
+                'categories' => $categories,
+            ];
+        });
+
+        if ($data === false) {
             return $this->error('Restoran tidak ditemukan.', 404);
         }
 
-        // Categories with active items only
-        $categories = MenuCategory::where('restaurant_id', $restaurant->id)
-            ->where('is_active', true)
-            ->with([
-                'activeMenuItems' => function ($q) {
-                    $q->orderBy('sort_order')->orderBy('name');
-                },
-            ])
-            ->orderBy('sort_order')
-            ->orderBy('name')
-            ->get()
-            ->filter(fn($c) => $c->activeMenuItems->isNotEmpty())
-            ->values();
-
-        // Table info (if ?table=id provided)
-        $tableInfo = null;
-        if ($request->filled('table')) {
-            $tableInfo = RestaurantTable::where('id', $request->table)
-                ->where('restaurant_id', $restaurant->id)
-                ->where('is_active', true)
-                ->first(['id', 'name', 'capacity', 'status']);
-        }
-
-        return $this->success([
-            'restaurant' => [
-                'name'     => $restaurant->name,
-                'slug'     => $restaurant->slug,
-                'logo_url' => $restaurant->logo_url,
-                'timezone' => $restaurant->timezone,
-                'currency' => $restaurant->currency,
-            ],
-            'table'      => $tableInfo,
-            'categories' => $categories,
-        ]);
+        return $this->success($data);
     }
 
     /**

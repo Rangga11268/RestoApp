@@ -268,7 +268,7 @@ export default function MenuItemsPage() {
               {/* Image Section */}
               <div className="relative aspect-[4/3] overflow-hidden bg-slate-100">
                 {item.image_url ? (
-                  <img src={item.image_url} alt={item.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                  <img src={item.image_url} alt={item.name} loading="lazy" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-slate-300">
                     <ImageBroken size={48} weight="duotone" />

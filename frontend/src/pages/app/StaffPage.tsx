@@ -444,6 +444,3 @@ export default function StaffPage() {
   )
 }
 
-function CheckCircle({ size, className, weight }: any) {
-    return <UserCircle size={size} className={className} weight={weight || "bold"} />
-}

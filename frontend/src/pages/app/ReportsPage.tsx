@@ -476,6 +476,7 @@ export default function ReportsPage() {
                          {item.image_url ? (
                             <img
                             src={item.image_url}
+                            loading="lazy"
                             className="w-12 h-12 rounded-2xl object-cover shadow-sm border border-white"
                             />
                         ) : (

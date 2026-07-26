@@ -350,6 +350,7 @@ export default function DashboardPage() {
                         {item.image_url ? (
                             <img
                             src={item.image_url}
+                            loading="lazy"
                             className="w-12 h-12 rounded-xl object-cover shadow-sm ring-2 ring-slate-100"
                             />
                         ) : (
