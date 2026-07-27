@@ -9,28 +9,21 @@ function cn(...inputs: ClassValue[]) {
 interface CardProps {
   children: React.ReactNode
   className?: string
-  variant?: 'premium' | 'glass' | 'outline'
-  animated?: boolean
+  variant?: 'default' | 'outline'
 }
 
-export default function Card({ 
-  children, 
-  className = '', 
-  variant = 'premium',
-  animated = false
+export default function Card({
+  children,
+  className = '',
+  variant = 'default'
 }: CardProps) {
-  const base = 'rounded-[24px] p-6 transition-all duration-300'
-  
   const variants = {
-    premium: 'bg-white border border-slate-100 shadow-premium',
-    glass: 'glass',
-    outline: 'bg-transparent border border-slate-200'
+    default: 'bg-surface border border-rule',
+    outline: 'bg-transparent border border-rule'
   }
 
-  const animation = animated ? 'hover:shadow-premium-hover hover:-translate-y-1' : ''
-
   return (
-    <div className={cn(base, variants[variant], animation, className)}>
+    <div className={cn('rounded-lg p-5', variants[variant], className)}>
       {children}
     </div>
   )

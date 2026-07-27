@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { EnvelopeSimple, LockKey, Eye, EyeClosed, CircleNotch } from "@phosphor-icons/react";
+import { EnvelopeSimple, LockKey, Eye, EyeClosed, CircleNotch, ForkKnife } from "@phosphor-icons/react";
 import { useAuthStore } from "@/stores/authStore";
 import AuthLayout from "@/components/auth/AuthLayout";
 
@@ -42,8 +42,8 @@ export default function LoginPage() {
     <AuthLayout>
       {/* Mobile brand */}
       <div className="flex items-center gap-2 mb-8 lg:hidden">
-        <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center">
-          <span className="text-sm">🍽</span>
+        <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+          <ForkKnife size={16} weight="bold" className="text-white" />
         </div>
         <span className="font-bold text-gray-900 text-lg">RestoApp</span>
       </div>
@@ -83,7 +83,7 @@ export default function LoginPage() {
               type="email"
               autoComplete="email"
               placeholder="email@domain.com"
-              className="w-full rounded-lg border border-gray-300 pl-9 pr-3 py-2.5 text-sm outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100 transition placeholder:text-gray-400"
+              className="w-full rounded-lg border border-gray-300 pl-9 pr-3 py-2.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition placeholder:text-gray-400"
             />
           </div>
           {errors.email && (
@@ -106,7 +106,7 @@ export default function LoginPage() {
               type={showPwd ? "text" : "password"}
               autoComplete="current-password"
               placeholder="••••••••"
-              className="w-full rounded-lg border border-gray-300 pl-9 pr-10 py-2.5 text-sm outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100 transition placeholder:text-gray-400"
+              className="w-full rounded-lg border border-gray-300 pl-9 pr-10 py-2.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition placeholder:text-gray-400"
             />
             <button
               type="button"
@@ -130,9 +130,9 @@ export default function LoginPage() {
             <div
               onClick={() => setRememberMe((v) => !v)}
               className={`w-4 h-4 rounded border-2 flex items-center justify-center transition ${
-                rememberMe
-                  ? "bg-orange-500 border-orange-500"
-                  : "border-gray-300 bg-white group-hover:border-orange-400"
+rememberMe
+                    ? "bg-primary border-primary"
+                    : "border-gray-300 bg-white group-hover:border-primary-hover"
               }`}
             >
               {rememberMe && (
@@ -152,7 +152,7 @@ export default function LoginPage() {
           </label>
           <Link
             to="/forgot-password"
-            className="text-xs text-orange-500 hover:text-orange-600"
+            className="text-xs text-primary hover:text-primary-hover"
           >
             Lupa password?
           </Link>
@@ -161,7 +161,7 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 active:bg-orange-700 disabled:opacity-60 text-white font-semibold py-2.5 rounded-lg text-sm transition"
+          className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-hover active:bg-primary-dark disabled:opacity-60 text-white font-semibold py-2.5 rounded-lg text-sm transition"
         >
           {isLoading && <CircleNotch size={15} className="animate-spin" />}
           {isLoading ? "Memproses..." : "Masuk"}
@@ -172,7 +172,7 @@ export default function LoginPage() {
         Belum punya akun?{" "}
         <Link
           to="/register"
-          className="text-orange-500 hover:text-orange-600 font-semibold"
+          className="text-primary hover:text-primary-hover font-semibold"
         >
           Daftar gratis
         </Link>

@@ -62,7 +62,7 @@ export default function ResetPasswordPage() {
           </p>
           <Link
             to="/forgot-password"
-            className="text-sm text-orange-500 hover:text-orange-600 font-semibold"
+            className="text-sm text-primary hover:text-primary-hover font-semibold"
           >
             Minta link baru
           </Link>
@@ -75,8 +75,8 @@ export default function ResetPasswordPage() {
     <AuthLayout>
       {/* Mobile brand */}
       <div className="flex items-center gap-2 mb-8 lg:hidden">
-        <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center">
-          <span className="text-sm">🍽</span>
+<div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+          <LockKey size={16} weight="bold" className="text-white" />
         </div>
         <span className="font-bold text-gray-900 text-lg">RestoApp</span>
       </div>
@@ -109,7 +109,7 @@ export default function ResetPasswordPage() {
               {...register("password")}
               type={showPwd ? "text" : "password"}
               placeholder="Min. 8 karakter"
-              className="w-full rounded-lg border border-gray-300 pl-9 pr-10 py-2.5 text-sm outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100 transition placeholder:text-gray-400"
+              className="w-full rounded-lg border border-gray-300 pl-9 pr-10 py-2.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition placeholder:text-gray-400"
             />
             <button
               type="button"
@@ -140,7 +140,7 @@ export default function ResetPasswordPage() {
               {...register("password_confirmation")}
               type={showConfirm ? "text" : "password"}
               placeholder="Ulangi password baru"
-              className="w-full rounded-lg border border-gray-300 pl-9 pr-10 py-2.5 text-sm outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100 transition placeholder:text-gray-400"
+              className="w-full rounded-lg border border-gray-300 pl-9 pr-10 py-2.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition placeholder:text-gray-400"
             />
             <button
               type="button"
@@ -161,7 +161,7 @@ export default function ResetPasswordPage() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 active:bg-orange-700 disabled:opacity-60 text-white font-semibold py-2.5 rounded-lg text-sm transition mt-1"
+          className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-hover active:bg-primary-dark disabled:opacity-60 text-white font-semibold py-2.5 rounded-lg text-sm transition mt-1"
         >
           {isSubmitting && <CircleNotch size={15} className="animate-spin" />}
           {isSubmitting ? "Menyimpan..." : "Simpan Password Baru"}

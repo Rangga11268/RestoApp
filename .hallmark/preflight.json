@@ -1,0 +1,8 @@
+{
+  "font": "Inter (Google Fonts, src/index.css L1)",
+  "palette": "Custom OKLCH @theme (src/index.css L6-44)",
+  "motion": "none installed (CSS transitions only)",
+  "spacing": "Tailwind v4 default + custom 4pt named scale in design.md",
+  "framework": "React 19 + Vite + Tailwind v4",
+  "scan_date": "2026-07-27"
+}

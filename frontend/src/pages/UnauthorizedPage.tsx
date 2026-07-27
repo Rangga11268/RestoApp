@@ -12,7 +12,7 @@ export default function UnauthorizedPage() {
         </p>
         <Link
           to="/dashboard"
-          className="inline-flex items-center px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium rounded-lg transition"
+          className="inline-flex items-center px-4 py-2 bg-primary hover:bg-primary-hover text-white text-sm font-medium rounded-lg transition"
         >
           ← Kembali ke Dashboard
         </Link>

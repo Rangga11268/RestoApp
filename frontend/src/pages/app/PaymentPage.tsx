@@ -34,8 +34,6 @@ import Badge from '@/components/ui/Badge'
 import Card from '@/components/ui/Card'
 import Input from '@/components/ui/Input'
 
-// ─── Helpers ─────────────────────────────────────────────
-
 function formatIDR(n: number) {
   return new Intl.NumberFormat('id-ID', {
     style: 'currency',
@@ -47,8 +45,6 @@ function formatIDR(n: number) {
 function formatNumber(n: number) {
   return new Intl.NumberFormat('id-ID').format(n)
 }
-
-// ─── Method button ────────────────────────────────────────
 
 interface MethodOption {
   method: PaymentMethod
@@ -89,8 +85,6 @@ const METHOD_OPTIONS: MethodOption[] = [
   },
 ]
 
-// ─── Quick cash buttons ───────────────────────────────────
-
 function quickAmounts(total: number): number[] {
   const ceil = Math.ceil(total / 1000) * 1000
   return [
@@ -106,8 +100,6 @@ function quickAmounts(total: number): number[] {
     .slice(0, 5)
 }
 
-// ─── Success overlay ──────────────────────────────────────
-
 function SuccessOverlay({
   order,
   changeAmount,
@@ -120,29 +112,29 @@ function SuccessOverlay({
   onDone: () => void
 }) {
   return (
-    <div className="fixed inset-0 z-[100] bg-slate-900/90 backdrop-blur-xl flex items-center justify-center p-6 animate-in fade-in zoom-in duration-300">
-      <Card className="w-full max-w-sm text-center p-10 bg-white border-transparent shadow-[0_0_100px_rgba(34,197,94,0.3)]">
-        <div className="flex items-center justify-center w-24 h-24 rounded-[40px] bg-success/10 text-success mx-auto mb-8 animate-bounce">
+    <div className="fixed inset-0 z-[100] bg-slate-900/90 backdrop-blur-xl flex items-center justify-center p-6">
+      <Card className="w-full max-w-sm text-center p-10 bg-surface border-transparent shadow-[0_0_100px_rgba(34,197,94,0.3)]">
+        <div className="flex items-center justify-center w-24 h-24 rounded-[40px] bg-success-light text-success mx-auto mb-8 animate-bounce">
           <ShieldCheck size={48} weight="fill" />
         </div>
-        <h2 className="text-3xl font-black text-slate-900 tracking-tighter mb-2">Settlement Complete</h2>
-        <p className="text-slate-400 font-bold text-sm mb-8 uppercase tracking-widest">{order.order_number} PAID</p>
+        <h2 className="text-xl font-semibold text-ink tracking-tighter mb-2">Settlement Complete</h2>
+        <p className="text-ink-2 font-bold text-sm mb-8 uppercase tracking-widest">{order.order_number} PAID</p>
 
         {changeAmount > 0 && (
-          <div className="bg-slate-900 rounded-3xl p-6 mb-8 text-center border-t-4 border-success">
-            <div className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-2">Change to Return</div>
-            <div className="text-3xl font-black text-white tracking-tighter">{formatIDR(changeAmount)}</div>
+          <div className="bg-slate-900 rounded-xl p-6 mb-8 text-center border-t-4 border-success">
+            <div className="text-[10px] font-semibold text-ink-2 uppercase tracking-[0.2em] mb-2">Change to Return</div>
+            <div className="text-xl font-semibold text-white tracking-tighter">{formatIDR(changeAmount)}</div>
           </div>
         )}
 
         <div className="space-y-3">
           <Button
             onClick={onPrint}
-            className="w-full h-14 rounded-2xl bg-primary shadow-primary/20 font-black uppercase tracking-widest text-[10px]"
+            className="w-full h-14 rounded-lg bg-accent shadow-primary/20 font-semibold uppercase tracking-widest text-[10px]"
           >
             <Printer size={20} weight="bold" className="mr-2" /> Print Thermal Invoice
           </Button>
-          <Button variant="secondary" onClick={onDone} className="w-full h-14 rounded-2xl border-slate-100 text-slate-900 font-black uppercase tracking-widest text-[10px]">
+          <Button variant="secondary" onClick={onDone} className="w-full h-14 rounded-lg border-rule-light text-ink font-semibold uppercase tracking-widest text-[10px]">
             Return to Dashboard
           </Button>
         </div>
@@ -150,8 +142,6 @@ function SuccessOverlay({
     </div>
   )
 }
-
-// ─── Main Page ────────────────────────────────────────────
 
 export default function PaymentPage() {
   const { id } = useParams<{ id: string }>()
@@ -175,7 +165,6 @@ export default function PaymentPage() {
 
   const snapScriptRef = useRef<HTMLScriptElement | null>(null)
 
-  // Load order
   useEffect(() => {
     if (!id) return
     setLoading(true)
@@ -191,14 +180,11 @@ export default function PaymentPage() {
       .finally(() => setLoading(false))
   }, [id, navigate])
 
-  // Derive change amount live
   useEffect(() => {
     if (!order) return
     const cash = parseFloat(cashInput.replace(/\./g, '').replace(',', '.')) || 0
     setChangeAmount(Math.max(0, cash - Number(order.total)))
   }, [cashInput, order])
-
-  // ── Handle Midtrans Snap ──────────────────────────────
 
   async function handleQris() {
     if (!order) return
@@ -237,8 +223,6 @@ export default function PaymentPage() {
     }
   }
 
-  // ── Handle direct payment (cash / card / transfer) ────
-
   async function handlePay() {
     if (!order) return
     setProcessing(true)
@@ -270,8 +254,8 @@ export default function PaymentPage() {
   if (loading) {
     return (
         <div className="flex flex-col items-center justify-center py-32 text-slate-300">
-            <ArrowsClockwise size={48} className="animate-spin mb-4 text-primary opacity-20" />
-            <span className="font-black text-xs uppercase tracking-[0.2em] animate-pulse">Syncing Payment API...</span>
+            <ArrowsClockwise size={48} className="animate-spin mb-4 text-accent opacity-20" />
+            <span className="font-semibold text-xs uppercase tracking-[0.2em] animate-pulse">Syncing Payment API...</span>
         </div>
     )
   }
@@ -280,10 +264,10 @@ export default function PaymentPage() {
     return (
       <div className="max-w-3xl mx-auto py-20 text-center">
         <div className="w-20 h-20 bg-danger/5 text-danger rounded-[28px] flex items-center justify-center mx-auto mb-6">
-            <WarningCircle size={40} weight="duotone" />
+            <WarningCircle size={40} weight="bold" />
         </div>
-        <h2 className="text-2xl font-black text-slate-900 tracking-tighter mb-2">Order Missing</h2>
-        <Button onClick={() => navigate('/orders')} variant="secondary" className="rounded-2xl px-8">
+        <h2 className="text-lg font-semibold text-ink tracking-tighter mb-2">Order Missing</h2>
+        <Button onClick={() => navigate('/orders')} variant="secondary" className="rounded-lg px-8">
             <ArrowLeft size={16} className="mr-2" /> Back to History
         </Button>
       </div>
@@ -307,47 +291,44 @@ export default function PaymentPage() {
         />
       )}
 
-      <div className="w-full max-w-5xl mx-auto space-y-10 animate-in pb-20">
-        {/* Top Header */}
+      <div className="w-full max-w-5xl mx-auto space-y-10 pb-20">
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
             <div className="space-y-4">
                 <Link
                     to={`/orders/${order.id}`}
-                    className="group flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-primary transition-colors"
+                    className="group flex items-center gap-2 text-[10px] font-semibold text-ink-2 uppercase tracking-widest hover:text-accent transition-colors"
                 >
                     <ArrowLeft size={14} weight="bold" className="transition-transform group-hover:-translate-x-1" />
                     Back to Order Detail
                 </Link>
                 <div className="flex items-center gap-4">
                     <div className="w-16 h-16 rounded-[28px] bg-slate-900 flex items-center justify-center text-white">
-                        <Money size={32} weight="duotone" />
+                        <Money size={32} weight="bold" />
                     </div>
                     <div>
-                        <h1 className="text-4xl font-black text-slate-900 tracking-tighter">Register Checkout</h1>
-                        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Order Transaction: {order.order_number}</p>
+                        <h1 className="text-4xl font-semibold text-ink tracking-tighter">Register Checkout</h1>
+                        <p className="text-xs font-bold text-ink-2 uppercase tracking-widest mt-1">Order Transaction: {order.order_number}</p>
                     </div>
                 </div>
             </div>
 
-            {/* Total Balance Badge */}
-            <div className="bg-slate-900 p-8 rounded-[40px] text-white flex flex-col items-center sm:items-end relative overflow-hidden group shadow-2xl shadow-primary/20">
-                 <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none group-hover:scale-110 transition-transform">
+            <div className="bg-slate-900 p-8 rounded-[40px] text-white flex flex-col items-center sm:items-end relative overflow-hidden shadow-2xl shadow-primary/20">
+                 <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none transition-transform">
                     <ShieldCheck size={120} weight="fill" />
                  </div>
-                 <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-1 relative z-10">Grand Balance Due</span>
-                 <span className="text-4xl font-black text-white tracking-tighter relative z-10">{formatIDR(total)}</span>
+                 <span className="text-[10px] font-semibold text-ink-2 uppercase tracking-[0.3em] mb-1 relative z-10">Grand Balance Due</span>
+                 <span className="text-4xl font-semibold text-white tracking-tighter relative z-10">{formatIDR(total)}</span>
             </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-            {/* Payment Method Selector */}
             <div className="lg:col-span-8 space-y-10">
-                 <Card className="p-8 border-slate-100">
+                 <Card className="p-8 border-rule-light">
                     <div className="flex items-center gap-3 mb-8">
-                        <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+                        <div className="w-10 h-10 rounded-lg bg-accent-light flex items-center justify-center text-accent">
                             <ListChecks size={20} weight="bold" />
                         </div>
-                        <h2 className="text-xl font-black text-slate-900 tracking-tighter">Settlement Method</h2>
+                        <h2 className="text-md font-semibold text-ink tracking-tighter">Settlement Method</h2>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -359,19 +340,19 @@ export default function PaymentPage() {
                                     key={opt.method}
                                     onClick={() => setMethod(opt.method)}
                                     className={cn(
-                                        "relative flex flex-col items-start p-6 rounded-[32px] border-2 transition-all duration-300 group overflow-hidden",
+                                        "relative flex flex-col items-start p-6 rounded-[32px] border-2 transition-all group overflow-hidden",
                                         active 
-                                            ? "bg-slate-900 border-slate-900 text-white shadow-xl scale-[1.02]"
-                                            : "bg-white border-slate-100 text-slate-400 hover:border-primary/20 hover:bg-slate-50"
+                                            ? "bg-slate-900 border-slate-900 text-white scale-[1.02]"
+                                            : "bg-surface border-rule-light text-ink-2 hover:border-accent/20 hover:bg-paper-2"
                                     )}
                                 >
-                                    <Icon size={28} weight={active ? "fill" : "duotone"} className={cn("mb-6 transition-colors", active ? "text-primary" : "text-slate-300")} />
-                                    <span className="text-xs font-black uppercase tracking-widest mb-1">{opt.label}</span>
-                                    <span className={cn("text-[9px] font-bold opacity-50 text-left leading-tight", active ? "text-slate-400" : "text-slate-400")}>{opt.desc}</span>
+                                    <Icon size={28} weight={active ? "fill" : "bold"} className={cn("mb-6 transition-colors", active ? "text-accent" : "text-slate-300")} />
+                                    <span className="text-xs font-semibold uppercase tracking-widest mb-1">{opt.label}</span>
+                                    <span className={cn("text-[9px] font-bold opacity-50 text-left leading-tight", active ? "text-slate-400" : "text-ink-2")}>{opt.desc}</span>
                                     
                                     {active && (
                                         <div className="absolute -bottom-2 -right-2">
-                                            <CheckCircle size={40} weight="fill" className="text-primary/10" />
+                                            <CheckCircle size={40} weight="fill" className="text-accent/10" />
                                         </div>
                                     )}
                                 </button>
@@ -379,14 +360,13 @@ export default function PaymentPage() {
                         })}
                     </div>
 
-                    {/* Cash Interface */}
                     {method === 'cash' && (
-                        <div className="mt-10 p-10 bg-slate-50/50 rounded-[40px] border border-slate-100 space-y-8 animate-in slide-in-from-top-4">
+                        <div className="mt-10 p-8 bg-paper-2 rounded-lg border border-rule space-y-8">
                              <div className="flex flex-col sm:flex-row items-center gap-8">
                                 <div className="flex-1 w-full">
-                                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 pl-1">Amount Rendered (IDR)</label>
+                                    <label className="block text-[10px] font-semibold text-ink-2 uppercase tracking-[0.2em] mb-3 pl-1">Amount Rendered (IDR)</label>
                                     <div className="relative group">
-                                         <Calculator size={24} className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-primary transition-colors" />
+                                         <Calculator size={24} className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-accent transition-colors" />
                                          <input
                                             type="text"
                                             inputMode="numeric"
@@ -397,40 +377,38 @@ export default function PaymentPage() {
                                                 setCashInput(raw ? formatNumber(Number(raw)) : '')
                                             }}
                                             className={cn(
-                                                "w-full h-20 pl-16 pr-8 bg-white rounded-[28px] text-3xl font-black text-slate-900 border-2 transition-all outline-none tracking-tighter",
-                                                cashInsufficient ? "border-danger ring-4 ring-danger/10" : "border-slate-100 focus:border-primary focus:ring-4 focus:ring-primary/5"
+                                                "w-full h-20 pl-16 pr-8 bg-surface rounded-[28px] text-xl font-semibold text-ink border-2 transition-all outline-none tracking-tighter",
+                                                cashInsufficient ? "border-danger ring-4 ring-danger/10" : "border-rule-light focus:border-accent focus:ring-4 focus:ring-accent/15"
                                             )}
                                          />
                                     </div>
                                     {cashInsufficient && (
-                                        <p className="mt-3 text-xs font-black text-danger uppercase tracking-widest flex items-center gap-2 justify-center sm:justify-start">
+                                        <p className="mt-3 text-xs font-semibold text-danger uppercase tracking-widest flex items-center gap-2 justify-center sm:justify-start">
                                             <WarningCircle size={16} weight="bold" />
                                             Balance Shortfall: {formatIDR(total - cashValue)}
                                         </p>
                                     )}
                                 </div>
 
-                                {/* Live Change Meter */}
                                 <div className={cn(
-                                    "w-full sm:w-64 h-24 rounded-[32px] flex flex-col items-center justify-center p-6 border-2 transition-all duration-500",
-                                    cashInput && !cashInsufficient ? "bg-success border-success text-white shadow-xl shadow-success/20" : "bg-white border-slate-100 text-slate-300"
+                                    "w-full sm:w-64 h-24 rounded-[32px] flex flex-col items-center justify-center p-6 border-2 transition-all",
+                                    cashInput && !cashInsufficient ? "bg-success border-success text-white shadow-success/20" : "bg-surface border-rule-light text-slate-300"
                                 )}>
-                                    <span className="text-[10px] font-black uppercase tracking-widest opacity-60">Kembalian</span>
-                                    <span className="text-2xl font-black tracking-tighter truncate w-full text-center">
+                                    <span className="text-[10px] font-semibold uppercase tracking-widest opacity-60">Kembalian</span>
+                                    <span className="text-lg font-semibold tracking-tighter truncate w-full text-center">
                                         {formatIDR(changeAmount)}
                                     </span>
                                 </div>
                              </div>
 
-                             {/* Quick Denominations */}
                              <div className="space-y-4">
-                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1 text-center sm:text-left">Quick Tenders</p>
+                                <p className="text-[10px] font-semibold text-ink-2 uppercase tracking-widest pl-1 text-center sm:text-left">Quick Tenders</p>
                                 <div className="flex flex-wrap gap-3">
                                     {quickAmounts(total).map((amt) => (
                                         <button
                                             key={amt}
                                             onClick={() => setCashInput(formatNumber(amt))}
-                                            className="px-6 py-3 bg-white border border-slate-200 rounded-2xl text-[11px] font-black text-slate-600 hover:border-primary hover:text-primary transition-all shadow-sm active:scale-95"
+                                            className="px-6 py-3 bg-surface border border-rule rounded-lg text-[11px] font-semibold text-ink-2 hover:border-accent hover:text-accent transition-all"
                                         >
                                             {formatIDR(amt)}
                                         </button>
@@ -440,38 +418,36 @@ export default function PaymentPage() {
                         </div>
                     )}
 
-                    {/* Reference Inputs for non-cash */}
                     {isNonCash && (
-                        <div className="mt-10 p-8 bg-slate-50/50 rounded-[40px] border border-slate-100 grid grid-cols-1 sm:grid-cols-2 gap-6 animate-in slide-in-from-top-4">
+                        <div className="mt-10 p-8 bg-paper-2 rounded-lg border border-rule grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <div>
-                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 pl-1">Reference ID (Optional)</label>
+                                <label className="block text-[10px] font-semibold text-ink-2 uppercase tracking-widest mb-3 pl-1">Reference ID (Optional)</label>
                                 <Input
                                     value={txRef}
                                     onChange={(e) => setTxRef(e.target.value)}
                                     placeholder="Enter Auth / TRX Code"
-                                    className="h-14 font-black rounded-2xl"
+                                    className="h-14 font-semibold rounded-lg"
                                 />
                             </div>
                             <div>
-                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 pl-1">Merchant Notes</label>
+                                <label className="block text-[10px] font-semibold text-ink-2 uppercase tracking-widest mb-3 pl-1">Merchant Notes</label>
                                 <Input
                                     value={notes}
                                     onChange={(e) => setNotes(e.target.value)}
                                     placeholder="Payment specifics..."
-                                    className="h-14 font-black rounded-2xl"
+                                    className="h-14 font-semibold rounded-lg"
                                 />
                             </div>
                         </div>
                     )}
                  </Card>
 
-                 {/* Checkout Final Action */}
                  <div className="flex justify-end pt-4">
                     {isQris ? (
                         <Button
                             onClick={handleQris}
                             disabled={snapLoading}
-                            className="w-full sm:w-auto h-20 px-16 rounded-[28px] bg-primary text-xl font-black tracking-tighter shadow-2xl shadow-primary/20 group hover:scale-[1.02]"
+                            className="w-full sm:w-auto h-20 px-16 rounded-[28px] bg-accent text-md font-semibold tracking-tighter shadow-2xl shadow-primary/20 group hover:scale-[1.02]"
                         >
                             {snapLoading ? <CircleNotch size={32} className="animate-spin" /> : (
                                 <div className="flex items-center gap-4">
@@ -485,7 +461,7 @@ export default function PaymentPage() {
                         <Button
                             onClick={handlePay}
                             disabled={processing || (method === 'cash' && (cashInsufficient || !cashInput))}
-                            className="w-full h-20 rounded-[28px] bg-primary text-xl font-black tracking-tighter shadow-2xl shadow-primary/20 group hover:scale-[1.02]"
+                            className="w-full h-20 rounded-[28px] bg-accent text-md font-semibold tracking-tighter shadow-2xl shadow-primary/20 group hover:scale-[1.02]"
                         >
                              {processing ? <CircleNotch size={32} className="animate-spin" /> : (
                                 <div className="flex items-center gap-4">
@@ -499,66 +475,63 @@ export default function PaymentPage() {
                  </div>
             </div>
 
-            {/* Sidebar Cart Preview */}
             <div className="lg:col-span-4 space-y-8">
-                 <Card className="p-8 border-slate-100 h-fit bg-slate-50/20 overflow-hidden relative">
-                    {/* Background Graphic */}
+                 <Card className="p-8 border-rule-light h-fit bg-paper-2/20 overflow-hidden relative">
                     <div className="absolute top-0 right-0 p-4 opacity-10 rotate-12">
-                        <Receipt size={100} weight="duotone" />
+                        <Receipt size={100} weight="bold" />
                     </div>
 
                     <div className="relative z-10">
-                        <div className="flex items-center gap-3 mb-8 pb-8 border-b border-slate-100">
-                            <div className="w-10 h-10 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-slate-400">
-                                <Receipt size={20} weight="duotone" />
+                        <div className="flex items-center gap-3 mb-8 pb-8 border-b border-rule-light">
+                            <div className="w-10 h-10 rounded-lg bg-surface border border-rule-light flex items-center justify-center text-ink-2">
+                                <Receipt size={20} weight="bold" />
                             </div>
-                            <h3 className="text-sm font-black text-slate-900 tracking-widest uppercase">Cart Insight</h3>
+                            <h3 className="text-sm font-semibold text-ink tracking-widest uppercase">Cart Insight</h3>
                         </div>
 
                         <div className="space-y-5 max-h-[40vh] overflow-y-auto pr-2 custom-scrollbar">
                              {order.items?.map((item) => (
                                 <div key={item.id} className="flex justify-between gap-4">
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-xs font-black text-slate-900 leading-tight mb-0.5">{item.menu_item_name}</p>
-                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{item.quantity} × {formatIDR(Number(item.price_snapshot))}</p>
+                                        <p className="text-xs font-semibold text-ink leading-tight mb-0.5">{item.menu_item_name}</p>
+                                        <p className="text-[10px] font-bold text-ink-2 uppercase tracking-widest">{item.quantity} × {formatIDR(Number(item.price_snapshot))}</p>
                                     </div>
-                                    <span className="text-xs font-black text-slate-900 tracking-tighter whitespace-nowrap">{formatIDR(Number(item.subtotal))}</span>
+                                    <span className="text-xs font-semibold text-ink tracking-tighter whitespace-nowrap">{formatIDR(Number(item.subtotal))}</span>
                                 </div>
                              ))}
                         </div>
 
-                        <div className="mt-8 pt-8 border-t border-slate-100 space-y-4 font-bold text-xs uppercase tracking-widest">
-                             <div className="flex justify-between text-slate-400">
+                        <div className="mt-8 pt-8 border-t border-rule-light space-y-4 font-bold text-xs uppercase tracking-widest">
+                             <div className="flex justify-between text-ink-2">
                                 <span>Subtotal</span>
                                 <span>{formatIDR(Number(order.subtotal))}</span>
                              </div>
                              {Number(order.discount_amount) > 0 && (
-                                <div className="flex justify-between text-primary">
+                                <div className="flex justify-between text-accent">
                                     <span>Discount</span>
                                     <span>−{formatIDR(Number(order.discount_amount))}</span>
                                 </div>
                              )}
                              {Number(order.tax_amount) > 0 && (
-                                <div className="flex justify-between text-slate-400">
+                                <div className="flex justify-between text-ink-2">
                                     <span>Tax / VAT</span>
                                     <span>{formatIDR(Number(order.tax_amount))}</span>
                                 </div>
                              )}
-                             <div className="pt-4 flex justify-between items-center text-slate-900 border-t border-slate-100">
-                                <span className="text-[10px] font-black">Final Total</span>
-                                <span className="text-xl font-black tracking-tighter">{formatIDR(total)}</span>
+                             <div className="pt-4 flex justify-between items-center text-ink border-t border-rule-light">
+                                <span className="text-[10px] font-semibold">Final Total</span>
+                                <span className="text-md font-semibold tracking-tighter">{formatIDR(total)}</span>
                              </div>
                         </div>
                     </div>
                  </Card>
 
-                 {/* Secure Checkout Badge */}
                  <div className="p-8 bg-slate-900 rounded-[32px] flex items-center gap-4 text-white">
-                     <div className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center text-primary">
+                     <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center text-accent">
                         <ShieldCheck size={24} weight="fill" />
                      </div>
                      <div>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Secure Ledger</p>
+                        <p className="text-[10px] font-semibold uppercase tracking-widest text-ink-2">Secure Ledger</p>
                         <p className="text-xs font-bold leading-tight">Every transaction is encrypted and logged in real-time.</p>
                      </div>
                  </div>

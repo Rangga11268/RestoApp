@@ -122,7 +122,7 @@ export function CartPanel(props: OrderFormProps) {
           </div>
         ) : (
           cartItems.map((item) => (
-            <div key={item.id} className="flex gap-4 group animate-in">
+            <div key={item.id} className="flex gap-4 group">
               <div className="relative flex-shrink-0">
                 {item.image_url ? (
                   <img src={item.image_url} className="w-16 h-16 rounded-2xl object-cover border border-slate-100" />
@@ -173,7 +173,7 @@ export function CartPanel(props: OrderFormProps) {
           </span>
         </div>
 
-        {error && <p className="text-xs font-bold text-danger bg-danger/5 p-3 rounded-xl border border-danger/10 text-center animate-in">{error}</p>}
+        {error && <p className="text-xs font-bold text-danger bg-danger/5 p-3 rounded-xl border border-danger/10 text-center">{error}</p>}
 
         <Button
           onClick={handleOrder}
@@ -211,7 +211,7 @@ export function CartDrawer({
   return (
     <>
       <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-[60] lg:hidden transition-opacity" onClick={onClose} />
-      <div className="fixed bottom-0 left-0 right-0 w-full bg-white rounded-t-[40px] z-[70] max-h-[90vh] flex flex-col shadow-2xl lg:hidden animate-in slide-in-from-bottom duration-500">
+      <div className="fixed bottom-0 left-0 right-0 w-full bg-white rounded-t-2xl z-[70] max-h-[90vh] flex flex-col shadow-lg lg:hidden">
         <div className="w-full flex justify-center py-4 bg-white rounded-t-[40px]">
           <div className="w-12 h-1.5 bg-slate-200 rounded-full" />
         </div>

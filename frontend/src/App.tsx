@@ -30,7 +30,7 @@ const PublicMenuPage = lazy(() => import('@/pages/public/PublicMenuPage'))
 
 const Loader = () => (
   <div className="flex items-center justify-center h-full min-h-[200px]">
-    <div className="w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" />
+    <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
   </div>
 )
 

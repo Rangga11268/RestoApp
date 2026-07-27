@@ -16,6 +16,7 @@ import {
   Key,
   ArrowsClockwise,
   CheckCircle,
+  Warning,
 } from "@phosphor-icons/react"
 import Modal from '@/components/Modal'
 import Button from '@/components/ui/Button'
@@ -38,8 +39,6 @@ import { twMerge } from 'tailwind-merge'
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
-
-// ─── Constants ─────────────────────────────────────────────
 
 const ROLE_CONFIG: Record<string, { label: string; icon: any; color: string }> = {
   manager: {
@@ -68,14 +67,12 @@ const emptyForm: StaffFormData = {
   phone: '',
 }
 
-// ─── Main page ────────────────────────────────────────────
-
 export default function StaffPage() {
   const [staff, setStaff] = useState<StaffMember[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [modalOpen, setModalOpen] = useState(false)
   const [editingStaff, setEditingStaff] = useState<StaffMember | null>(null)
-  
   const [form, setForm] = useState<StaffFormData>(emptyForm)
   const [saving, setSaving] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -83,9 +80,12 @@ export default function StaffPage() {
 
   const reload = async () => {
     setLoading(true)
+    setError(null)
     try {
       const data = await getStaff()
       setStaff(data)
+    } catch {
+      setError('Gagal memuat staff. Periksa koneksi server.')
     } finally {
       setLoading(false)
     }
@@ -162,8 +162,8 @@ export default function StaffPage() {
     try {
       const updated = await toggleStaff(s.id)
       setStaff((prev) => prev.map((x) => (x.id === s.id ? updated : x)))
-      Toast.fire({ 
-          icon: 'success', 
+      Toast.fire({
+          icon: 'success',
           title: `Account ${updated.is_active ? 'Activated' : 'Suspended'}`,
           timer: 1500,
           showConfirmButton: false
@@ -187,23 +187,23 @@ export default function StaffPage() {
   }
 
   return (
-    <div className="w-full max-w-7xl mx-auto space-y-10 animate-in selection:bg-primary/20">
-      {/* Header Premium */}
+    <div className="w-full max-w-7xl mx-auto space-y-10 selection:bg-accent/20">
+      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
         <div>
            <Badge variant="primary" className="mb-2">Admin & Ops</Badge>
-           <h1 className="text-4xl font-black text-slate-900 tracking-tighter">Team Directory</h1>
-           <p className="text-sm font-medium text-slate-400 mt-1">
+           <h1 className="text-4xl font-semibold text-ink tracking-tighter">Team Directory</h1>
+           <p className="text-sm font-medium text-ink-2 mt-1">
              Manage access levels and monitor staff activity.
            </p>
         </div>
         <div className="flex items-center gap-4">
-          <div className="px-5 py-3 bg-white border border-slate-100 rounded-2xl text-sm font-bold text-slate-600 shadow-sm hidden md:flex items-center gap-2">
-            <span className="text-primary font-black">{staff.length}</span> Active Members
+          <div className="px-5 py-3 bg-surface border border-rule-light rounded-lg text-sm font-bold text-ink-2 hidden md:flex items-center gap-2">
+            <span className="text-accent font-semibold">{staff.length}</span> Active Members
           </div>
           <Button
             onClick={openCreate}
-            className="shadow-xl shadow-primary/20 rounded-2xl px-6"
+            className="rounded-lg px-6"
           >
             <UserPlus size={20} weight="bold" className="mr-2" /> Invite Member
           </Button>
@@ -211,26 +211,53 @@ export default function StaffPage() {
       </div>
 
       {/* Main Grid */}
-      {loading ? (
-        <div className="flex flex-col items-center justify-center py-32 text-slate-300">
-          <ArrowsClockwise size={48} className="animate-spin mb-4 text-primary opacity-20" />
-          <span className="font-black text-xs uppercase tracking-[0.2em] animate-pulse">Syncing Directory...</span>
+      {error ? (
+        <div className="flex items-start gap-4 p-5 bg-danger/5 border border-danger/10 rounded-lg">
+          <Warning size={24} weight="bold" className="text-danger flex-shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <p className="font-semibold text-danger text-xs uppercase tracking-widest mb-1">Gagal memuat data</p>
+            <p className="text-sm text-danger font-medium">{error}</p>
+          </div>
+          <button onClick={reload} className="text-danger hover:text-danger/70 font-bold text-xs uppercase tracking-widest shrink-0 self-start">
+            Coba Lagi
+          </button>
+        </div>
+      ) : loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="bg-surface border border-rule rounded-lg overflow-hidden animate-pulse">
+              <div className="p-6 space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-16 h-16 bg-gray-200 rounded-full" />
+                  <div className="space-y-2 flex-1">
+                    <div className="h-5 bg-gray-200 rounded w-1/2" />
+                    <div className="h-3 bg-gray-200 rounded w-2/3" />
+                  </div>
+                </div>
+                <div className="h-3 bg-gray-200 rounded w-1/3" />
+                <div className="flex gap-2 pt-3">
+                  <div className="h-10 bg-gray-200 rounded-lg flex-1" />
+                  <div className="h-10 w-10 bg-gray-200 rounded-lg" />
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       ) : staff.length === 0 ? (
-        <div className="text-center py-40 bg-white/50 backdrop-blur rounded-[48px] border border-slate-100 border-dashed flex flex-col items-center">
-          <div className="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center mb-6">
-            <UserCircle size={48} weight="duotone" className="text-slate-200" />
+        <div className="text-center py-40 bg-surface/50 backdrop-blur rounded-[48px] border border-rule-light border-dashed flex flex-col items-center">
+          <div className="w-24 h-24 bg-paper-2 rounded-full flex items-center justify-center mb-6">
+            <UserCircle size={48} weight="bold" className="text-slate-200" />
           </div>
-          <p className="font-black text-2xl text-slate-900 tracking-tight">
+          <p className="font-semibold text-lg text-ink tracking-tight">
             Team is Empty
           </p>
-          <p className="text-slate-400 text-sm font-medium mt-2 mb-8 max-w-[280px]">
+          <p className="text-ink-2 text-sm font-medium mt-2 mb-8 max-w-[280px]">
             You're currently flying solo! Add your staff to delegate tasks and see performance.
           </p>
           <Button
             onClick={openCreate}
             variant="secondary"
-            className="rounded-2xl px-8"
+            className="rounded-lg px-8"
           >
             <UserPlus size={18} weight="bold" className="mr-2" /> Start Onboarding
           </Button>
@@ -245,25 +272,25 @@ export default function StaffPage() {
                 key={s.id}
                 animated
                 className={cn(
-                    "p-0 flex flex-col overflow-hidden group transition-all duration-300",
+                    "p-0 flex flex-col overflow-hidden group transition-all",
                     !s.is_active && "opacity-60 grayscale"
                 )}
               >
                 {/* Visual Header */}
                 <div className="p-8 pb-4 flex items-start gap-6">
                     <div className="relative">
-                         <div className="w-20 h-20 rounded-[28px] bg-slate-900 border-4 border-white shadow-2xl flex items-center justify-center text-white text-2xl font-black">
+                         <div className="w-20 h-20 rounded-[28px] bg-slate-900 border-4 border-surface shadow-2xl flex items-center justify-center text-white text-lg font-semibold">
                             {s.name[0].toUpperCase()}
                          </div>
                          <div className={cn(
-                             "absolute -bottom-1 -right-1 w-8 h-8 rounded-2xl border-4 border-white flex items-center justify-center shadow-lg",
-                             s.is_active ? "bg-success text-white" : "bg-slate-200 text-slate-400"
+                             "absolute -bottom-1 -right-1 w-8 h-8 rounded-lg border-4 border-surface flex items-center justify-center",
+                             s.is_active ? "bg-success text-white" : "bg-slate-200 text-ink-2"
                          )}>
                              {s.is_active ? <CheckCircle size={14} weight="bold" /> : <ToggleLeft size={14} weight="bold" />}
                          </div>
                     </div>
                     <div className="flex-1 min-w-0 pt-2">
-                        <h3 className="text-xl font-black text-slate-900 tracking-tighter truncate">{s.name}</h3>
+                        <h3 className="text-md font-semibold text-ink tracking-tighter truncate">{s.name}</h3>
                         <div className="mt-1.5 flex flex-wrap gap-2">
                             <span className={cn("px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border", Config.color)}>
                                 {Config.label}
@@ -274,17 +301,17 @@ export default function StaffPage() {
 
                 {/* Contact Info */}
                 <div className="px-8 py-4 space-y-2.5">
-                    <div className="flex items-center gap-2.5 text-slate-400">
+                    <div className="flex items-center gap-2.5 text-ink-2">
                         <EnvelopeSimple size={16} weight="bold" className="text-slate-200" />
                         <span className="text-xs font-bold truncate">{s.email}</span>
                     </div>
                     {s.phone && (
-                         <div className="flex items-center gap-2.5 text-slate-400">
+                         <div className="flex items-center gap-2.5 text-ink-2">
                             <Phone size={16} weight="bold" className="text-slate-200" />
                             <span className="text-xs font-bold">{s.phone}</span>
                         </div>
                     )}
-                    <div className="flex items-center gap-2.5 text-slate-400">
+                    <div className="flex items-center gap-2.5 text-ink-2">
                         <ClockCounterClockwise size={16} weight="bold" className="text-slate-200" />
                         <span className="text-[10px] font-black uppercase tracking-tight">
                             Last Active: {s.last_login_at ? new Date(s.last_login_at).toLocaleDateString() : 'Never'}
@@ -293,14 +320,14 @@ export default function StaffPage() {
                 </div>
 
                 {/* Actions Footer */}
-                <div className="mt-6 p-6 pt-4 border-t border-slate-50 bg-slate-50/30 flex items-center justify-between gap-3">
+                <div className="mt-6 p-6 pt-4 border-t border-slate-50 bg-paper-2/30 flex items-center justify-between gap-3">
                     <button
                         onClick={() => handleToggle(s)}
                         disabled={working === s.id}
                         className={cn(
-                            "flex-1 flex items-center justify-center gap-2 h-10 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border",
-                            s.is_active 
-                                ? "bg-white border-slate-100 text-slate-400 hover:text-danger hover:border-danger/10"
+                            "flex-1 flex items-center justify-center gap-2 h-10 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all border",
+                            s.is_active
+                                ? "bg-surface border-rule-light text-ink-2 hover:text-danger hover:border-danger/10"
                                 : "bg-success/5 border-success/10 text-success hover:bg-success hover:text-white"
                         )}
                     >
@@ -315,13 +342,13 @@ export default function StaffPage() {
                     <div className="flex gap-2">
                         <button
                             onClick={() => openEdit(s)}
-                            className="w-10 h-10 rounded-xl bg-white border border-slate-100 flex items-center justify-center text-slate-400 hover:text-primary hover:border-primary/20 transition-all"
+                            className="w-10 h-10 rounded-lg bg-surface border border-rule-light flex items-center justify-center text-ink-2 hover:text-accent hover:border-primary/20 transition-all"
                         >
                             <Pencil size={18} weight="bold" />
                         </button>
                         <button
                             onClick={() => handleDelete(s)}
-                            className="w-10 h-10 rounded-xl bg-white border border-slate-100 flex items-center justify-center text-slate-400 hover:text-danger hover:border-danger/20 transition-all"
+                            className="w-10 h-10 rounded-lg bg-surface border border-rule-light flex items-center justify-center text-ink-2 hover:text-danger hover:border-danger/20 transition-all"
                         >
                             <Trash size={18} weight="bold" />
                         </button>
@@ -343,19 +370,19 @@ export default function StaffPage() {
         <form onSubmit={handleSave} className="space-y-6">
           <div className="space-y-4">
             <div>
-              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Member Identity</label>
+              <label className="block text-[10px] font-semibold text-ink-2 uppercase tracking-widest mb-2">Member Identity</label>
               <Input
                 value={form.name}
                 onChange={(e) => setForm(f => ({ ...f, name: e.target.value }))}
                 placeholder="Full Name"
                 className="h-12 font-bold"
               />
-              {errors.name && <p className="text-[10px] font-black text-danger mt-2 pl-1">⚠ {errors.name}</p>}
+              {errors.name && <p className="text-[10px] font-black text-danger mt-2 pl-1">{errors.name}</p>}
             </div>
 
             <div className="grid grid-cols-2 gap-4">
                 <div>
-                     <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Access Email</label>
+                     <label className="block text-[10px] font-semibold text-ink-2 uppercase tracking-widest mb-2">Access Email</label>
                     <Input
                         type="email"
                         value={form.email}
@@ -363,10 +390,10 @@ export default function StaffPage() {
                         placeholder="email@work.com"
                         className="h-12 font-bold"
                     />
-                    {errors.email && <p className="text-[10px] font-black text-danger mt-2 pl-1">⚠ {errors.email}</p>}
+                    {errors.email && <p className="text-[10px] font-black text-danger mt-2 pl-1">{errors.email}</p>}
                 </div>
                 <div>
-                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Work Phone</label>
+                    <label className="block text-[10px] font-semibold text-ink-2 uppercase tracking-widest mb-2">Work Phone</label>
                     <Input
                         value={form.phone}
                         onChange={(e) => setForm(f => ({ ...f, phone: e.target.value }))}
@@ -377,11 +404,11 @@ export default function StaffPage() {
             </div>
 
             <div>
-              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Organizational Role</label>
+              <label className="block text-[10px] font-semibold text-ink-2 uppercase tracking-widest mb-2">Organizational Role</label>
               <select
                 value={form.role}
                 onChange={(e) => setForm(f => ({ ...f, role: e.target.value }))}
-                className="w-full h-12 rounded-2xl border border-slate-200 px-5 text-sm font-black text-slate-900 focus:ring-4 focus:ring-primary/10 bg-slate-50 cursor-pointer appearance-none outline-none"
+                className="w-full h-12 rounded-lg border border-rule px-5 text-sm font-semibold text-ink focus:ring-4 focus:ring-primary/10 bg-paper-2 cursor-pointer appearance-none outline-none"
               >
                 <option value="manager">Manager / Admin</option>
                 <option value="cashier">Frontend Cashier</option>
@@ -391,7 +418,7 @@ export default function StaffPage() {
 
             <div className="grid grid-cols-2 gap-4">
                 <div>
-                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">
+                    <label className="block text-[10px] font-semibold text-ink-2 uppercase tracking-widest mb-2">
                         {editingStaff ? 'New Password' : 'Password'}
                     </label>
                     <div className="relative">
@@ -399,25 +426,25 @@ export default function StaffPage() {
                             type="password"
                             value={form.password}
                             onChange={(e) => setForm(f => ({ ...f, password: e.target.value }))}
-                            placeholder="••••••••"
+                            placeholder="......"
                             className="h-12 font-bold"
                         />
                         <Key size={18} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 pointer-events-none" />
                     </div>
                 </div>
                 <div>
-                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Confirm</label>
+                    <label className="block text-[10px] font-semibold text-ink-2 uppercase tracking-widest mb-2">Confirm</label>
                     <Input
                         type="password"
                         value={form.password_confirmation}
                         onChange={(e) => setForm(f => ({ ...f, password_confirmation: e.target.value }))}
-                        placeholder="••••••••"
+                        placeholder="......"
                         className="h-12 font-bold"
                     />
                 </div>
             </div>
-            {errors.password && <p className="text-[10px] font-black text-danger pl-1">⚠ {errors.password}</p>}
-            {errors.password_confirmation && <p className="text-[10px] font-black text-danger pl-1">⚠ {errors.password_confirmation}</p>}
+            {errors.password && <p className="text-[10px] font-black text-danger pl-1">{errors.password}</p>}
+            {errors.password_confirmation && <p className="text-[10px] font-black text-danger pl-1">{errors.password_confirmation}</p>}
           </div>
 
           <div className="flex gap-4 pt-4 border-t border-slate-50">
@@ -425,14 +452,14 @@ export default function StaffPage() {
               type="button"
               variant="secondary"
               onClick={() => setModalOpen(false)}
-              className="flex-1 rounded-2xl h-14 font-black uppercase tracking-widest"
+              className="flex-1 rounded-lg h-14 font-semibold uppercase tracking-widest"
             >
               Cancel
             </Button>
-            <Button 
-                type="submit" 
-                variant="primary" 
-                className="flex-[2] rounded-2xl h-14 font-black uppercase tracking-widest shadow-xl shadow-primary/20" 
+            <Button
+                type="submit"
+                variant="primary"
+                className="flex-[2] rounded-lg h-14 font-semibold uppercase tracking-widest"
                 disabled={saving}
             >
               {saving ? <CircleNotch size={20} className="animate-spin" /> : editingStaff ? 'Update Member' : 'Add Member'}
@@ -443,4 +470,3 @@ export default function StaffPage() {
     </div>
   )
 }
-

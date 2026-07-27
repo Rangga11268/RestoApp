@@ -45,43 +45,43 @@ function InvoiceContent({ order }: { order: Order }) {
   const payment = order.payment
 
   return (
-    <div id="invoice-print-area" className="bg-white max-w-sm mx-auto font-mono text-[11px] leading-tight text-slate-900 border-2 border-dashed border-slate-100 p-8 shadow-2xl rounded-[32px] sm:border-none sm:shadow-none sm:p-0">
+    <div id="invoice-print-area" className="bg-surface max-w-sm mx-auto font-mono text-[11px] leading-tight text-ink border-2 border-dashed border-rule-light p-8 rounded-[32px] sm:border-none sm:shadow-none sm:p-0">
       {/* Brand Header */}
-      <div className="text-center pb-6 mb-6 border-b border-dashed border-slate-200">
-        <h1 className="text-xl font-black tracking-tighter uppercase mb-1">
+      <div className="text-center pb-6 mb-6 border-b border-dashed border-rule">
+        <h1 className="text-md font-semibold tracking-tighter uppercase mb-1">
           {order.restaurant?.name ?? 'RestoApp'}
         </h1>
         {order.restaurant?.address && (
-          <p className="text-[10px] text-slate-400 font-bold mb-1">{order.restaurant.address}</p>
+          <p className="text-[10px] text-ink-2 font-bold mb-1">{order.restaurant.address}</p>
         )}
         {order.restaurant?.phone && (
-          <p className="text-[10px] text-slate-400 font-bold">T: {order.restaurant.phone}</p>
+          <p className="text-[10px] text-ink-2 font-bold">T: {order.restaurant.phone}</p>
         )}
       </div>
 
       {/* Transaction Details */}
       <div className="mb-6 space-y-1.5 font-bold uppercase tracking-tight">
         <div className="flex justify-between">
-          <span className="text-slate-400">Order ID:</span>
+          <span className="text-ink-2">Order ID:</span>
           <span>{order.order_number}</span>
         </div>
         <div className="flex justify-between">
-          <span className="text-slate-400">Date:</span>
+          <span className="text-ink-2">Date:</span>
           <span>{formatDateTime(order.created_at)}</span>
         </div>
         <div className="flex justify-between">
-          <span className="text-slate-400">Service:</span>
+          <span className="text-ink-2">Service:</span>
           <span>{ORDER_TYPE_LABELS[order.order_type]}</span>
         </div>
         {order.table && (
           <div className="flex justify-between">
-            <span className="text-slate-400">Table:</span>
+            <span className="text-ink-2">Table:</span>
             <span>{order.table.name}</span>
           </div>
         )}
         {order.customer_name && (
           <div className="flex justify-between">
-            <span className="text-slate-400">Patron:</span>
+            <span className="text-ink-2">Patron:</span>
             <span>{order.customer_name}</span>
           </div>
         )}
@@ -89,20 +89,20 @@ function InvoiceContent({ order }: { order: Order }) {
 
       {/* Itemized List */}
       <div className="mb-6">
-        <div className="border-y border-dashed border-slate-200 py-2 mb-3 font-black text-slate-400 uppercase tracking-widest text-[9px] flex justify-between">
+        <div className="border-y border-dashed border-rule py-2 mb-3 font-semibold text-ink-2 uppercase tracking-widest text-[9px] flex justify-between">
             <span>Description</span>
             <span>Amount</span>
         </div>
         <div className="space-y-3">
             {order.items?.map((item) => (
                 <div key={item.id}>
-                    <div className="flex justify-between font-black text-slate-900">
+                    <div className="flex justify-between font-semibold text-ink">
                         <span className="flex-1 pr-4">{item.menu_item_name}</span>
                         <span>{formatIDR(Number(item.subtotal))}</span>
                     </div>
-                    <div className="text-slate-400 text-[10px] font-bold mt-0.5">
+                    <div className="text-ink-2 text-[10px] font-bold mt-0.5">
                         {item.quantity} × {formatIDR(Number(item.price_snapshot))}
-                        {item.notes && <span className="ml-2 italic text-primary">({item.notes})</span>}
+                        {item.notes && <span className="ml-2 text-accent">({item.notes})</span>}
                     </div>
                 </div>
             ))}
@@ -110,24 +110,24 @@ function InvoiceContent({ order }: { order: Order }) {
       </div>
 
       {/* Financial Summary */}
-      <div className="space-y-2 mb-6 border-t border-dashed border-slate-200 pt-4 font-bold">
-        <div className="flex justify-between text-slate-500">
+      <div className="space-y-2 mb-6 border-t border-dashed border-rule pt-4 font-bold">
+        <div className="flex justify-between text-ink-2">
           <span>Subtotal</span>
           <span>{formatIDR(Number(order.subtotal))}</span>
         </div>
         {Number(order.discount_amount) > 0 && (
-          <div className="flex justify-between text-primary">
+          <div className="flex justify-between text-accent">
             <span>Discount Applied</span>
             <span>−{formatIDR(Number(order.discount_amount))}</span>
           </div>
         )}
         {Number(order.tax_amount) > 0 && (
-          <div className="flex justify-between text-slate-500">
+          <div className="flex justify-between text-ink-2">
             <span>VAT / Taxes</span>
             <span>{formatIDR(Number(order.tax_amount))}</span>
           </div>
         )}
-        <div className="flex justify-between font-black text-lg text-slate-900 pt-2 mt-2 border-t-2 border-slate-900">
+        <div className="flex justify-between font-semibold text-md text-ink pt-2 mt-2 border-t-2 border-ink">
           <span>TOTAL</span>
           <span>{formatIDR(Number(order.total))}</span>
         </div>
@@ -135,23 +135,23 @@ function InvoiceContent({ order }: { order: Order }) {
 
       {/* Payment Settlement */}
       {payment && (
-        <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 space-y-2 font-bold mb-6">
+        <div className="bg-paper-2 p-4 rounded-lg border border-rule-light space-y-2 font-bold mb-6">
             <div className="flex justify-between">
-                <span className="text-slate-400 uppercase text-[9px]">Settled Via</span>
+                <span className="text-ink-2 uppercase text-[9px]">Settled Via</span>
                 <span className="uppercase text-[10px]">{METHOD_LABELS[payment.method]}</span>
             </div>
             <div className="flex justify-between">
-                <span className="text-slate-400 uppercase text-[9px]">Amount Tendered</span>
-                <span className="text-slate-900">{formatIDR(Number(payment.amount))}</span>
+                <span className="text-ink-2 uppercase text-[9px]">Amount Tendered</span>
+                <span className="text-ink">{formatIDR(Number(payment.amount))}</span>
             </div>
             {Number(payment.change_amount) > 0 && (
-                <div className="flex justify-between text-primary font-black">
+                <div className="flex justify-between text-accent font-semibold">
                     <span className="uppercase text-[9px]">Change Returned</span>
                     <span>{formatIDR(Number(payment.change_amount))}</span>
                 </div>
             )}
             {payment.paid_at && (
-                <div className="flex justify-between border-t border-slate-200 mt-2 pt-2 text-[9px] text-slate-400">
+                <div className="flex justify-between border-t border-rule mt-2 pt-2 text-[9px] text-ink-2">
                     <span>Payment Time</span>
                     <span>{formatDateTime(payment.paid_at)}</span>
                 </div>
@@ -161,7 +161,7 @@ function InvoiceContent({ order }: { order: Order }) {
 
       {/* Proof of Transaction Footer */}
       <div className="text-center pt-4 opacity-50 space-y-1">
-        <p className="font-black uppercase tracking-widest text-[9px]">Thank you for dining with us!</p>
+        <p className="font-semibold uppercase tracking-widest text-[9px]">Thank you for dining with us!</p>
         <p className="text-[10px] font-bold">Support: help@restoapp.com</p>
       </div>
 
@@ -170,7 +170,7 @@ function InvoiceContent({ order }: { order: Order }) {
            <div className="w-16 h-16 border-2 border-slate-900 rounded-lg p-1">
                 <div className="w-full h-full bg-slate-900 rounded-sm" />
            </div>
-           <span className="text-[7px] font-black mt-1">RESTOAPP VERIFIED</span>
+           <span className="text-[7px] font-semibold mt-1">RESTOAPP VERIFIED</span>
       </div>
     </div>
   )
@@ -203,8 +203,8 @@ export default function InvoicePage() {
   if (loading) {
     return (
         <div className="flex flex-col items-center justify-center py-32 text-slate-300">
-            <ArrowsClockwise size={48} className="animate-spin mb-4 text-primary opacity-20" />
-            <span className="font-black text-xs uppercase tracking-[0.2em] animate-pulse">Generating Invoice...</span>
+            <ArrowsClockwise size={48} className="animate-spin mb-4 text-accent opacity-20" />
+            <span className="font-semibold text-xs uppercase tracking-[0.2em] animate-pulse">Generating Invoice...</span>
         </div>
     )
   }
@@ -213,10 +213,10 @@ export default function InvoicePage() {
     return (
         <div className="max-w-3xl mx-auto py-20 text-center">
           <div className="w-20 h-20 bg-danger/5 text-danger rounded-[28px] flex items-center justify-center mx-auto mb-6">
-              <WarningCircle size={40} weight="duotone" />
+              <WarningCircle size={40} weight="bold" />
           </div>
-          <h2 className="text-2xl font-black text-slate-900 tracking-tighter mb-2">Invoice Missing</h2>
-          <Button onClick={() => navigate('/orders')} variant="secondary" className="rounded-2xl px-8">
+          <h2 className="text-lg font-semibold text-ink tracking-tighter mb-2">Invoice Missing</h2>
+          <Button onClick={() => navigate('/orders')} variant="secondary" className="rounded-lg px-8">
               <ArrowLeft size={16} className="mr-2" /> Back to History
           </Button>
         </div>
@@ -241,19 +241,19 @@ export default function InvoicePage() {
         }
       `}</style>
 
-      <div className="w-full max-w-4xl mx-auto space-y-8 animate-in pb-20">
+      <div className="w-full max-w-4xl mx-auto space-y-8 pb-20">
         {/* Navigation / Actions Layer */}
         <div className="no-print flex flex-col md:flex-row md:items-center justify-between gap-6">
            <div className="flex items-center gap-6">
                 <button
                     onClick={() => navigate(`/orders/${order.id}`)}
-                    className="flex items-center justify-center w-12 h-12 bg-white border border-slate-100 rounded-2xl text-slate-400 hover:text-slate-900 hover:border-slate-300 transition-all shadow-sm"
+                    className="flex items-center justify-center w-12 h-12 bg-surface border border-rule-light rounded-lg text-ink-2 hover:text-slate-900 hover:border-slate-300"
                 >
                     <ArrowLeft size={20} weight="bold" />
                 </button>
                 <div>
-                     <h1 className="text-2xl font-black text-slate-900 tracking-tighter">Digital Receipt</h1>
-                     <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">{order.order_number}</p>
+                     <h1 className="text-lg font-semibold text-ink tracking-tighter">Digital Receipt</h1>
+                     <p className="text-xs font-bold text-ink-2 uppercase tracking-widest">{order.order_number}</p>
                 </div>
            </div>
 
@@ -261,7 +261,7 @@ export default function InvoicePage() {
                 {order.payment_status !== 'paid' && (
                     <Button
                         onClick={() => navigate(`/orders/${order.id}/payment`)}
-                        className="h-12 px-6 rounded-2xl bg-amber-500 shadow-amber-500/20"
+                        className="h-12 px-6 rounded-lg bg-amber-500"
                     >
                         COMPLETE PAYMENT
                     </Button>
@@ -269,11 +269,11 @@ export default function InvoicePage() {
                 <Button
                     variant="secondary"
                     onClick={handlePrint}
-                    className="h-12 px-6 rounded-2xl border-slate-100 bg-white"
+                    className="h-12 px-6 rounded-lg border-rule-light bg-surface"
                 >
                     <Printer size={18} weight="bold" className="mr-2" /> PRINT 80MM
                 </Button>
-                 <button className="flex items-center justify-center w-12 h-12 bg-white border border-slate-100 rounded-2xl text-slate-400 hover:text-primary transition-all shadow-sm">
+                 <button className="flex items-center justify-center w-12 h-12 bg-surface border border-rule-light rounded-lg text-ink-2 hover:text-accent">
                     <ShareNetwork size={20} weight="bold" />
                 </button>
            </div>
@@ -283,7 +283,7 @@ export default function InvoicePage() {
         <div className="no-print">
             <Badge 
                 variant={order.payment_status === 'paid' ? 'success' : 'warning'}
-                className="py-2 px-6 rounded-2xl font-black uppercase tracking-widest text-[10px] border-none shadow-sm"
+                className="py-2 px-6 rounded-lg font-semibold uppercase tracking-widest text-[10px] border-none"
             >
                 {order.payment_status === 'paid' ? <CheckCircle size={14} weight="bold" className="mr-2" /> : <Clock size={14} weight="bold" className="mr-2" />}
                 {order.payment_status === 'paid' ? 'SETTLED & VERIFIED' : 'PENDING PAYMENT'}
@@ -299,35 +299,35 @@ export default function InvoicePage() {
 
             {/* Merchant Insight Section (No Print) */}
             <div className="lg:col-span-6 no-print space-y-8">
-                 <Card className="p-8 border-slate-100 bg-slate-50/50">
+                 <Card className="p-8 border-rule-light bg-paper-2/50">
                     <div className="flex items-center gap-3 mb-8">
-                        <div className="w-10 h-10 rounded-2xl bg-white border border-slate-100 flex items-center justify-center text-slate-400">
-                            <IdentificationBadge size={20} weight="duotone" />
+                        <div className="w-10 h-10 rounded-lg bg-surface border border-rule-light flex items-center justify-center text-ink-2">
+                            <IdentificationBadge size={20} weight="bold" />
                         </div>
-                        <h3 className="text-sm font-black text-slate-900 tracking-widest uppercase">Audit Logs</h3>
+                        <h3 className="text-sm font-semibold text-ink tracking-widest uppercase">Audit Logs</h3>
                     </div>
 
                     <div className="space-y-6">
                         <div className="flex items-center gap-4">
-                             <div className="w-10 h-10 rounded-full bg-white border border-slate-100 flex items-center justify-center text-xs font-black">
+                             <div className="w-10 h-10 rounded-full bg-surface border border-rule-light flex items-center justify-center text-xs font-semibold">
                                 {order.cashier?.name?.[0] || 'A'}
                              </div>
                              <div>
-                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Handled By</p>
-                                <p className="text-sm font-black text-slate-900">{order.cashier?.name || 'System Auto'}</p>
+                                <p className="text-[10px] font-semibold text-ink-2 uppercase tracking-widest mb-0.5">Handled By</p>
+                                <p className="text-sm font-semibold text-ink">{order.cashier?.name || 'System Auto'}</p>
                              </div>
                         </div>
 
                         <div className="p-6 bg-slate-900 rounded-[28px] text-white">
                              <div className="flex items-center justify-between mb-4">
-                                <span className="text-[10px] font-black text-white/30 tracking-widest uppercase">Settlement Method</span>
-                                <Badge variant="glass" className="text-white border-white/20 uppercase tracking-tight text-[9px]">Confirmed</Badge>
+                                <span className="text-[10px] font-semibold text-white/30 tracking-widest uppercase">Settlement Method</span>
+                                <Badge variant="muted" className="text-white border-white/20 uppercase tracking-tight text-[9px]">Confirmed</Badge>
                              </div>
                              <div className="flex items-center gap-4">
-                                {order.payment?.method === 'cash' ? <Money size={32} weight="duotone" className="text-success" /> : <QrCode size={32} weight="duotone" className="text-primary" />}
+                                {order.payment?.method === 'cash' ? <Money size={32} weight="bold" className="text-success" /> : <QrCode size={32} weight="bold" className="text-accent" />}
                                 <div>
-                                    <p className="text-lg font-black tracking-tight leading-none uppercase">{order.payment?.method || 'NONE'}</p>
-                                    <p className="text-xs font-bold text-slate-400 mt-1">Ref: {order.payment?.transaction_ref || 'INTERNAL'}</p>
+                                    <p className="text-md font-semibold tracking-tight leading-none uppercase">{order.payment?.method || 'NONE'}</p>
+                                    <p className="text-xs font-bold text-ink-2 mt-1">Ref: {order.payment?.transaction_ref || 'INTERNAL'}</p>
                                 </div>
                              </div>
                         </div>
@@ -337,12 +337,12 @@ export default function InvoicePage() {
                  {/* Refund Logic (Owner Only) */}
                  {user?.role === 'owner' && order.payment_status === 'paid' && order.payment && (
                     <div className="p-8 bg-danger/5 rounded-[32px] border border-danger/10 flex flex-col items-center gap-4 text-center">
-                        <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-danger shadow-sm">
+                        <div className="w-12 h-12 bg-surface rounded-lg flex items-center justify-center text-danger">
                             <WarningCircle size={24} weight="bold" />
                         </div>
                         <div>
-                            <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest mb-1">High Risk Action</h4>
-                            <p className="text-[11px] font-bold text-slate-400">Performing a refund will revert all ledger entries and void the transaction permanently.</p>
+                            <h4 className="text-xs font-semibold text-ink uppercase tracking-widest mb-1">High Risk Action</h4>
+                            <p className="text-[11px] font-bold text-ink-2">Performing a refund will revert all ledger entries and void the transaction permanently.</p>
                         </div>
                         <button
                             onClick={async () => {
@@ -362,7 +362,7 @@ export default function InvoicePage() {
                                 Toast.fire({ icon: 'error', title: 'Refund failed to sync.' })
                                 }
                             }}
-                            className="w-full h-12 rounded-2xl border-2 border-danger text-danger font-black uppercase tracking-widest text-[10px] hover:bg-danger hover:text-white transition-all shadow-lg shadow-danger/5"
+                            className="w-full h-12 rounded-lg border-2 border-danger text-danger font-semibold uppercase tracking-widest text-[10px] hover:bg-danger hover:text-white"
                         >
                             Authorize Total Refund
                         </button>

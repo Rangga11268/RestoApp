@@ -75,6 +75,7 @@ function downloadQrSvg(svgRef: React.RefObject<HTMLDivElement | null>, tableName
 export default function TablesPage() {
   const [tables, setTables] = useState<Table[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [modalOpen, setModalOpen] = useState(false)
   const [editing, setEditing] = useState<Table | null>(null)
   const [qrTarget, setQrTarget] = useState<Table | null>(null)
@@ -92,8 +93,11 @@ export default function TablesPage() {
 
   const load = async () => {
     setLoading(true)
+    setError(null)
     try {
       setTables(await getTables())
+    } catch {
+      setError('Gagal memuat meja. Periksa koneksi server.')
     } finally {
       setLoading(false)
     }
@@ -158,44 +162,44 @@ export default function TablesPage() {
   }
 
   return (
-    <div className="w-full max-w-7xl mx-auto space-y-10 animate-in selection:bg-primary/20">
-      {/* Header Premium */}
+    <div className="w-full max-w-7xl mx-auto space-y-10 selection:bg-accent/20">
+      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
         <div>
            <Badge variant="primary" className="mb-2">Layout Management</Badge>
-           <h1 className="text-4xl font-black text-slate-900 tracking-tighter">Dining Tables</h1>
-           <p className="text-sm font-medium text-slate-400 mt-1">
+           <h1 className="text-4xl font-semibold text-ink tracking-tighter">Dining Tables</h1>
+           <p className="text-sm font-medium text-ink-2 mt-1">
              Organize your restaurant floor and print smart QR codes for each table.
            </p>
         </div>
         <div className="flex items-center gap-4">
-          <div className="px-5 py-3 bg-white border border-slate-100 rounded-2xl text-sm font-bold text-slate-600 shadow-sm hidden md:flex items-center gap-2">
-            <span className="text-primary font-black">{tables.length}</span> Active Tables
+          <div className="px-5 py-3 bg-surface border border-rule-light rounded-lg text-sm font-bold text-ink-2 hidden md:flex items-center gap-2">
+            <span className="text-accent font-semibold">{tables.length}</span> Active Tables
           </div>
           <Button
             variant="secondary"
             onClick={() => window.print()}
-            className="rounded-2xl px-6 bg-white border-slate-100 hidden md:flex"
+            className="rounded-lg px-6 bg-surface border-rule-light hidden md:flex"
           >
             <Printer size={20} weight="bold" className="mr-2" /> Print All QR
           </Button>
           <Button
             onClick={openCreate}
-            className="shadow-xl shadow-primary/20 rounded-2xl px-6"
+            className="rounded-lg px-6"
           >
             <Plus size={20} weight="bold" className="mr-2" /> Add Table
           </Button>
         </div>
       </div>
 
-      {/* Warning: akses via localhost */}
+      {/* Warning: localhost access */}
       {isLocalhost() && !import.meta.env.VITE_APP_URL && (
-        <div className="flex items-start gap-4 p-5 bg-amber-50 border border-amber-200/50 rounded-3xl animate-in fade-in">
-          <div className="w-12 h-12 rounded-2xl bg-amber-100 flex items-center justify-center text-amber-900 flex-shrink-0">
-              <Warning size={24} weight="duotone" />
+        <div className="flex items-start gap-4 p-5 bg-amber-50 border border-amber-200/50 rounded-lg">
+          <div className="w-12 h-12 rounded-lg bg-amber-100 flex items-center justify-center text-amber-900 flex-shrink-0">
+              <Warning size={24} weight="bold" />
           </div>
           <div>
-            <p className="font-black tracking-tight text-amber-900 uppercase text-[10px] tracking-[0.2em] mb-1 leading-none">Developer Notice</p>
+            <p className="font-semibold tracking-tight text-amber-900 uppercase text-[10px] tracking-[0.2em] mb-1 leading-none">Developer Notice</p>
             <p className="text-sm text-amber-900 font-bold leading-relaxed">
               QR Codes might not work on mobile devices while using <code className="bg-white px-1.5 rounded-md border border-amber-200">localhost</code>. 
               Please access via your network IP for mobile testing.
@@ -205,26 +209,53 @@ export default function TablesPage() {
       )}
 
       {/* Main Content Area */}
-      {loading ? (
-        <div className="flex flex-col items-center justify-center py-32 text-slate-300">
-          <ArrowsClockwise size={48} className="animate-spin mb-4 text-primary opacity-20" />
-          <span className="font-black text-xs uppercase tracking-[0.2em] animate-pulse">Loading Floor Plan...</span>
+      {error ? (
+        <div className="flex items-start gap-4 p-5 bg-danger/5 border border-danger/10 rounded-lg">
+          <Warning size={24} weight="bold" className="text-danger flex-shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <p className="font-semibold text-danger text-xs uppercase tracking-widest mb-1">Gagal memuat data</p>
+            <p className="text-sm text-danger font-medium">{error}</p>
+          </div>
+          <button onClick={load} className="text-danger hover:text-danger/70 font-bold text-xs uppercase tracking-widest shrink-0 self-start">
+            Coba Lagi
+          </button>
+        </div>
+      ) : loading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          {[...Array(8)].map((_, i) => (
+            <div key={i} className="bg-surface border border-rule rounded-lg overflow-hidden animate-pulse">
+              <div className="p-6 space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-gray-200 rounded-lg" />
+                  <div className="space-y-2 flex-1">
+                    <div className="h-5 bg-gray-200 rounded w-1/2" />
+                    <div className="h-3 bg-gray-200 rounded w-1/4" />
+                  </div>
+                </div>
+                <div className="flex gap-2 pt-3">
+                  <div className="h-10 bg-gray-200 rounded-lg flex-1" />
+                  <div className="h-10 bg-gray-200 rounded-lg flex-1" />
+                  <div className="h-10 w-10 bg-gray-200 rounded-lg" />
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       ) : tables.length === 0 ? (
-        <div className="text-center py-40 bg-white/50 backdrop-blur rounded-[48px] border border-slate-100 border-dashed flex flex-col items-center">
-          <div className="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center mb-6">
-            <Chair size={48} weight="duotone" className="text-slate-200" />
+        <div className="text-center py-40 bg-surface/50 backdrop-blur rounded-[48px] border border-rule-light border-dashed flex flex-col items-center">
+          <div className="w-24 h-24 bg-paper-2 rounded-full flex items-center justify-center mb-6">
+            <Chair size={48} weight="bold" className="text-slate-200" />
           </div>
-          <p className="font-black text-2xl text-slate-900 tracking-tight">
+          <p className="font-semibold text-lg text-ink tracking-tight">
             Empty Floor Plan
           </p>
-          <p className="text-slate-400 text-sm font-medium mt-2 mb-8 max-w-[280px]">
+          <p className="text-ink-2 text-sm font-medium mt-2 mb-8 max-w-[280px]">
             Ready to digitize? Add your first table and we'll generate the QR code automatically.
           </p>
           <Button
             onClick={openCreate}
             variant="secondary"
-            className="rounded-2xl px-8"
+            className="rounded-lg px-8"
           >
             <Plus size={18} weight="bold" className="mr-2" /> Start Creating
           </Button>
@@ -236,15 +267,15 @@ export default function TablesPage() {
               key={t.id}
               animated
               className={cn(
-                  "p-0 flex flex-col overflow-hidden group transition-all duration-300",
+                  "p-0 flex flex-col overflow-hidden group transition-all",
                   !t.is_active && "opacity-60 grayscale"
               )}
             >
               {/* Header Card */}
               <div className="p-6 pb-2 flex items-start justify-between">
                 <div>
-                  <h3 className="text-xl font-black text-slate-900 tracking-tighter">{t.name}</h3>
-                  <div className="flex items-center gap-1.5 text-slate-400 mt-1">
+                  <h3 className="text-md font-semibold text-ink tracking-tighter">{t.name}</h3>
+                  <div className="flex items-center gap-1.5 text-ink-2 mt-1">
                       <Users size={14} weight="bold" />
                       <span className="text-[11px] font-black uppercase tracking-widest">{t.capacity} Seats</span>
                   </div>
@@ -260,20 +291,20 @@ export default function TablesPage() {
               {/* QR Centerpiece */}
               <div className="px-6 py-6 flex flex-col items-center relative">
                 <div className={cn(
-                    "absolute inset-0 bg-gradient-to-b from-transparent to-slate-50 opacity-40 -z-10 transition-colors",
+                    "absolute inset-0 bg-gradient-to-b from-transparent to-paper-2 opacity-40 -z-10 transition-colors",
                     t.status === 'occupied' ? 'to-danger/5' : t.status === 'available' ? 'to-success/5' : 'to-warning/5'
                 )} />
 
                 {t.qr_code ? (
                   <div
-                    className="w-40 h-40 cursor-pointer flex items-center justify-center p-3 bg-white rounded-3xl shadow-xl border border-slate-100 group-hover:scale-105 transition-transform group-hover:shadow-primary/10"
+                    className="w-40 h-40 cursor-pointer flex items-center justify-center p-3 bg-surface rounded-xl border border-rule-light group-hover:scale-105 transition-transform"
                     onClick={() => setQrTarget(t)}
                   >
                     <QRCode value={buildQrUrl(t.qr_code)} size={136} level="M" />
                   </div>
                 ) : (
-                  <div className="w-40 h-40 bg-slate-50 rounded-3xl flex border border-slate-100 border-dashed items-center justify-center text-slate-200">
-                    <QrCode size={56} weight="duotone" />
+                  <div className="w-40 h-40 bg-paper-2 rounded-xl border border-rule-light border-dashed flex items-center justify-center text-slate-200">
+                    <QrCode size={56} weight="bold" />
                   </div>
                 )}
                 
@@ -281,7 +312,7 @@ export default function TablesPage() {
                   <button
                     onClick={() => doRegenerate(t)}
                     disabled={regenerating === t.id}
-                    className="flex-1 flex items-center justify-center h-10 bg-slate-50 text-slate-400 rounded-xl hover:bg-slate-900 hover:text-white transition-all disabled:opacity-50"
+                    className="flex-1 flex items-center justify-center h-10 bg-paper-2 text-ink-2 rounded-lg hover:bg-slate-900 hover:text-white transition-all disabled:opacity-50"
                   >
                     <ArrowsClockwise
                       size={16}
@@ -292,7 +323,7 @@ export default function TablesPage() {
                   {t.qr_code && (
                     <button
                       onClick={() => setQrTarget(t)}
-                      className="flex-[2] flex items-center justify-center gap-2 h-10 bg-primary text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-primary-hover shadow-lg shadow-primary/20 transition-all"
+                      className="flex-[2] flex items-center justify-center gap-2 h-10 bg-accent text-white text-[10px] font-semibold uppercase tracking-widest rounded-lg hover:bg-accent-hover transition-all"
                     >
                       <DownloadSimple size={16} weight="bold" /> Download
                     </button>
@@ -301,20 +332,20 @@ export default function TablesPage() {
               </div>
 
               {/* Action Footer */}
-              <div className="mt-auto px-6 py-4 bg-slate-50/50 border-t border-slate-100 flex items-center justify-between">
-                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+              <div className="mt-auto px-6 py-4 bg-paper-2/50 border-t border-rule-light flex items-center justify-between">
+                <span className="text-[10px] font-black uppercase tracking-widest text-ink-2">
                   {t.is_active ? 'Active' : 'Disabled'}
                 </span>
                 <div className="flex gap-2">
                   <button
                     onClick={() => openEdit(t)}
-                    className="w-10 h-10 rounded-xl bg-white border border-slate-100 flex items-center justify-center text-slate-600 hover:text-primary hover:border-primary/20 transition-all"
+                    className="w-10 h-10 rounded-lg bg-surface border border-rule-light flex items-center justify-center text-ink-2 hover:text-accent hover:border-primary/20 transition-all"
                   >
                     <Pencil size={16} weight="bold" />
                   </button>
                   <button
                     onClick={() => handleDelete(t)}
-                    className="w-10 h-10 rounded-xl bg-white border border-slate-100 flex items-center justify-center text-slate-600 hover:text-danger hover:border-danger/20 transition-all"
+                    className="w-10 h-10 rounded-lg bg-surface border border-rule-light flex items-center justify-center text-ink-2 hover:text-danger hover:border-danger/20 transition-all"
                   >
                     <Trash size={16} weight="bold" />
                   </button>
@@ -335,7 +366,7 @@ export default function TablesPage() {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-4">
             <div>
-              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Table Identity</label>
+              <label className="block text-[10px] font-semibold text-ink-2 uppercase tracking-widest mb-2">Table Identity</label>
               <Input
                 {...register('name')}
                 placeholder="cth: Table 5 / VIP A"
@@ -346,7 +377,7 @@ export default function TablesPage() {
             </div>
 
             <div>
-              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Seating Capacity</label>
+              <label className="block text-[10px] font-semibold text-ink-2 uppercase tracking-widest mb-2">Seating Capacity</label>
               <Input
                 {...register('capacity')}
                 type="number"
@@ -359,11 +390,11 @@ export default function TablesPage() {
 
             {editing && (
               <div>
-                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Usage Status</label>
+                <label className="block text-[10px] font-semibold text-ink-2 uppercase tracking-widest mb-2">Usage Status</label>
                 <div className="relative">
                     <select
                         {...register('status')}
-                        className="w-full h-12 rounded-2xl border border-slate-200 px-5 text-sm font-bold text-slate-900 focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all bg-slate-50 appearance-none cursor-pointer"
+                        className="w-full h-12 rounded-lg border border-rule px-5 text-sm font-bold text-ink focus:ring-4 focus:ring-primary/10 focus:border-accent transition-all bg-paper-2 appearance-none cursor-pointer"
                     >
                         <option value="available">Available (Empty)</option>
                         <option value="occupied">Occupied</option>
@@ -373,17 +404,17 @@ export default function TablesPage() {
               </div>
             )}
 
-            <label className="flex items-center gap-4 p-4 bg-slate-50 border border-slate-100 rounded-2xl cursor-pointer hover:bg-slate-100 transition-all group">
+            <label className="flex items-center gap-4 p-4 bg-paper-2 border border-rule-light rounded-lg cursor-pointer hover:bg-paper-2 transition-all group">
                 <div className="relative flex-shrink-0">
                     <input
                         {...register('is_active')}
                         type="checkbox"
-                        className="w-6 h-6 rounded-lg border-slate-300 text-primary focus:ring-primary/20 bg-white transition-all cursor-pointer"
+                        className="w-6 h-6 rounded-lg border-slate-300 text-accent focus:ring-accent/15 bg-surface transition-all cursor-pointer"
                     />
                 </div>
                 <div className="flex flex-col">
-                    <span className="text-sm font-black text-slate-900 tracking-tight leading-none mb-1">Active for Public</span>
-                    <span className="text-[11px] font-medium text-slate-400">Allow customers to order from this table.</span>
+                    <span className="text-sm font-semibold text-ink tracking-tight leading-none mb-1">Active for Public</span>
+                    <span className="text-[11px] font-medium text-ink-2">Allow customers to order from this table.</span>
                 </div>
             </label>
           </div>
@@ -393,14 +424,14 @@ export default function TablesPage() {
               type="button"
               variant="secondary"
               onClick={() => setModalOpen(false)}
-              className="flex-1 rounded-2xl"
+              className="flex-1 rounded-lg"
             >
               Cancel
             </Button>
             <Button
               type="submit"
               variant="primary"
-              className="flex-[2] rounded-2xl shadow-xl shadow-primary/20"
+              className="flex-[2] rounded-lg"
               disabled={isSubmitting}
             >
               {isSubmitting ? 'Processing...' : editing ? 'Update Changes' : 'Save Table'}
@@ -420,15 +451,15 @@ export default function TablesPage() {
           <div className="flex flex-col items-center gap-8 py-6">
             <div
               ref={qrModalRef}
-              className="p-8 bg-white rounded-[40px] border border-slate-100 shadow-2xl relative overflow-hidden group"
+              className="p-8 bg-surface rounded-[40px] border border-rule-light shadow-2xl relative overflow-hidden group"
             >
-                <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="absolute inset-0 bg-accent/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                 <QRCode value={buildQrUrl(qrTarget.qr_code)} size={280} level="M" />
             </div>
             
-            <div className="bg-slate-50 rounded-2xl px-6 py-3.5 border border-slate-100 w-full group relative overflow-hidden">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Public Link Access</p>
-              <p className="text-xs font-mono font-bold text-slate-900 truncate">
+            <div className="bg-paper-2 rounded-lg px-6 py-3.5 border border-rule-light w-full group relative overflow-hidden">
+              <p className="text-[10px] font-semibold text-ink-2 uppercase tracking-widest mb-2">Public Link Access</p>
+              <p className="text-xs font-mono font-bold text-ink truncate">
                 {buildQrUrl(qrTarget.qr_code)}
               </p>
             </div>
@@ -443,7 +474,7 @@ export default function TablesPage() {
         )}
       </Modal>
 
-      {/* ── Print Template (Hidden from screen) ── */}
+      {/* Print Template (Hidden from screen) */}
       <div id="qr-print-gallery" className="hidden print:block fixed inset-0 bg-white z-[999]">
          <style>{`
             @media print {
@@ -472,13 +503,13 @@ export default function TablesPage() {
                {tables.filter(t => t.is_active && t.qr_code).map((t) => (
                   <div key={t.id} className="qr-card-print flex flex-col items-center">
                       <div className="mb-6">
-                        <h2 className="text-3xl font-black text-slate-900 tracking-tighter">{t.name}</h2>
+                        <h2 className="text-xl font-semibold text-ink tracking-tighter">{t.name}</h2>
                         <p className="text-xs font-black text-primary uppercase tracking-[0.2em] mt-1">Scan to Order</p>
                       </div>
                       <div className="p-6 border-4 border-slate-900 rounded-[40px] mb-6">
                         <QRCode value={buildQrUrl(t.qr_code!)} size={180} level="M" />
                       </div>
-                      <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-tight">
+                      <div className="text-[10px] font-semibold text-ink-2 uppercase tracking-widest leading-tight">
                          Proudly Powered by RestoApp SaaS<br/>
                          Premium Digital Dining Experience
                       </div>

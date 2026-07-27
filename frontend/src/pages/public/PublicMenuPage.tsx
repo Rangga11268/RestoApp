@@ -155,7 +155,7 @@ export default function PublicMenuPage() {
   if (notFound)
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50 font-sans px-6">
-        <div className="w-full max-w-lg bg-white rounded-[48px] shadow-premium flex flex-col items-center py-20 px-10 text-center border border-slate-100">
+        <div className="w-full max-w-lg bg-white rounded-2xl flex flex-col items-center py-20 px-10 text-center border border-gray-200">
           <div className="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center mb-8 shadow-inner border border-slate-100">
              <ImageBroken size={48} weight="duotone" className="text-slate-200" />
           </div>
@@ -371,7 +371,7 @@ export default function PublicMenuPage() {
 
       {/* ── MOBILE Floating Cart Button ──────────────────────────────── */}
       {cartCount > 0 && (
-        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 w-[calc(100%-3rem)] max-w-sm z-[60] lg:hidden animate-in slide-in-from-bottom duration-500">
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 w-[calc(100%-3rem)] max-w-sm z-[60] lg:hidden">
           <button
             onClick={() => setCartOpen(true)}
             className="w-full bg-slate-900 text-white rounded-[32px] p-2.5 flex items-center justify-between shadow-2xl ring-4 ring-white active:scale-95 transition-all overflow-hidden relative group"

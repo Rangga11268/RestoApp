@@ -48,12 +48,31 @@ export const reorderCategories = (
 
 // ─── Menu Items ──────────────────────────────────────────
 
+export interface PaginatedMenuItems {
+  data: MenuItem[];
+  meta: {
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    total: number;
+  };
+}
+
 export const getMenuItems = (
   params?: Record<string, string | number | boolean>,
 ) =>
   api
     .get<{ data: MenuItem[] }>("/menu/items", { params })
     .then((r) => r.data.data);
+
+export const getMenuItemsPaginated = (
+  params?: Record<string, string | number | boolean>,
+) =>
+  api
+    .get<PaginatedMenuItems>("/menu/items", {
+      params: { ...params, paginate: true },
+    })
+    .then((r) => r.data);
 
 export const createMenuItem = (data: FormData) =>
   api

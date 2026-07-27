@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Plus, Pencil, Trash, List, Tag, Eye, EyeSlash, DotsThreeOutlineVertical, Stack, ArrowsClockwise } from "@phosphor-icons/react"
+import { Plus, Pencil, Trash, List, Tag, Eye, EyeSlash, DotsThreeOutlineVertical, Stack, ArrowsClockwise, Warning } from "@phosphor-icons/react"
 import { useForm, type Resolver } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -34,6 +34,7 @@ type FormData = z.infer<typeof schema>
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [modalOpen, setModalOpen] = useState(false)
   const [editing, setEditing] = useState<Category | null>(null)
 
@@ -49,8 +50,11 @@ export default function CategoriesPage() {
 
   const load = async () => {
     setLoading(true)
+    setError(null)
     try {
       setCategories(await getCategories())
+    } catch {
+      setError('Gagal memuat kategori. Periksa koneksi server.')
     } finally {
       setLoading(false)
     }
@@ -105,23 +109,23 @@ export default function CategoriesPage() {
   }
 
   return (
-    <div className="w-full max-w-7xl mx-auto space-y-10 animate-in selection:bg-primary/20">
+    <div className="w-full max-w-7xl mx-auto space-y-10 selection:bg-accent/20">
       {/* Header Premium */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
         <div>
            <Badge variant="primary" className="mb-2">Menu Structure</Badge>
-           <h1 className="text-4xl font-black text-slate-900 tracking-tighter">Kitchen Categories</h1>
-           <p className="text-sm font-medium text-slate-400 mt-1">
+           <h1 className="text-4xl font-black text-ink tracking-tighter">Kitchen Categories</h1>
+           <p className="text-sm font-medium text-ink-2 mt-1">
              Manage your menu hierarchy and organization.
            </p>
         </div>
         <div className="flex items-center gap-4">
-          <div className="px-5 py-3 bg-white border border-slate-100 rounded-2xl text-sm font-bold text-slate-600 shadow-sm hidden md:flex items-center gap-2">
-            <span className="text-primary font-black">{categories.length}</span> Total Categories
+          <div className="px-5 py-3 bg-surface border border-rule-light rounded-lg text-sm font-bold text-ink-2 hidden md:flex items-center gap-2">
+            <span className="text-accent font-black">{categories.length}</span> Total Categories
           </div>
           <Button
             onClick={openCreate}
-            className="shadow-xl shadow-primary/20 rounded-2xl px-6"
+            className="shadow-xl shadow-accent/20 rounded-lg px-6"
           >
             <Plus size={20} weight="bold" className="mr-2" /> New Category
           </Button>
@@ -129,26 +133,49 @@ export default function CategoriesPage() {
       </div>
 
       {/* Main Content Area */}
-      {loading ? (
-        <div className="flex flex-col items-center justify-center py-32 text-slate-300">
-          <ArrowsClockwise size={48} className="animate-spin mb-4 text-primary opacity-20" />
-          <span className="font-black text-xs uppercase tracking-[0.2em] animate-pulse">Organizing Pantry...</span>
+      {error ? (
+        <div className="flex items-start gap-4 p-5 bg-danger/5 border border-danger/10 rounded-lg">
+          <Warning size={24} weight="bold" className="text-danger flex-shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <p className="font-black text-danger text-xs uppercase tracking-widest mb-1">Gagal memuat data</p>
+            <p className="text-sm text-danger font-medium">{error}</p>
+          </div>
+          <button onClick={load} className="text-danger hover:text-danger/70 font-bold text-xs uppercase tracking-widest shrink-0 self-start">
+            Coba Lagi
+          </button>
+        </div>
+      ) : loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="bg-surface border border-rule rounded-lg overflow-hidden animate-pulse">
+              <div className="h-24 bg-gray-200" />
+              <div className="p-6 space-y-3">
+                <div className="h-5 bg-gray-200 rounded w-3/4" />
+                <div className="h-3 bg-gray-200 rounded w-full" />
+                <div className="h-3 bg-gray-200 rounded w-1/2" />
+                <div className="flex gap-2 pt-4">
+                  <div className="h-10 bg-gray-200 rounded-lg flex-1" />
+                  <div className="h-10 w-10 bg-gray-200 rounded-lg" />
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       ) : categories.length === 0 ? (
-        <div className="text-center py-40 bg-white/50 backdrop-blur rounded-[48px] border border-slate-100 border-dashed flex flex-col items-center">
-          <div className="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center mb-6">
-            <Stack size={48} weight="duotone" className="text-slate-200" />
+        <div className="text-center py-40 bg-surface/50 backdrop-blur rounded-[48px] border border-rule-light border-dashed flex flex-col items-center">
+          <div className="w-24 h-24 bg-paper-2 rounded-full flex items-center justify-center mb-6">
+            <Stack size={48} weight="bold" className="text-slate-200" />
           </div>
-          <p className="font-black text-2xl text-slate-900 tracking-tight">
+          <p className="font-black text-lg text-ink tracking-tight">
             No Categories Yet
           </p>
-          <p className="text-slate-400 text-sm font-medium mt-2 mb-8 max-w-[280px]">
+          <p className="text-ink-2 text-sm font-medium mt-2 mb-8 max-w-[280px]">
             Start by grouping your food and drinks. It helps customers find what they love!
           </p>
           <Button
             onClick={openCreate}
             variant="secondary"
-            className="rounded-2xl px-8"
+            className="rounded-lg px-8"
           >
             <Plus size={18} weight="bold" className="mr-2" /> Add First Category
           </Button>
@@ -160,21 +187,21 @@ export default function CategoriesPage() {
               key={cat.id}
               animated
               className={cn(
-                  "p-0 flex flex-col overflow-hidden group transition-all duration-300",
+                  "p-0 flex flex-col overflow-hidden group transition-all",
                   !cat.is_active && "opacity-60 grayscale"
               )}
             >
               {/* Visual Identity Header */}
               <div className="h-24 bg-slate-900 relative overflow-hidden flex items-end px-6 pb-4">
-                 <div className="absolute inset-0 opacity-20 transition-transform group-hover:scale-110 duration-700">
-                    <div className="absolute inset-0 bg-gradient-to-tr from-primary/40 to-transparent" />
-                    <Tag size={120} weight="duotone" className="absolute -right-4 -top-8 rotate-12 text-white" />
+                 <div className="absolute inset-0">
+                    <div className="absolute inset-0 bg-gradient-to-tr from-accent/30 to-transparent" />
+                    <Tag size={120} weight="bold" className="absolute -right-4 -top-8 text-white/10" />
                  </div>
                  <div className="relative z-10 w-full flex items-center justify-between">
-                    <div className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white font-black text-xl">
+                    <div className="w-12 h-12 rounded-lg bg-surface/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white font-black text-md">
                         {cat.name[0]}
                     </div>
-                    <Badge variant={cat.is_active ? 'success' : 'glass'} className="text-[9px]">
+                    <Badge variant={cat.is_active ? 'success' : 'muted'} className="text-[9px]">
                         {cat.is_active ? 'ONLINE' : 'OFFLINE'}
                     </Badge>
                  </div>
@@ -183,24 +210,24 @@ export default function CategoriesPage() {
               {/* Content Area */}
               <div className="p-6">
                 <div className="flex items-start justify-between mb-2">
-                    <h3 className="text-xl font-black text-slate-900 tracking-tighter group-hover:text-primary transition-colors">
+                    <h3 className="text-md font-black text-ink tracking-tighter group-hover:text-accent transition-colors">
                         {cat.name}
                     </h3>
-                    <span className="text-[10px] font-black text-slate-300 bg-slate-50 px-2.5 py-1 rounded-lg">
+                    <span className="text-[10px] font-black text-slate-300 bg-paper-2 px-2.5 py-1 rounded-lg">
                         ORDER #{cat.sort_order}
                     </span>
                 </div>
                 
-                <p className="text-xs text-slate-400 font-medium line-clamp-2 min-h-[32px] mb-6">
+                <p className="text-xs text-ink-2 font-medium line-clamp-2 min-h-[32px] mb-6">
                     {cat.description || "No description provided for this category."}
                 </p>
 
                 <div className="flex items-center justify-between py-4 border-t border-slate-50">
                     <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-xl bg-primary/5 flex items-center justify-center text-primary font-black text-xs">
+                        <div className="w-8 h-8 rounded-lg bg-accent/5 flex items-center justify-center text-accent font-black text-xs">
                             {cat.menu_items_count ?? 0}
                         </div>
-                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Items listed</span>
+                        <span className="text-[10px] font-black text-ink-2 uppercase tracking-widest">Items listed</span>
                     </div>
                 </div>
 
@@ -208,14 +235,14 @@ export default function CategoriesPage() {
                     <Button 
                         onClick={() => openEdit(cat)}
                         variant="secondary" 
-                        className="flex-1 rounded-xl h-10 text-[10px] font-black bg-slate-50 border-slate-100 hover:bg-slate-900 hover:text-white transition-all"
+                        className="flex-1 rounded-lg h-10 text-[10px] font-black bg-paper-2 border-rule-light hover:bg-slate-900 hover:text-white transition-all"
                     >
                         <Pencil size={14} weight="bold" className="mr-2" /> EDIT
                     </Button>
                     <Button 
                         onClick={() => handleDelete(cat)}
                         variant="secondary"
-                        className="w-10 h-10 rounded-xl px-0 bg-slate-50 border-slate-100 hover:text-danger hover:border-danger/20 transition-all text-slate-400"
+                        className="w-10 h-10 rounded-lg px-0 bg-paper-2 border-rule-light hover:text-danger hover:border-danger/20 transition-all text-ink-2"
                     >
                         <Trash size={16} weight="bold" />
                     </Button>
@@ -236,7 +263,7 @@ export default function CategoriesPage() {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-4">
             <div>
-              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Display Name</label>
+              <label className="block text-[10px] font-black text-ink-2 uppercase tracking-widest mb-2">Display Name</label>
               <Input
                 {...register('name')}
                 placeholder="e.g. Signature Bowls, Hot Beverages"
@@ -247,11 +274,11 @@ export default function CategoriesPage() {
             </div>
 
             <div>
-              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Brief Description</label>
+              <label className="block text-[10px] font-black text-ink-2 uppercase tracking-widest mb-2">Brief Description</label>
               <textarea
                     {...register('description')}
                     rows={3}
-                    className="w-full rounded-2xl border border-slate-200 px-5 py-4 text-sm font-bold text-slate-900 focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all bg-slate-50 placeholder:text-slate-300 resize-none outline-none"
+                    className="w-full rounded-lg border border-rule px-5 py-4 text-sm font-bold text-ink focus:ring-4 focus:ring-accent/10 focus:border-accent transition-all bg-paper-2 placeholder:text-slate-300 resize-none outline-none"
                     placeholder="Tell your customers about this group..."
                 />
               {errors.description && (
@@ -261,7 +288,7 @@ export default function CategoriesPage() {
 
             <div className="grid grid-cols-2 gap-4">
                  <div>
-                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Display Order</label>
+                    <label className="block text-[10px] font-black text-ink-2 uppercase tracking-widest mb-2">Display Order</label>
                     <Input
                         {...register('sort_order')}
                         type="number"
@@ -269,13 +296,13 @@ export default function CategoriesPage() {
                     />
                 </div>
                 <div className="flex flex-col justify-end">
-                    <label className="flex items-center gap-3 h-12 px-4 bg-slate-50 border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-100 transition-all">
+                    <label className="flex items-center gap-3 h-12 px-4 bg-paper-2 border border-rule rounded-lg cursor-pointer hover:bg-slate-100 transition-all">
                         <input
                             {...register('is_active')}
                             type="checkbox"
-                            className="w-5 h-5 rounded border-slate-300 text-primary focus:ring-primary/20 bg-white transition-all cursor-pointer"
+                            className="w-5 h-5 rounded border-slate-300 text-accent focus:ring-accent/15 bg-surface transition-all cursor-pointer"
                         />
-                        <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Active</span>
+                        <span className="text-[10px] font-black text-ink-2 uppercase tracking-widest">Active</span>
                     </label>
                 </div>
             </div>
@@ -286,14 +313,14 @@ export default function CategoriesPage() {
               type="button"
               variant="secondary"
               onClick={() => setModalOpen(false)}
-              className="flex-1 rounded-2xl"
+              className="flex-1 rounded-lg"
             >
               Cancel
             </Button>
             <Button
               type="submit"
               variant="primary"
-              className="flex-[2] rounded-2xl shadow-xl shadow-primary/20"
+              className="flex-[2] rounded-lg shadow-xl shadow-accent/20"
               disabled={isSubmitting}
             >
               {isSubmitting ? 'Syncing...' : editing ? 'Update Category' : 'Save Category'}
@@ -304,5 +331,3 @@ export default function CategoriesPage() {
     </div>
   )
 }
-
-

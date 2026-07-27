@@ -17,7 +17,7 @@ export default function SuccessScreen({
        <div className="absolute -top-[20%] -left-[10%] w-[60%] h-[60%] bg-gradient-to-br from-success/5 to-emerald-500/5 rounded-full blur-[120px] pointer-events-none" />
        <div className="absolute -bottom-[20%] -right-[10%] w-[60%] h-[60%] bg-gradient-to-br from-primary/5 to-amber-500/5 rounded-full blur-[120px] pointer-events-none" />
 
-      <div className="w-full max-w-lg bg-white/80 backdrop-blur-2xl md:rounded-[48px] min-h-screen md:min-h-[700px] shadow-premium flex flex-col items-center justify-center px-10 py-16 text-center relative z-10 border border-white/50 animate-in">
+      <div className="w-full max-w-lg bg-white md:rounded-2xl min-h-screen md:min-h-[700px] flex flex-col items-center justify-center px-10 py-16 text-center relative z-10 border border-gray-200">
         
         <div className="relative mb-10">
            <div className="absolute inset-0 bg-success/20 rounded-full animate-ping" />
@@ -50,7 +50,7 @@ export default function SuccessScreen({
             onClick={onReset} 
             variant="primary" 
             size="lg"
-            className="w-full font-bold shadow-2xl shadow-primary/20 animate-in delay-300"
+            className="w-full font-bold shadow-sm"
         >
           Back to Menu
         </Button>
