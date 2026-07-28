@@ -15,6 +15,7 @@ const CategoriesPage = lazy(() => import('@/pages/app/CategoriesPage'))
 const MenuItemsPage = lazy(() => import('@/pages/app/MenuItemsPage'))
 const TablesPage = lazy(() => import('@/pages/app/TablesPage'))
 const SettingsPage = lazy(() => import('@/pages/app/SettingsPage'))
+const NotificationsPage = lazy(() => import('@/pages/app/NotificationsPage'))
 const OrdersPage = lazy(() => import('@/pages/app/OrdersPage'))
 const OrderDetailPage = lazy(() => import('@/pages/app/OrderDetailPage'))
 const ComponentsPreviewPage = lazy(() => import('@/pages/dev/ComponentsPreviewPage'))
@@ -90,6 +91,14 @@ export default function App() {
               element={
                 <ShellRoute>
                   <SettingsPage />
+                </ShellRoute>
+              }
+            />
+            <Route
+              path="/notifications"
+              element={
+                <ShellRoute>
+                  <NotificationsPage />
                 </ShellRoute>
               }
             />

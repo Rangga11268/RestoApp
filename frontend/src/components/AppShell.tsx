@@ -187,7 +187,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           </div>
 
           <div className="flex items-center gap-2 ml-auto">
-            <button className="relative flex items-center justify-center w-9 h-9 rounded-lg bg-surface border border-rule text-ink-2 hover:text-ink hover:bg-paper-2 transition-colors">
+            <button onClick={() => navigate('/notifications')} className="relative flex items-center justify-center w-9 h-9 rounded-lg bg-surface border border-rule text-ink-2 hover:text-ink hover:bg-paper-2 transition-colors">
               <Bell size={16} weight="bold" />
               <span className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-danger" />
             </button>
