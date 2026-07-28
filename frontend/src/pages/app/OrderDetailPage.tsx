@@ -73,22 +73,22 @@ const NEXT_STATUS_CONFIG: Partial<
   confirmed: {
     label: 'Approve Order',
     icon: <CheckCircle size={18} weight="bold" />,
-    color: 'bg-accent shadow-primary/20 hover:scale-[1.02]',
+    color: 'bg-accent shadow-primary/20 ',
   },
   cooking: {
     label: 'Send to Kitchen',
     icon: <CookingPot size={18} weight="bold" />,
-    color: 'bg-orange-500 shadow-orange-500/20 hover:scale-[1.02]',
+    color: 'bg-orange-500 shadow-orange-500/20 ',
   },
   ready: {
     label: 'Mark as Ready',
     icon: <BellRinging size={18} weight="bold" />,
-    color: 'bg-green-500 shadow-green-500/20 hover:scale-[1.02]',
+    color: 'bg-green-500 shadow-green-500/20 ',
   },
   completed: {
     label: 'Finish Order',
     icon: <CheckCircle size={18} weight="bold" />,
-    color: 'bg-slate-900 shadow-slate-900/20 hover:scale-[1.02]',
+    color: 'bg-slate-900 shadow-slate-900/20 ',
   },
 }
 
@@ -122,7 +122,7 @@ function StatusStepper({ status }: { status: OrderStatus }) {
           <div key={step} className="relative z-10 flex flex-col items-center group">
             <div
                 className={cn(
-                  'w-11 h-11 rounded-[20px] flex items-center justify-center transition-all border-4 border-white',
+                  'w-11 h-11 rounded-lg flex items-center justify-center transition-all  border-white',
                   done
                     ? 'bg-success text-white'
                     : active
@@ -219,7 +219,7 @@ export default function OrderDetailPage() {
   if (error || !order) {
     return (
       <div className="max-w-3xl mx-auto py-20 text-center">
-        <div className="w-20 h-20 bg-danger/5 text-danger rounded-[28px] flex items-center justify-center mx-auto mb-6">
+        <div className="w-20 h-20 bg-danger/5 text-danger rounded-lg flex items-center justify-center mx-auto mb-6">
             <WarningCircle size={40} weight="bold" />
         </div>
         <h2 className="text-lg font-semibold text-ink tracking-tighter mb-2">Order Not Found</h2>
@@ -253,7 +253,7 @@ export default function OrderDetailPage() {
                 Back to Dashboard
             </Link>
             <div className="flex items-center gap-4">
-                 <div className="w-16 h-16 rounded-[28px] bg-slate-900 flex items-center justify-center text-white">
+                 <div className="w-16 h-16 rounded-lg bg-slate-900 flex items-center justify-center text-white">
                     <Fingerprint size={32} weight="bold" />
                  </div>
                  <div>
@@ -272,7 +272,7 @@ export default function OrderDetailPage() {
             </div>
         </div>
 
-        <div className="flex items-center gap-6 bg-surface p-6 rounded-[32px] border border-rule-light">
+        <div className="flex items-center gap-6 bg-surface p-6 rounded-lg border border-rule-light">
              <div className="text-right">
                 <span className="text-[10px] font-semibold text-ink-2 uppercase tracking-widest block mb-0.5">Order Total</span>
                 <span className="text-lg font-semibold text-ink tracking-tighter leading-none">{formatCurrency(order.total)}</span>
@@ -309,7 +309,7 @@ export default function OrderDetailPage() {
                     <StatusStepper status={order.status} />
 
                     {nextStatuses.length > 0 && (
-                        <div className="mt-12 p-6 bg-paper-2/50 rounded-[32px] border border-rule-light flex flex-col sm:flex-row items-center justify-between gap-6">
+                        <div className="mt-12 p-6 bg-paper-2/50 rounded-lg border border-rule-light flex flex-col sm:flex-row items-center justify-between gap-6">
                             <div className="flex-1">
                                 <p className="text-sm font-semibold text-ink mb-1">Take Action</p>
                                 <p className="text-xs font-medium text-ink-2">Move this order to the next phase of preparation.</p>
@@ -366,7 +366,7 @@ export default function OrderDetailPage() {
                 <div className="divide-y divide-slate-50">
                     {order.items?.map((item) => (
                         <div key={item.id} className="flex items-start gap-6 p-8 group hover:bg-paper-2/50 transition-all">
-                             <div className="w-14 h-14 rounded-[22px] bg-slate-900 flex flex-col items-center justify-center text-white flex-shrink-0 transition-transform">
+                             <div className="w-14 h-14 rounded-lg bg-slate-900 flex flex-col items-center justify-center text-white flex-shrink-0 transition-transform">
                                 <span className="text-[10px] font-semibold opacity-50 leading-none mb-1 uppercase">Qty</span>
                                 <span className="text-md font-semibold leading-none">{item.quantity}</span>
                              </div>
@@ -481,7 +481,7 @@ export default function OrderDetailPage() {
                 {order.payment_status === 'unpaid' && order.status !== 'cancelled' ? (
                      <Button 
                         onClick={() => navigate(`/orders/${order.id}/payment`)}
-                        className="w-full h-14 rounded-lg bg-success shadow-success/20 hover:scale-[1.02]"
+                        className="w-full h-14 rounded-lg bg-success shadow-success/20 "
                     >
                         COLLECT PAYMENT <ArrowCircleRight size={20} className="ml-2" />
                     </Button>
@@ -497,9 +497,9 @@ export default function OrderDetailPage() {
             </Card>
 
             {order.notes && (
-                <div className="p-8 bg-warning-light rounded-[32px] border border-amber-100 flex flex-col gap-4">
+                <div className="p-8 bg-warning-light rounded-lg border border-amber-100 flex flex-col gap-4">
                     <div className="flex items-center gap-2 text-amber-700">
-                        <Note size={20} weight="fill" />
+                        <Note size={20} weight="bold" />
                         <span className="text-[10px] font-semibold uppercase tracking-widest">Guest Instructions</span>
                     </div>
                     <p className="text-xs font-bold text-amber-900/70 leading-relaxed">

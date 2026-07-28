@@ -233,7 +233,7 @@ export default function MenuItemsPage() {
 
           <Button
             onClick={openCreate}
-            className="shadow-xl shadow-primary/20 rounded-lg h-12 px-6 ml-auto lg:ml-0"
+            className="rounded-lg h-12 px-6 ml-auto lg:ml-0"
           >
             <Plus size={20} weight="bold" className="mr-2" /> Add Item
           </Button>
@@ -272,7 +272,7 @@ export default function MenuItemsPage() {
           ))}
         </div>
       ) : !result || result.data.length === 0 ? (
-        <div className="text-center py-40 bg-surface/50 rounded-[48px] border border-rule-light border-dashed flex flex-col items-center">
+        <div className="text-center py-40 bg-surface/50 rounded-xl border border-rule-light border-dashed flex flex-col items-center">
           <ChefHat size={48} weight="bold" className="text-slate-200 mb-6" />
           <p className="font-black text-lg text-ink tracking-tight">
             Kitchen is Empty
@@ -311,7 +311,7 @@ export default function MenuItemsPage() {
                 <div className="absolute top-4 left-4 flex flex-col gap-2">
                     {item.is_featured && (
                     <Badge variant="primary" className="py-1 bg-accent/90 border-transparent">
-                        <Star size={12} weight="fill" className="mr-1" /> FEATURED
+                        <Star size={12} weight="bold" className="mr-1" /> FEATURED
                     </Badge>
                     )}
                     <Badge variant={item.is_available ? 'success' : 'muted'} className="py-1">
@@ -356,7 +356,7 @@ export default function MenuItemsPage() {
                             item.is_available ? "text-success hover:bg-success/5" : "text-ink-2 hover:bg-paper-2"
                         )}
                     >
-                         {item.is_available ? <CheckCircle size={20} weight="fill" /> : <WarningCircle size={20} weight="fill" />}
+                         {item.is_available ? <CheckCircle size={20} weight="bold" /> : <WarningCircle size={20} weight="bold" />}
                     </Button>
                     <Button 
                         onClick={() => openEdit(item)}
@@ -419,7 +419,7 @@ export default function MenuItemsPage() {
                 <label className="block text-[10px] font-black text-ink-2 uppercase tracking-widest pl-1">Visual Presentation</label>
                 <div 
                     onClick={() => fileRef.current?.click()}
-                    className="aspect-[4/5] rounded-[32px] border-4 border-dashed border-rule-light bg-paper-2 flex flex-col items-center justify-center cursor-pointer hover:border-accent/20 hover:bg-accent/5 transition-all overflow-hidden relative group"
+                    className="aspect-[4/5] rounded-lg  border-dashed border-rule-light bg-paper-2 flex flex-col items-center justify-center cursor-pointer hover:border-accent/20 hover:bg-accent/5 transition-all overflow-hidden relative group"
                 >
                     {imagePreview ? (
                         <>
@@ -526,7 +526,7 @@ export default function MenuItemsPage() {
             <Button 
                 variant="primary" 
                 type="submit" 
-                className="flex-[2] rounded-lg h-14 font-black uppercase tracking-widest shadow-xl shadow-primary/20" 
+                className="flex-[2] rounded-lg h-14 font-semibold uppercase tracking-wider" 
                 disabled={isSubmitting}
             >
               {isSubmitting ? 'Syncing...' : editing ? 'Update Product' : 'Create Product'}

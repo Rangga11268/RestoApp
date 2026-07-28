@@ -16,6 +16,7 @@ import {
     EnvelopeSimple
 } from "@phosphor-icons/react"
 import { Toast } from '@/lib/swal'
+import { useAuthStore } from '@/stores/authStore'
 import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
 import Badge from '@/components/ui/Badge'
@@ -86,6 +87,11 @@ export default function SettingsPage() {
       setRestaurant(updated)
       setLogoPreview(updated.logo_url ?? null)
       if (fileRef.current) fileRef.current.value = ''
+
+      const { user, setUser } = useAuthStore.getState()
+      if (user) setUser({ ...user, restaurant: updated as any })
+      document.querySelector<HTMLLinkElement>('link[rel="icon"]')!.href = updated.logo_url ?? '/vite.svg'
+
       Toast.fire({ icon: 'success', title: 'Global settings updated' })
     } catch (err: any) {
       const msg = err.response?.data?.message
@@ -157,7 +163,7 @@ export default function SettingsPage() {
 
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
                     {/* Brand Identity / Logo */}
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-8 p-6 bg-paper-2/50 rounded-[32px] border border-rule-light">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-8 p-6 bg-paper-2/50 rounded-lg border border-rule-light">
                          <div className="relative group">
                             {logoPreview ? (
                                 <img

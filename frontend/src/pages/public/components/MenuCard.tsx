@@ -37,46 +37,44 @@ export default function MenuCard({
   onUpdateQty,
 }: MenuCardProps) {
   return (
-    <div className="bg-white rounded-[32px] overflow-hidden shadow-sm hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500 group flex flex-col hover:-translate-y-2 relative ring-1 ring-slate-100 hover:ring-primary/20">
+    <div className="bg-surface rounded-lg overflow-hidden group flex flex-col relative ring-1 ring-rule hover:ring-accent/20">
       <div className="relative overflow-hidden aspect-[4/3] p-2">
         {item.image_url ? (
           <img
             src={item.image_url}
             alt={item.name}
-            className="w-full h-full object-cover rounded-[24px] group-hover:scale-110 transition-transform duration-700 ease-out"
+            className="w-full h-full object-cover rounded-lg "
           />
         ) : (
-          <div className="w-full h-full bg-slate-50 flex items-center justify-center text-slate-200 rounded-[24px]">
-            <ForkKnife size={48} weight="duotone" />
+          <div className="w-full h-full bg-paper-2 flex items-center justify-center text-ink-2 rounded-lg">
+            <ForkKnife size={48} weight="bold" />
           </div>
         )}
-        
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
         {item.is_featured && (
-          <span className="absolute top-4 left-4 bg-white text-amber-950 text-[9px] font-black px-3 py-1.5 rounded-full uppercase tracking-[0.15em] shadow-sm flex items-center gap-1.5 border border-amber-200">
+          <span className="absolute top-4 left-4 bg-white text-amber-950 text-[9px] font-semibold px-3 py-1.5 rounded-full uppercase tracking-wider flex items-center gap-1.5 border border-amber-200">
             Chef's Choice
           </span>
         )}
       </div>
 
-      <div className="p-6 flex-1 flex flex-col relative z-10 bg-white">
-        <h3 className="font-extrabold text-slate-900 text-lg leading-snug line-clamp-2 tracking-tight group-hover:text-primary transition-colors">
+      <div className="p-6 flex-1 flex flex-col relative z-10 bg-surface">
+        <h3 className="font-semibold text-ink text-lg leading-snug line-clamp-2 tracking-tight group-hover:text-accent transition-colors">
           {item.name}
         </h3>
         {item.description && (
-          <p className="text-xs font-medium text-slate-400 mt-3 line-clamp-2 leading-relaxed">
+          <p className="text-xs font-medium text-ink-2 mt-3 line-clamp-2 leading-relaxed">
             {item.description}
           </p>
         )}
         
         <div className="mt-8 flex items-end justify-between">
           <div>
-            <p className="font-black text-primary text-2xl tracking-tighter leading-none">
+            <p className="font-semibold text-accent text-2xl tracking-tighter leading-none">
               {fmt(item.price, currency)}
             </p>
             {item.preparation_time && (
-              <span className="inline-flex items-center gap-1.5 text-[10px] uppercase font-bold text-slate-400 bg-slate-50 px-2.5 py-1 rounded-lg mt-3 border border-slate-100 tracking-wider">
+              <span className="inline-flex items-center gap-1.5 text-[10px] uppercase font-bold text-ink-2 bg-paper-2 px-2.5 py-1 rounded-lg mt-3 border border-rule-light tracking-wider">
                 <Clock size={12} weight="bold" /> ±{item.preparation_time} min
               </span>
             )}
@@ -87,24 +85,24 @@ export default function MenuCard({
                 <Button
                   onClick={() => onUpdateQty(item.id, 1)}
                   variant="primary"
-                  className="px-6 py-2.5 font-bold tracking-tight rounded-xl shadow-lg shadow-primary/20"
+                  className="px-6 py-2.5 font-bold tracking-tight rounded-xl"
                 >
                   Add
                 </Button>
               ) : (
-                <div className="flex items-center gap-4 bg-slate-50 rounded-2xl p-1.5 border border-slate-100 shadow-inner">
+                <div className="flex items-center gap-4 bg-paper-2 rounded-2xl p-1.5 border border-rule-light shadow-inner">
                   <button
                     onClick={() => onUpdateQty(item.id, qty - 1)}
-                    className="w-8 h-8 rounded-xl bg-white shadow-sm flex items-center justify-center text-slate-600 hover:text-primary transition-all p-0 border border-slate-100 active:scale-90"
+                    className="w-8 h-8 rounded-xl bg-surface flex items-center justify-center text-ink hover:text-accent p-0 border border-rule-light"
                   >
                     <Minus size={14} weight="bold" />
                   </button>
-                  <span className="text-sm font-black text-slate-900 w-4 text-center">
+                  <span className="text-sm font-semibold text-ink w-4 text-center">
                     {qty}
                   </span>
                   <button
                     onClick={() => onUpdateQty(item.id, qty + 1)}
-                    className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center text-white hover:bg-primary-hover transition-all p-0 shadow-lg shadow-primary/30 active:scale-90"
+                    className="w-8 h-8 rounded-xl bg-accent flex items-center justify-center text-white hover:bg-accent-hover p-0"
                   >
                     <Plus size={14} weight="bold" />
                   </button>

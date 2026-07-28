@@ -112,10 +112,10 @@ function SuccessOverlay({
   onDone: () => void
 }) {
   return (
-    <div className="fixed inset-0 z-[100] bg-slate-900/90 backdrop-blur-xl flex items-center justify-center p-6">
+    <div className="fixed inset-0 z-[100] bg-slate-900/90  flex items-center justify-center p-6">
       <Card className="w-full max-w-sm text-center p-10 bg-surface border-transparent shadow-[0_0_100px_rgba(34,197,94,0.3)]">
-        <div className="flex items-center justify-center w-24 h-24 rounded-[40px] bg-success-light text-success mx-auto mb-8 animate-bounce">
-          <ShieldCheck size={48} weight="fill" />
+        <div className="flex items-center justify-center w-24 h-24 rounded-lg bg-success-light text-success mx-auto mb-8 ">
+          <ShieldCheck size={48} weight="bold" />
         </div>
         <h2 className="text-xl font-semibold text-ink tracking-tighter mb-2">Settlement Complete</h2>
         <p className="text-ink-2 font-bold text-sm mb-8 uppercase tracking-widest">{order.order_number} PAID</p>
@@ -263,7 +263,7 @@ export default function PaymentPage() {
   if (error || !order) {
     return (
       <div className="max-w-3xl mx-auto py-20 text-center">
-        <div className="w-20 h-20 bg-danger/5 text-danger rounded-[28px] flex items-center justify-center mx-auto mb-6">
+        <div className="w-20 h-20 bg-danger/5 text-danger rounded-lg flex items-center justify-center mx-auto mb-6">
             <WarningCircle size={40} weight="bold" />
         </div>
         <h2 className="text-lg font-semibold text-ink tracking-tighter mb-2">Order Missing</h2>
@@ -302,7 +302,7 @@ export default function PaymentPage() {
                     Back to Order Detail
                 </Link>
                 <div className="flex items-center gap-4">
-                    <div className="w-16 h-16 rounded-[28px] bg-slate-900 flex items-center justify-center text-white">
+                    <div className="w-16 h-16 rounded-lg bg-slate-900 flex items-center justify-center text-white">
                         <Money size={32} weight="bold" />
                     </div>
                     <div>
@@ -312,9 +312,9 @@ export default function PaymentPage() {
                 </div>
             </div>
 
-            <div className="bg-slate-900 p-8 rounded-[40px] text-white flex flex-col items-center sm:items-end relative overflow-hidden shadow-2xl shadow-primary/20">
+            <div className="bg-slate-900 p-8 rounded-lg text-white flex flex-col items-center sm:items-end relative overflow-hidden ">
                  <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none transition-transform">
-                    <ShieldCheck size={120} weight="fill" />
+                    <ShieldCheck size={120} weight="bold" />
                  </div>
                  <span className="text-[10px] font-semibold text-ink-2 uppercase tracking-[0.3em] mb-1 relative z-10">Grand Balance Due</span>
                  <span className="text-4xl font-semibold text-white tracking-tighter relative z-10">{formatIDR(total)}</span>
@@ -340,7 +340,7 @@ export default function PaymentPage() {
                                     key={opt.method}
                                     onClick={() => setMethod(opt.method)}
                                     className={cn(
-                                        "relative flex flex-col items-start p-6 rounded-[32px] border-2 transition-all group overflow-hidden",
+                                        "relative flex flex-col items-start p-6 rounded-lg border-2 transition-all group overflow-hidden",
                                         active 
                                             ? "bg-slate-900 border-slate-900 text-white scale-[1.02]"
                                             : "bg-surface border-rule-light text-ink-2 hover:border-accent/20 hover:bg-paper-2"
@@ -352,7 +352,7 @@ export default function PaymentPage() {
                                     
                                     {active && (
                                         <div className="absolute -bottom-2 -right-2">
-                                            <CheckCircle size={40} weight="fill" className="text-accent/10" />
+                                            <CheckCircle size={40} weight="bold" className="text-accent/10" />
                                         </div>
                                     )}
                                 </button>
@@ -377,7 +377,7 @@ export default function PaymentPage() {
                                                 setCashInput(raw ? formatNumber(Number(raw)) : '')
                                             }}
                                             className={cn(
-                                                "w-full h-20 pl-16 pr-8 bg-surface rounded-[28px] text-xl font-semibold text-ink border-2 transition-all outline-none tracking-tighter",
+                                                "w-full h-20 pl-16 pr-8 bg-surface rounded-lg text-xl font-semibold text-ink border-2 transition-all outline-none tracking-tighter",
                                                 cashInsufficient ? "border-danger ring-4 ring-danger/10" : "border-rule-light focus:border-accent focus:ring-4 focus:ring-accent/15"
                                             )}
                                          />
@@ -391,7 +391,7 @@ export default function PaymentPage() {
                                 </div>
 
                                 <div className={cn(
-                                    "w-full sm:w-64 h-24 rounded-[32px] flex flex-col items-center justify-center p-6 border-2 transition-all",
+                                    "w-full sm:w-64 h-24 rounded-lg flex flex-col items-center justify-center p-6 border-2 transition-all",
                                     cashInput && !cashInsufficient ? "bg-success border-success text-white shadow-success/20" : "bg-surface border-rule-light text-slate-300"
                                 )}>
                                     <span className="text-[10px] font-semibold uppercase tracking-widest opacity-60">Kembalian</span>
@@ -447,7 +447,7 @@ export default function PaymentPage() {
                         <Button
                             onClick={handleQris}
                             disabled={snapLoading}
-                            className="w-full sm:w-auto h-20 px-16 rounded-[28px] bg-accent text-md font-semibold tracking-tighter shadow-2xl shadow-primary/20 group hover:scale-[1.02]"
+                            className="w-full sm:w-auto h-20 px-16 rounded-lg bg-accent text-md font-semibold tracking-tighter  group "
                         >
                             {snapLoading ? <CircleNotch size={32} className="animate-spin" /> : (
                                 <div className="flex items-center gap-4">
@@ -461,11 +461,11 @@ export default function PaymentPage() {
                         <Button
                             onClick={handlePay}
                             disabled={processing || (method === 'cash' && (cashInsufficient || !cashInput))}
-                            className="w-full h-20 rounded-[28px] bg-accent text-md font-semibold tracking-tighter shadow-2xl shadow-primary/20 group hover:scale-[1.02]"
+                            className="w-full h-20 rounded-lg bg-accent text-md font-semibold tracking-tighter  group "
                         >
                              {processing ? <CircleNotch size={32} className="animate-spin" /> : (
                                 <div className="flex items-center gap-4">
-                                    <ShieldCheck size={32} weight="fill" />
+                                    <ShieldCheck size={32} weight="bold" />
                                     <span>POST SETTLEMENT — {formatIDR(total)}</span>
                                     <ArrowRight size={24} weight="bold" className="ml-2 group-hover:translate-x-2 transition-transform" />
                                 </div>
@@ -526,9 +526,9 @@ export default function PaymentPage() {
                     </div>
                  </Card>
 
-                 <div className="p-8 bg-slate-900 rounded-[32px] flex items-center gap-4 text-white">
+                 <div className="p-8 bg-slate-900 rounded-lg flex items-center gap-4 text-white">
                      <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center text-accent">
-                        <ShieldCheck size={24} weight="fill" />
+                        <ShieldCheck size={24} weight="bold" />
                      </div>
                      <div>
                         <p className="text-[10px] font-semibold uppercase tracking-widest text-ink-2">Secure Ledger</p>

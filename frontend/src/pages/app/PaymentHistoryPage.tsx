@@ -191,7 +191,7 @@ export default function PaymentHistoryPage() {
             </div>
         ) : payments.length === 0 ? (
              <div className="text-center py-40 flex flex-col items-center">
-                <div className="w-20 h-20 bg-paper-2 rounded-[24px] flex items-center justify-center text-slate-200 mb-4">
+                <div className="w-20 h-20 bg-paper-2 rounded-lg flex items-center justify-center text-slate-200 mb-4">
                     <FileText size={40} weight="bold" />
                 </div>
                 <p className="font-semibold text-md text-ink tracking-tighter">No Transactions Found</p>

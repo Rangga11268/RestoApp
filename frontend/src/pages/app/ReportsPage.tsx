@@ -76,7 +76,7 @@ function ChartTooltip({
 }) {
   if (!active || !payload?.length) return null
   return (
-    <div className="bg-slate-900/95 backdrop-blur-xl border border-white/10 rounded-lg px-5 py-4 text-xs space-y-3 min-w-[180px]">
+    <div className="bg-slate-900/95  border border-white/10 rounded-lg px-5 py-4 text-xs space-y-3 min-w-[180px]">
       <div className="flex items-center gap-2 pb-2 border-b border-white/10">
         <Calendar size={14} weight="bold" className="text-accent" />
         <p className="font-semibold text-white tracking-tight">{label}</p>
@@ -344,7 +344,7 @@ export default function ReportsPage() {
                 <span className="font-semibold text-xs uppercase tracking-[0.2em]">Crafting Graph...</span>
             </div>
             ) : !sales?.chart?.length ? (
-            <div className="flex flex-col items-center justify-center h-full text-slate-300 border-2 border-dashed border-rule-light rounded-[32px]">
+            <div className="flex flex-col items-center justify-center h-full text-slate-300 border-2 border-dashed border-rule-light rounded-lg">
                 <Calendar size={48} weight="bold" className="mb-4 opacity-20" />
                 <span className="text-sm font-bold text-ink-2">No data for selected range</span>
             </div>
@@ -532,7 +532,7 @@ export default function ReportsPage() {
                     .toUpperCase()
                     return (
                         <div key={s.cashier_id} className="flex items-center gap-4 px-8 py-5 hover:bg-paper-2/50">
-                            <div className="w-10 h-10 rounded-full bg-slate-900 text-white flex items-center justify-center text-[10px] font-semibold border-4 border-white">
+                            <div className="w-10 h-10 rounded-full bg-slate-900 text-white flex items-center justify-center text-[10px] font-semibold  border-white">
                             {initials}
                             </div>
                             <div className="flex-1 min-w-0">

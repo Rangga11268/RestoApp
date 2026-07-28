@@ -60,6 +60,12 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate()
   const { pathname } = useLocation()
 
+  useEffect(() => {
+    if (user?.restaurant?.logo_url) {
+      document.querySelector<HTMLLinkElement>('link[rel="icon"]')!.href = user.restaurant.logo_url
+    }
+  }, [user?.restaurant?.logo_url])
+
   const visibleNav = navItems.filter((item) => user && item.roles.includes(user.role))
 
   const handleLogout = async () => {
@@ -70,7 +76,14 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const sidebarContent = (
     <div className="flex flex-col h-full">
       <div className={cn('flex items-center h-14', collapsed ? 'justify-center' : 'px-5')}>
-        {!collapsed ? (
+        {user?.restaurant?.logo_url ? (
+          <div className={cn('flex items-center', collapsed ? 'justify-center' : 'gap-2.5')}>
+            <img src={user.restaurant.logo_url} alt="Logo" className="w-8 h-8 object-contain rounded-lg" />
+            {!collapsed && (
+              <span className="font-semibold text-ink-sidebar text-base tracking-tight truncate">{user.restaurant.name}</span>
+            )}
+          </div>
+        ) : !collapsed ? (
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center">
               <ForkKnife size={16} weight="bold" className="text-white" />
@@ -166,7 +179,11 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             >
               <List size={18} weight="bold" className="text-ink" />
             </button>
-            <span className="font-semibold text-ink text-sm">RestoApp</span>
+            {user?.restaurant?.logo_url ? (
+              <img src={user.restaurant.logo_url} alt="Logo" className="h-6 object-contain" />
+            ) : (
+              <span className="font-semibold text-ink text-sm">RestoApp</span>
+            )}
           </div>
 
           <div className="flex items-center gap-2 ml-auto">

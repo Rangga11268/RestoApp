@@ -102,13 +102,13 @@ export function CartPanel(props: OrderFormProps) {
   } = useOrderForm(props);
 
   return (
-    <div className="flex flex-col h-full bg-white">
-      <div className="px-8 py-6 border-b border-slate-50 bg-white/80 backdrop-blur-md">
-        <h2 className="font-extrabold text-slate-900 text-lg flex items-center gap-3 tracking-tighter uppercase tracking-widest text-xs">
-          <ShoppingCart size={18} weight="duotone" className="text-primary" />
+    <div className="flex flex-col h-full bg-surface">
+      <div className="px-8 py-6 border-b border-paper-2 bg-surface/80">
+        <h2 className="font-semibold text-ink text-lg flex items-center gap-3 tracking-tighter uppercase tracking-widest text-xs">
+          <ShoppingCart size={18} weight="bold" className="text-accent" />
           My Orders
         </h2>
-        <div className="flex items-center gap-2 mt-4 text-[10px] font-black text-primary bg-primary/5 px-3 py-1.5 rounded-lg w-fit tracking-widest uppercase border border-primary/10">
+        <div className="flex items-center gap-2 mt-4 text-[10px] font-bold text-accent bg-accent/5 px-3 py-1.5 rounded-lg w-fit tracking-widest uppercase border border-accent/10">
           <ForkKnife size={14} weight="bold" />
           {tableId ? "Dine In" : "Take Away"}
         </div>
@@ -117,31 +117,31 @@ export function CartPanel(props: OrderFormProps) {
       <div className="flex-1 overflow-y-auto px-8 py-6 space-y-6 custom-scrollbar">
         {cartItems.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center h-full opacity-40">
-            <ShoppingCart size={48} weight="duotone" className="text-slate-300 mb-4" />
-            <p className="text-sm font-bold text-slate-900 tracking-tight">Empty Cart</p>
+            <ShoppingCart size={48} weight="bold" className="text-ink-2 mb-4" />
+            <p className="text-sm font-bold text-ink tracking-tight">Empty Cart</p>
           </div>
         ) : (
           cartItems.map((item) => (
             <div key={item.id} className="flex gap-4 group">
               <div className="relative flex-shrink-0">
                 {item.image_url ? (
-                  <img src={item.image_url} className="w-16 h-16 rounded-2xl object-cover border border-slate-100" />
+                  <img src={item.image_url} className="w-16 h-16 rounded-lg object-cover border border-rule-light" />
                 ) : (
-                   <div className="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-200 border border-slate-100">
+                   <div className="w-16 h-16 rounded-lg bg-paper-2 flex items-center justify-center text-ink-2 border border-rule-light">
                     <ImageBroken size={24} />
                    </div>
                 )}
               </div>
               <div className="flex flex-col justify-center flex-1 min-w-0">
-                <p className="text-sm font-extrabold text-slate-900 line-clamp-2 tracking-tight leading-tight">
+                <p className="text-sm font-semibold text-ink line-clamp-2 tracking-tight leading-tight">
                   {item.name}
                 </p>
                 <div className="flex items-center justify-between mt-2">
-                  <p className="text-sm text-primary font-black">{fmt(item.price, currency)}</p>
-                  <div className="flex items-center gap-2.5 bg-slate-50 rounded-xl p-1 border border-slate-100">
-                    <button onClick={() => onUpdateQty(item.id, item.qty - 1)} className="w-6 h-6 rounded-lg bg-white shadow-sm flex items-center justify-center text-slate-400 hover:text-danger active:scale-90"><Minus size={10} weight="bold" /></button>
-                    <span className="text-xs font-black text-slate-900 w-3 text-center">{item.qty}</span>
-                    <button onClick={() => onUpdateQty(item.id, item.qty + 1)} className="w-6 h-6 rounded-lg bg-primary flex items-center justify-center text-white shadow-md shadow-primary/30 active:scale-90"><Plus size={10} weight="bold" /></button>
+                  <p className="text-sm text-accent font-semibold">{fmt(item.price, currency)}</p>
+                  <div className="flex items-center gap-2.5 bg-paper-2 rounded-xl p-1 border border-rule-light">
+                    <button onClick={() => onUpdateQty(item.id, item.qty - 1)} className="w-6 h-6 rounded-lg bg-surface flex items-center justify-center text-ink-2 hover:text-danger"><Minus size={10} weight="bold" /></button>
+                    <span className="text-xs font-semibold text-ink w-3 text-center">{item.qty}</span>
+                    <button onClick={() => onUpdateQty(item.id, item.qty + 1)} className="w-6 h-6 rounded-lg bg-accent flex items-center justify-center text-white"><Plus size={10} weight="bold" /></button>
                   </div>
                 </div>
               </div>
@@ -150,7 +150,7 @@ export function CartPanel(props: OrderFormProps) {
         )}
       </div>
 
-      <div className="px-8 pb-8 pt-6 border-t border-slate-50 space-y-4 shadow-[0_-10px_30px_rgba(0,0,0,0.02)]">
+      <div className="px-8 pb-8 pt-6 border-t border-paper-2 space-y-4 shadow-[0_-10px_30px_rgba(0,0,0,0.02)]">
         <div className="space-y-3">
           <Input 
             value={customerName} 
@@ -162,13 +162,13 @@ export function CartPanel(props: OrderFormProps) {
             onChange={(e) => setNotes(e.target.value)}
             placeholder="Order Notes..."
             rows={2}
-            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all resize-none"
+            className="w-full bg-paper-2 border border-rule rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-4 focus:ring-accent/10 focus:border-accent resize-none"
           />
         </div>
         
-        <div className="flex items-center justify-between pt-4 border-t border-slate-50 border-dashed">
-          <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Total Pay</span>
-          <span className="font-black text-2xl text-slate-900 tracking-tighter">
+        <div className="flex items-center justify-between pt-4 border-t border-paper-2 border-dashed">
+          <span className="text-xs font-bold text-ink-2 uppercase tracking-widest">Total Pay</span>
+          <span className="font-semibold text-2xl text-ink tracking-tighter">
             {fmt(subtotal, currency)}
           </span>
         </div>
@@ -178,7 +178,7 @@ export function CartPanel(props: OrderFormProps) {
         <Button
           onClick={handleOrder}
           disabled={loading || cartItems.length === 0}
-          className="w-full py-4 rounded-2xl shadow-xl shadow-primary/20 font-bold tracking-tight"
+          className="w-full py-4 rounded-lg font-bold tracking-tight"
         >
           {loading ? <CircleNotch size={20} className="animate-spin" /> : <Receipt size={20} weight="bold" className="mr-2" />}
           {loading ? "Processing..." : "Place Order"}
@@ -210,36 +210,36 @@ export function CartDrawer({
 
   return (
     <>
-      <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-[60] lg:hidden transition-opacity" onClick={onClose} />
-      <div className="fixed bottom-0 left-0 right-0 w-full bg-white rounded-t-2xl z-[70] max-h-[90vh] flex flex-col shadow-lg lg:hidden">
-        <div className="w-full flex justify-center py-4 bg-white rounded-t-[40px]">
-          <div className="w-12 h-1.5 bg-slate-200 rounded-full" />
+      <div className="fixed inset-0 bg-ink/40 z-[60] lg:hidden" onClick={onClose} />
+      <div className="fixed bottom-0 left-0 right-0 w-full bg-surface rounded-t-lg z-[70] max-h-[90vh] flex flex-col lg:hidden">
+        <div className="w-full flex justify-center py-4 bg-surface rounded-t-[40px]">
+          <div className="w-12 h-1.5 bg-ink-2 rounded-full" />
         </div>
         
-        <div className="flex items-center justify-between px-8 py-2 border-b border-slate-50">
+        <div className="flex items-center justify-between px-8 py-2 border-b border-paper-2">
           <div>
-            <h2 className="font-black text-xl text-slate-900 tracking-tight">Cart</h2>
-            <p className="text-[10px] font-bold text-primary uppercase tracking-widest mt-0.5">{cartItems.length} items</p>
+            <h2 className="font-semibold text-xl text-ink tracking-tight">Cart</h2>
+            <p className="text-[10px] font-bold text-accent uppercase tracking-widest mt-0.5">{cartItems.length} items</p>
           </div>
-          <button onClick={onClose} className="w-10 h-10 rounded-2xl bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-slate-100 transition-all"><X size={20} weight="bold" /></button>
+          <button onClick={onClose} className="w-10 h-10 rounded-lg bg-paper-2 text-ink-2 flex items-center justify-center hover:bg-paper-2"><X size={20} weight="bold" /></button>
         </div>
         
         <div className="flex-1 overflow-y-auto px-8 py-6 space-y-6 custom-scrollbar">
            {cartItems.map((item) => (
             <div key={item.id} className="flex gap-4">
               {item.image_url ? (
-                <img src={item.image_url} className="w-16 h-16 rounded-2xl object-cover border border-slate-100" />
+                <img src={item.image_url} className="w-16 h-16 rounded-lg object-cover border border-rule-light" />
               ) : (
-                 <div className="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-200 border border-slate-100"><ImageBroken size={24} /></div>
+                 <div className="w-16 h-16 rounded-lg bg-paper-2 flex items-center justify-center text-ink-2 border border-rule-light"><ImageBroken size={24} /></div>
               )}
               <div className="flex flex-col justify-center flex-1 min-w-0">
-                <p className="text-sm font-extrabold text-slate-900 line-clamp-2 leading-tight">{item.name}</p>
+                <p className="text-sm font-semibold text-ink line-clamp-2 leading-tight">{item.name}</p>
                 <div className="flex items-center justify-between mt-2">
-                  <p className="text-sm text-primary font-black">{fmt(item.price, currency)}</p>
-                  <div className="flex items-center gap-3 bg-slate-50 rounded-xl p-1 border border-slate-100">
-                    <button onClick={() => onUpdateQty(item.id, item.qty - 1)} className="w-7 h-7 rounded-lg bg-white shadow-sm flex items-center justify-center text-slate-400 p-0 border border-slate-100"><Minus size={12} weight="bold" /></button>
-                    <span className="text-xs font-black text-slate-900 w-4 text-center">{item.qty}</span>
-                    <button onClick={() => onUpdateQty(item.id, item.qty + 1)} className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center text-white shadow-md p-0"><Plus size={12} weight="bold" /></button>
+                  <p className="text-sm text-accent font-semibold">{fmt(item.price, currency)}</p>
+                  <div className="flex items-center gap-3 bg-paper-2 rounded-xl p-1 border border-rule-light">
+                    <button onClick={() => onUpdateQty(item.id, item.qty - 1)} className="w-7 h-7 rounded-lg bg-surface flex items-center justify-center text-ink-2 p-0 border border-rule-light"><Minus size={12} weight="bold" /></button>
+                    <span className="text-xs font-semibold text-ink w-4 text-center">{item.qty}</span>
+                    <button onClick={() => onUpdateQty(item.id, item.qty + 1)} className="w-7 h-7 rounded-lg bg-accent flex items-center justify-center text-white p-0"><Plus size={12} weight="bold" /></button>
                   </div>
                 </div>
               </div>
@@ -247,24 +247,24 @@ export function CartDrawer({
           ))}
         </div>
         
-        <div className="px-8 pb-14 pt-6 bg-white border-t border-slate-100 space-y-6">
+        <div className="px-8 pb-14 pt-6 bg-surface border-t border-rule-light space-y-6">
           <div className="grid grid-cols-2 gap-4">
             <Input value={customerName} onChange={(e) => setCustomerName(e.target.value)} placeholder="Name" />
             <Input value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Notes..." />
           </div>
 
-          <div className="flex justify-between items-center bg-slate-900 rounded-2xl p-1.5 pl-6 shadow-xl overflow-hidden relative border border-white/5">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/20 blur-3xl rounded-full -mr-16 -mt-16" />
+          <div className="flex justify-between items-center bg-ink rounded-lg p-1.5 pl-6 overflow-hidden relative border border-white/5">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-accent/20 blur-3xl rounded-full -mr-16 -mt-16" />
             
             <div className="relative z-10 flex flex-col">
-              <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-0.5">Payable</span>
-              <span className="font-extrabold text-xl text-white tracking-tighter leading-none">{fmt(subtotal, currency)}</span>
+              <span className="text-[8px] font-semibold text-ink-2 uppercase tracking-widest mb-0.5">Payable</span>
+              <span className="font-semibold text-xl text-white tracking-tighter leading-none">{fmt(subtotal, currency)}</span>
             </div>
             
             <Button
               onClick={handleOrder}
               disabled={loading || cartItems.length === 0}
-              className="px-4 h-8 font-black text-[9px] relative z-10 shadow-lg shadow-primary/20 rounded-lg"
+              className="px-4 h-8 font-bold text-[9px] relative z-10 rounded-lg"
             >
               {loading ? <CircleNotch size={12} className="animate-spin" /> : <div className="flex items-center gap-1.5"><span>CHECKOUT</span> <CaretRight size={12} weight="bold" /></div>}
             </Button>

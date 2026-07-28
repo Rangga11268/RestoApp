@@ -45,7 +45,7 @@ function InvoiceContent({ order }: { order: Order }) {
   const payment = order.payment
 
   return (
-    <div id="invoice-print-area" className="bg-surface max-w-sm mx-auto font-mono text-[11px] leading-tight text-ink border-2 border-dashed border-rule-light p-8 rounded-[32px] sm:border-none sm:shadow-none sm:p-0">
+    <div id="invoice-print-area" className="bg-surface max-w-sm mx-auto font-mono text-[11px] leading-tight text-ink border-2 border-dashed border-rule-light p-8 rounded-lg sm:border-none sm:shadow-none sm:p-0">
       {/* Brand Header */}
       <div className="text-center pb-6 mb-6 border-b border-dashed border-rule">
         <h1 className="text-md font-semibold tracking-tighter uppercase mb-1">
@@ -212,7 +212,7 @@ export default function InvoicePage() {
   if (error || !order) {
     return (
         <div className="max-w-3xl mx-auto py-20 text-center">
-          <div className="w-20 h-20 bg-danger/5 text-danger rounded-[28px] flex items-center justify-center mx-auto mb-6">
+          <div className="w-20 h-20 bg-danger/5 text-danger rounded-lg flex items-center justify-center mx-auto mb-6">
               <WarningCircle size={40} weight="bold" />
           </div>
           <h2 className="text-lg font-semibold text-ink tracking-tighter mb-2">Invoice Missing</h2>
@@ -318,7 +318,7 @@ export default function InvoicePage() {
                              </div>
                         </div>
 
-                        <div className="p-6 bg-slate-900 rounded-[28px] text-white">
+                        <div className="p-6 bg-slate-900 rounded-lg text-white">
                              <div className="flex items-center justify-between mb-4">
                                 <span className="text-[10px] font-semibold text-white/30 tracking-widest uppercase">Settlement Method</span>
                                 <Badge variant="muted" className="text-white border-white/20 uppercase tracking-tight text-[9px]">Confirmed</Badge>
@@ -336,7 +336,7 @@ export default function InvoicePage() {
 
                  {/* Refund Logic (Owner Only) */}
                  {user?.role === 'owner' && order.payment_status === 'paid' && order.payment && (
-                    <div className="p-8 bg-danger/5 rounded-[32px] border border-danger/10 flex flex-col items-center gap-4 text-center">
+                    <div className="p-8 bg-danger/5 rounded-lg border border-danger/10 flex flex-col items-center gap-4 text-center">
                         <div className="w-12 h-12 bg-surface rounded-lg flex items-center justify-center text-danger">
                             <WarningCircle size={24} weight="bold" />
                         </div>

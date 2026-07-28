@@ -125,7 +125,7 @@ export default function CategoriesPage() {
           </div>
           <Button
             onClick={openCreate}
-            className="shadow-xl shadow-accent/20 rounded-lg px-6"
+            className=" rounded-lg px-6"
           >
             <Plus size={20} weight="bold" className="mr-2" /> New Category
           </Button>
@@ -162,7 +162,7 @@ export default function CategoriesPage() {
           ))}
         </div>
       ) : categories.length === 0 ? (
-        <div className="text-center py-40 bg-surface/50 backdrop-blur rounded-[48px] border border-rule-light border-dashed flex flex-col items-center">
+        <div className="text-center py-40 bg-surface/50 backdrop-blur rounded-xl border border-rule-light border-dashed flex flex-col items-center">
           <div className="w-24 h-24 bg-paper-2 rounded-full flex items-center justify-center mb-6">
             <Stack size={48} weight="bold" className="text-slate-200" />
           </div>
@@ -198,7 +198,7 @@ export default function CategoriesPage() {
                     <Tag size={120} weight="bold" className="absolute -right-4 -top-8 text-white/10" />
                  </div>
                  <div className="relative z-10 w-full flex items-center justify-between">
-                    <div className="w-12 h-12 rounded-lg bg-surface/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white font-black text-md">
+                    <div className="w-12 h-12 rounded-lg bg-surface/10  border border-white/20 flex items-center justify-center text-white font-black text-md">
                         {cat.name[0]}
                     </div>
                     <Badge variant={cat.is_active ? 'success' : 'muted'} className="text-[9px]">
@@ -320,7 +320,7 @@ export default function CategoriesPage() {
             <Button
               type="submit"
               variant="primary"
-              className="flex-[2] rounded-lg shadow-xl shadow-accent/20"
+              className="flex-[2] rounded-lg "
               disabled={isSubmitting}
             >
               {isSubmitting ? 'Syncing...' : editing ? 'Update Category' : 'Save Category'}

@@ -244,7 +244,7 @@ export default function StaffPage() {
           ))}
         </div>
       ) : staff.length === 0 ? (
-        <div className="text-center py-40 bg-surface/50 backdrop-blur rounded-[48px] border border-rule-light border-dashed flex flex-col items-center">
+        <div className="text-center py-40 bg-surface/50 backdrop-blur rounded-xl border border-rule-light border-dashed flex flex-col items-center">
           <div className="w-24 h-24 bg-paper-2 rounded-full flex items-center justify-center mb-6">
             <UserCircle size={48} weight="bold" className="text-slate-200" />
           </div>
@@ -279,11 +279,11 @@ export default function StaffPage() {
                 {/* Visual Header */}
                 <div className="p-8 pb-4 flex items-start gap-6">
                     <div className="relative">
-                         <div className="w-20 h-20 rounded-[28px] bg-slate-900 border-4 border-surface shadow-2xl flex items-center justify-center text-white text-lg font-semibold">
+                         <div className="w-20 h-20 rounded-lg bg-slate-900  border-surface  flex items-center justify-center text-white text-lg font-semibold">
                             {s.name[0].toUpperCase()}
                          </div>
                          <div className={cn(
-                             "absolute -bottom-1 -right-1 w-8 h-8 rounded-lg border-4 border-surface flex items-center justify-center",
+                             "absolute -bottom-1 -right-1 w-8 h-8 rounded-lg  border-surface flex items-center justify-center",
                              s.is_active ? "bg-success text-white" : "bg-slate-200 text-ink-2"
                          )}>
                              {s.is_active ? <CheckCircle size={14} weight="bold" /> : <ToggleLeft size={14} weight="bold" />}
@@ -334,7 +334,7 @@ export default function StaffPage() {
                         {working === s.id ? (
                             <CircleNotch size={14} className="animate-spin" />
                         ) : s.is_active ? (
-                            <ToggleRight size={18} weight="fill" />
+                            <ToggleRight size={18} weight="bold" />
                         ) : (
                             "Activate"
                         )}

@@ -242,7 +242,7 @@ export default function TablesPage() {
           ))}
         </div>
       ) : tables.length === 0 ? (
-        <div className="text-center py-40 bg-surface/50 backdrop-blur rounded-[48px] border border-rule-light border-dashed flex flex-col items-center">
+        <div className="text-center py-40 bg-surface/50 backdrop-blur rounded-xl border border-rule-light border-dashed flex flex-col items-center">
           <div className="w-24 h-24 bg-paper-2 rounded-full flex items-center justify-center mb-6">
             <Chair size={48} weight="bold" className="text-slate-200" />
           </div>
@@ -451,7 +451,7 @@ export default function TablesPage() {
           <div className="flex flex-col items-center gap-8 py-6">
             <div
               ref={qrModalRef}
-              className="p-8 bg-surface rounded-[40px] border border-rule-light shadow-2xl relative overflow-hidden group"
+              className="p-8 bg-surface rounded-lg border border-rule-light  relative overflow-hidden group"
             >
                 <div className="absolute inset-0 bg-accent/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                 <QRCode value={buildQrUrl(qrTarget.qr_code)} size={280} level="M" />
@@ -466,7 +466,7 @@ export default function TablesPage() {
             
             <Button
               onClick={() => downloadQrSvg(qrModalRef, qrTarget.name)}
-              className="w-full flex items-center justify-center gap-3 h-14 font-black rounded-[28px] shadow-2xl shadow-primary/20"
+              className="w-full flex items-center justify-center gap-3 h-14 font-black rounded-lg "
             >
               <DownloadSimple size={20} weight="bold" /> Download Vector (SVG)
             </Button>
@@ -506,7 +506,7 @@ export default function TablesPage() {
                         <h2 className="text-xl font-semibold text-ink tracking-tighter">{t.name}</h2>
                         <p className="text-xs font-black text-primary uppercase tracking-[0.2em] mt-1">Scan to Order</p>
                       </div>
-                      <div className="p-6 border-4 border-slate-900 rounded-[40px] mb-6">
+                      <div className="p-6  border-slate-900 rounded-lg mb-6">
                         <QRCode value={buildQrUrl(t.qr_code!)} size={180} level="M" />
                       </div>
                       <div className="text-[10px] font-semibold text-ink-2 uppercase tracking-widest leading-tight">
